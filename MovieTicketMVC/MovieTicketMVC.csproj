@@ -238,6 +238,10 @@
     <Compile Include="Migrations\202503221238069_RemovedUrl.Designer.cs">
       <DependentUpon>202503221238069_RemovedUrl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605271323495_InitialAzureDatabase.cs" />
+    <Compile Include="Migrations\202605271323495_InitialAzureDatabase.Designer.cs">
+      <DependentUpon>202605271323495_InitialAzureDatabase.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -286,6 +290,7 @@
     <Content Include="Scripts\bootstrap.esm.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Properties\PublishProfiles\movie-ticket-mvc-nikola - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -410,6 +415,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503221238069_RemovedUrl.resx">
       <DependentUpon>202503221238069_RemovedUrl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605271323495_InitialAzureDatabase.resx">
+      <DependentUpon>202605271323495_InitialAzureDatabase.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

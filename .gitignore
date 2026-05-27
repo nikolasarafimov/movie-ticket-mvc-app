@@ -1,0 +1,17 @@
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# SQL / local database files
+*.mdf
+*.ldf
+
+# Publish profiles with secrets
+*.pubxml.user
+
+# Logs
+*.log
