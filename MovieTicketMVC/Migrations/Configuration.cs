@@ -1,35 +1,83 @@
 ﻿namespace MovieTicketMVC.Migrations
 {
-    using Microsoft.AspNet.Identity.EntityFramework;
     using Microsoft.AspNet.Identity;
+    using Microsoft.AspNet.Identity.EntityFramework;
     using MovieTicketMVC.Models;
     using System;
-    using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<MovieTicketMVC.Models.ApplicationDbContext>
+    internal sealed class Configuration
+        : DbMigrationsConfiguration<ApplicationDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(MovieTicketMVC.Models.ApplicationDbContext context)
+        protected override void Seed(ApplicationDbContext context)
         {
+            SeedAdmin(context);
+            SeedMovies(context);
+
+            context.SaveChanges();
+        }
+
+        private static void SeedAdmin(ApplicationDbContext context)
+        {
+            const string adminRoleName = "Admin";
+
             var roleManager = new RoleManager<IdentityRole>(
                 new RoleStore<IdentityRole>(context));
 
-            if (!roleManager.RoleExists("Admin"))
+            if (!roleManager.RoleExists(adminRoleName))
             {
-                var roleResult = roleManager.Create(new IdentityRole("Admin"));
+                var roleResult =
+                    roleManager.Create(new IdentityRole(adminRoleName));
+
+                if (!roleResult.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        "Failed to create the Admin role: "
+                        + string.Join("; ", roleResult.Errors));
+                }
             }
+
+            var adminEmail =
+                Environment.GetEnvironmentVariable(
+                    "MOVIETICKET_ADMIN_EMAIL");
+
+            var adminPassword =
+                Environment.GetEnvironmentVariable(
+                    "MOVIETICKET_ADMIN_PASSWORD");
+
+            var hasAdminEmail =
+                !string.IsNullOrWhiteSpace(adminEmail);
+
+            var hasAdminPassword =
+                !string.IsNullOrWhiteSpace(adminPassword);
+
+            if (!hasAdminEmail && !hasAdminPassword)
+            {
+                return;
+            }
+
+            if (!hasAdminEmail || !hasAdminPassword)
+            {
+                throw new InvalidOperationException(
+                    "Both MOVIETICKET_ADMIN_EMAIL and "
+                    + "MOVIETICKET_ADMIN_PASSWORD must be configured "
+                    + "when admin seeding is enabled.");
+            }
+
+            adminEmail = adminEmail.Trim();
 
             var userManager = new UserManager<ApplicationUser>(
                 new UserStore<ApplicationUser>(context));
 
-            var adminEmail = "admin@movieticket.com";
-            var adminUser = userManager.FindByName(adminEmail);
+            var adminUser =
+                userManager.FindByName(adminEmail)
+                ?? userManager.FindByEmail(adminEmail);
 
             if (adminUser == null)
             {
@@ -39,18 +87,37 @@
                     Email = adminEmail,
                     EmailConfirmed = true
                 };
-                userManager.Create(adminUser, "Password12345@"); 
 
-                userManager.AddToRole(adminUser.Id, "Admin");
+                var createResult =
+                    userManager.Create(adminUser, adminPassword);
+
+                if (!createResult.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        "Failed to create the administrator account: "
+                        + string.Join("; ", createResult.Errors));
+                }
             }
 
-            context.Movies.RemoveRange(context.Movies);
-            context.Tickets.RemoveRange(context.Tickets);
-            context.Movies.RemoveRange(context.Movies);
+            if (!userManager.IsInRole(adminUser.Id, adminRoleName))
+            {
+                var roleResult =
+                    userManager.AddToRole(
+                        adminUser.Id,
+                        adminRoleName);
 
-            context.SaveChanges();
+                if (!roleResult.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        "Failed to assign the administrator role: "
+                        + string.Join("; ", roleResult.Errors));
+                }
+            }
+        }
 
-            context.Movies.AddRange(new[]
+        private static void SeedMovies(ApplicationDbContext context)
+        {
+            var movies = new[]
             {
                 new Movie
                 {
@@ -84,7 +151,7 @@
                 {
                     Title = "The Clockmaker’s Curse",
                     LengthInMinutes = 132,
-                    ReleaseDate = new DateTime(2025, 2, 01),
+                    ReleaseDate = new DateTime(2025, 2, 1),
                     Description = "A young apprentice discovers that his mentor’s clockwork creations can manipulate time itself. But when a mysterious figure demands the ultimate timepiece, he must race against destiny to prevent catastrophe.",
                     IsForAdults = true,
                     IsCurrentlyShowing = true,
@@ -98,7 +165,7 @@
                 {
                     Title = "Fractured Allegiance",
                     LengthInMinutes = 117,
-                    ReleaseDate = new DateTime(2024, 11, 08),
+                    ReleaseDate = new DateTime(2024, 11, 8),
                     Description = "A rogue CIA agent, accused of treason, must uncover a global conspiracy while being hunted by both his former allies and deadly mercenaries. With time running out, he must decide who he can trust.",
                     IsForAdults = true,
                     IsCurrentlyShowing = true,
@@ -122,7 +189,6 @@
                     LocalTrailerPath = "~/Content/Videos/BeneathTrailer.mp4",
                     Language = "Англиски"
                 },
-
                 new Movie
                 {
                     Title = "The Last Symphony",
@@ -141,7 +207,7 @@
                 {
                     Title = "The Iron Pact",
                     LengthInMinutes = 145,
-                    ReleaseDate = new DateTime(2025, 9, 09),
+                    ReleaseDate = new DateTime(2025, 9, 9),
                     Description = "In the midst of WWII, an elite German officer defects with top-secret intelligence. As Allied forces race to extract him, the Nazis unleash a relentless pursuit to ensure he never leaves occupied territory alive.",
                     IsForAdults = true,
                     IsCurrentlyShowing = false,
@@ -193,9 +259,20 @@
                     LocalTrailerPath = "~/Content/Videos/WildTrailer.mp4",
                     Language = "Англиски"
                 }
-            });
+            };
 
-            context.SaveChanges();
+            foreach (var movie in movies)
+            {
+                var movieExists =
+                    context.Movies.Any(
+                        existingMovie =>
+                            existingMovie.Title == movie.Title);
+
+                if (!movieExists)
+                {
+                    context.Movies.Add(movie);
+                }
+            }
         }
     }
 }
