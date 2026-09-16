@@ -1,4 +1,5 @@
 # MovieTicketMVC
+[![CI](https://github.com/nikolasarafimov/movie-ticket-mvc-app/actions/workflows/ci.yml/badge.svg)](https://github.com/nikolasarafimov/movie-ticket-mvc-app/actions/workflows/ci.yml)
 
 A full-featured cinema ticket booking web application built with **ASP.NET MVC 5** and **.NET Framework 4.7.2**.
 
