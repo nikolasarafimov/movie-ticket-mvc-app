@@ -1,13 +1,924 @@
 ﻿@{
-    ViewBag.Title = "Contact";
+    ViewBag.Title = "Контакт";
 }
-<main aria-labelledby="title">
-    <h2 id="title">Контактирајте не</h2>
-    <h3>@ViewBag.Message</h3>
 
-    <address>
-        <p>Емаил адреса: info@movieticketapp.com</p>
-        <p>Телефон: +389 70 123 456</p>
-        <p>Социјални мрежи: <a href="#">Facebook</a> | <a href="#">Instagram</a> | <a href="#">Twitter</a></p>
-    </address>
+<main class="contact-page"
+      aria-labelledby="contact-title">
+
+    <section class="contact-hero">
+
+        <div class="contact-hero-glow contact-hero-glow-one"
+             aria-hidden="true">
+        </div>
+
+        <div class="contact-hero-glow contact-hero-glow-two"
+             aria-hidden="true">
+        </div>
+
+
+        <div class="contact-hero-content">
+
+            <div class="cinema-eyebrow">
+                CONTACT & SUPPORT
+            </div>
+
+            <h1 id="contact-title">
+                Како можеме да
+                <span class="cinema-text-gradient">
+                    помогнеме?
+                </span>
+            </h1>
+
+            <p>
+                Имаш прашање за резервација, билет или
+                користењето на MovieTicket? Контактирај нè
+                преку e-mail или телефон.
+            </p>
+
+
+            <div class="contact-hero-actions">
+
+                <a class="btn btn-primary"
+                   href="mailto:info@movieticketapp.com">
+
+                    <span>
+                        Испрати e-mail
+                    </span>
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
+
+                </a>
+
+                <a class="btn btn-outline-secondary"
+                   href="@Url.Action("Current", "Movies")">
+
+                    Прегледај филмови
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="contact-hero-art"
+             aria-hidden="true">
+
+            <div class="contact-orbit
+                        contact-orbit-large">
+            </div>
+
+            <div class="contact-orbit
+                        contact-orbit-small">
+            </div>
+
+
+            <div class="contact-message-art">
+
+                <div class="contact-message-art-line">
+                </div>
+
+                <div class="contact-message-art-line short">
+                </div>
+
+                <div class="contact-message-art-line medium">
+                </div>
+
+                <span>
+                    &#64;
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="contact-section">
+
+        <div class="contact-section-heading">
+
+            <div>
+
+                <div class="cinema-eyebrow">
+                    GET IN TOUCH
+                </div>
+
+                <h2>
+                    Контакт информации
+                </h2>
+
+            </div>
+
+            <p>
+                Избери го начинот што најмногу ти одговара.
+            </p>
+
+        </div>
+
+
+        <div class="contact-grid">
+
+            <article class="contact-card">
+
+                <div class="contact-card-top">
+
+                    <div class="contact-card-icon"
+                         aria-hidden="true">
+                        &#64;
+                    </div>
+
+                    <span class="contact-card-number">
+                        01
+                    </span>
+
+                </div>
+
+
+                <div class="contact-card-content">
+
+                    <span>
+                        E-MAIL
+                    </span>
+
+                    <h3>
+                        Пиши ни
+                    </h3>
+
+                    <p>
+                        За прашања поврзани со билети,
+                        резервации или MovieTicket профилот.
+                    </p>
+
+                </div>
+
+
+                <a class="contact-card-link"
+                   href="mailto:info@movieticketapp.com">
+
+                    <span>
+                        info@movieticketapp.com
+                    </span>
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
+
+                </a>
+
+            </article>
+
+
+            <article class="contact-card">
+
+                <div class="contact-card-top">
+
+                    <div class="contact-card-icon phone"
+                         aria-hidden="true">
+
+                        <span></span>
+
+                    </div>
+
+                    <span class="contact-card-number">
+                        02
+                    </span>
+
+                </div>
+
+
+                <div class="contact-card-content">
+
+                    <span>
+                        PHONE
+                    </span>
+
+                    <h3>
+                        Јави ни се
+                    </h3>
+
+                    <p>
+                        Директен контакт доколку ти е потребна
+                        помош со користењето на платформата.
+                    </p>
+
+                </div>
+
+
+                <a class="contact-card-link"
+                   href="tel:+38970123456">
+
+                    <span>
+                        +389 70 123 456
+                    </span>
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
+
+                </a>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <section class="contact-support-panel">
+
+        <div class="contact-support-copy">
+
+            <div class="contact-support-icon"
+                 aria-hidden="true">
+
+                <span>
+                    ?
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <span class="contact-support-label">
+                    BEFORE CONTACTING US
+                </span>
+
+                <h2>
+                    Провери ги деталите за билетот
+                </h2>
+
+                <p>
+                    За прашања поврзани со конкретна
+                    резервација, деталите за филмот,
+                    датумот, терминот и седиштата можеш
+                    да ги најдеш во делот со твоите билети.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        @if (Request.IsAuthenticated)
+        {
+            <a class="btn btn-outline-secondary"
+               href="@Url.Action("Index", "Tickets")">
+
+                Мои билети
+
+            </a>
+        }
+        else
+        {
+            <a class="btn btn-outline-secondary"
+               href="@Url.Action("Login", "Account")">
+
+                Најави се
+
+            </a>
+        }
+
+    </section>
+
+
+    <section class="contact-bottom">
+
+        <div>
+
+            <div class="cinema-eyebrow">
+                READY FOR THE NEXT MOVIE?
+            </div>
+
+            <h2>
+                Назад кон големото платно.
+            </h2>
+
+            <p>
+                Прегледај ги актуелните филмови и
+                избери го следниот термин.
+            </p>
+
+        </div>
+
+
+        <a class="btn btn-primary"
+           href="@Url.Action("Current", "Movies")">
+
+            <span>
+                Актуелни филмови
+            </span>
+
+            <span aria-hidden="true">
+                →
+            </span>
+
+        </a>
+
+    </section>
+
 </main>
+
+
+<style>
+    .contact-page {
+        width: 100%;
+    }
+
+
+    /* =====================================================
+       HERO
+       ===================================================== */
+
+    .contact-hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 310px;
+        min-height: 430px;
+        align-items: center;
+        gap: 2rem;
+        padding: clamp(2rem, 6vw, 4.5rem);
+        overflow: hidden;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-xl);
+        background: radial-gradient( circle at 82% 25%, rgba(214, 168, 75, 0.12), transparent 28% ), radial-gradient( circle at 0% 100%, rgba(58, 101, 169, 0.14), transparent 32% ), linear-gradient( 145deg, #151e2b, #090e16 58%, #06090e );
+        box-shadow: var(--cinema-shadow);
+        isolation: isolate;
+    }
+
+        .contact-hero::before {
+            position: absolute;
+            z-index: -2;
+            inset: 0;
+            content: "";
+            opacity: 0.24;
+            background-image: linear-gradient( rgba(255, 255, 255, 0.022) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px );
+            background-size: 48px 48px;
+            mask-image: linear-gradient( 90deg, #000, transparent );
+        }
+
+    .contact-hero-glow {
+        position: absolute;
+        z-index: -1;
+        border-radius: 50%;
+        filter: blur(25px);
+        pointer-events: none;
+    }
+
+    .contact-hero-glow-one {
+        top: -170px;
+        right: -110px;
+        width: 440px;
+        height: 440px;
+        background: rgba(214, 168, 75, 0.065);
+    }
+
+    .contact-hero-glow-two {
+        bottom: -180px;
+        left: -100px;
+        width: 420px;
+        height: 420px;
+        background: rgba(58, 101, 169, 0.07);
+    }
+
+    .contact-hero-content {
+        position: relative;
+        z-index: 3;
+        max-width: 760px;
+    }
+
+    .contact-hero h1 {
+        max-width: 720px;
+        margin-bottom: 1.3rem;
+        font-size: clamp( 3.2rem, 7vw, 5.8rem );
+        line-height: 0.94;
+        letter-spacing: -0.065em;
+    }
+
+    .contact-hero-content > p {
+        max-width: 600px;
+        margin: 0;
+        color: var(--cinema-text-soft);
+        font-size: 0.98rem;
+        line-height: 1.8;
+    }
+
+    .contact-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 2rem;
+    }
+
+        .contact-hero-actions .btn {
+            min-height: 48px;
+        }
+
+        .contact-hero-actions
+        .btn-primary {
+            display: inline-flex;
+            min-width: 190px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+            .contact-hero-actions
+            .btn-primary > span:last-child {
+                transition: transform var(--cinema-transition);
+            }
+
+            .contact-hero-actions
+            .btn-primary:hover > span:last-child {
+                transform: translateX(5px);
+            }
+
+
+    /* =====================================================
+       HERO ART
+       ===================================================== */
+
+    .contact-hero-art {
+        position: relative;
+        display: grid;
+        width: 280px;
+        height: 280px;
+        place-items: center;
+    }
+
+    .contact-orbit {
+        position: absolute;
+        border: 1px solid rgba(214, 168, 75, 0.09);
+        border-radius: 50%;
+        animation: contact-orbit-spin 26s linear infinite;
+    }
+
+        .contact-orbit::after {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            width: 9px;
+            height: 9px;
+            content: "";
+            border-radius: 50%;
+            background: var(--cinema-gold);
+            box-shadow: 0 0 18px rgba(214, 168, 75, 0.68);
+        }
+
+    .contact-orbit-large {
+        width: 255px;
+        height: 255px;
+    }
+
+    .contact-orbit-small {
+        width: 180px;
+        height: 180px;
+        animation-direction: reverse;
+        animation-duration: 18s;
+    }
+
+    .contact-message-art {
+        position: relative;
+        z-index: 4;
+        width: 145px;
+        height: 112px;
+        padding: 1.5rem 1.25rem;
+        border: 1px solid rgba(214, 168, 75, 0.27);
+        border-radius: 22px 22px 22px 7px;
+        background: linear-gradient( 145deg, rgba(31, 41, 56, 0.85), rgba(10, 14, 21, 0.94) );
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), 0 0 45px rgba(214, 168, 75, 0.06);
+        transform: rotate(-3deg);
+        animation: contact-message-float 6s ease-in-out infinite;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+
+        .contact-message-art > span {
+            position: absolute;
+            right: 16px;
+            bottom: 12px;
+            color: var(--cinema-gold-light);
+            font-size: 0.72rem;
+            font-weight: 900;
+        }
+
+    .contact-message-art-line {
+        width: 100%;
+        height: 5px;
+        margin-bottom: 9px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.13);
+    }
+
+        .contact-message-art-line.short {
+            width: 58%;
+        }
+
+        .contact-message-art-line.medium {
+            width: 78%;
+        }
+
+
+    /* =====================================================
+       SECTION
+       ===================================================== */
+
+    .contact-section {
+        margin-top: clamp(3rem, 6vw, 5rem);
+    }
+
+    .contact-section-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .contact-section-heading h2 {
+            margin: 0;
+            font-size: clamp( 1.9rem, 4vw, 2.6rem );
+        }
+
+        .contact-section-heading > p {
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.76rem;
+        }
+
+
+    /* =====================================================
+       CONTACT CARDS
+       ===================================================== */
+
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .contact-card {
+        display: flex;
+        min-height: 330px;
+        flex-direction: column;
+        padding: clamp(1.4rem, 3vw, 2rem);
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-lg);
+        background: radial-gradient( circle at 100% 0%, rgba(214, 168, 75, 0.045), transparent 34% ), linear-gradient( 145deg, rgba(20, 27, 39, 0.88), rgba(9, 13, 20, 0.95) );
+        box-shadow: var(--cinema-shadow-sm);
+        transition: transform var(--cinema-transition), border-color var(--cinema-transition), box-shadow var(--cinema-transition);
+    }
+
+        .contact-card:hover {
+            border-color: rgba(214, 168, 75, 0.22);
+            box-shadow: var(--cinema-shadow);
+            transform: translateY(-5px);
+        }
+
+    .contact-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .contact-card-icon {
+        display: grid;
+        width: 52px;
+        height: 52px;
+        place-items: center;
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.19);
+        border-radius: 15px;
+        background: rgba(214, 168, 75, 0.055);
+        font-size: 0.85rem;
+        font-weight: 900;
+    }
+
+        .contact-card-icon.phone {
+            position: relative;
+        }
+
+            .contact-card-icon.phone > span {
+                position: relative;
+                display: block;
+                width: 14px;
+                height: 25px;
+                border: 2px solid currentColor;
+                border-radius: 7px 7px 9px 9px;
+                transform: rotate(-30deg);
+            }
+
+                .contact-card-icon.phone > span::before,
+                .contact-card-icon.phone > span::after {
+                    position: absolute;
+                    left: 50%;
+                    width: 7px;
+                    height: 4px;
+                    content: "";
+                    border-radius: 4px;
+                    background: currentColor;
+                    transform: translateX(-50%);
+                }
+
+                .contact-card-icon.phone > span::before {
+                    top: -3px;
+                }
+
+                .contact-card-icon.phone > span::after {
+                    bottom: -3px;
+                }
+
+    .contact-card-number {
+        color: var(--cinema-text-muted);
+        font-size: 0.56rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+    }
+
+    .contact-card-content {
+        padding: 2.2rem 0 1.5rem;
+    }
+
+        .contact-card-content > span {
+            display: block;
+            margin-bottom: 0.45rem;
+            color: var(--cinema-gold-light);
+            font-size: 0.52rem;
+            font-weight: 900;
+            letter-spacing: 0.13em;
+        }
+
+        .contact-card-content h3 {
+            margin-bottom: 0.8rem;
+            color: var(--cinema-text);
+            font-size: 1.45rem;
+        }
+
+        .contact-card-content p {
+            max-width: 480px;
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.76rem;
+            line-height: 1.7;
+        }
+
+    .contact-card-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: auto;
+        padding-top: 1.1rem;
+        color: var(--cinema-text-soft);
+        border-top: 1px solid var(--cinema-border);
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+        .contact-card-link > span:last-child {
+            color: var(--cinema-gold-light);
+            transition: transform var(--cinema-transition);
+        }
+
+        .contact-card-link:hover {
+            color: var(--cinema-gold-light);
+        }
+
+            .contact-card-link:hover > span:last-child {
+                transform: translateX(5px);
+            }
+
+
+    /* =====================================================
+       SUPPORT PANEL
+       ===================================================== */
+
+    .contact-support-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-top: 1rem;
+        padding: 1.4rem 1.5rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-lg);
+        background: rgba(255, 255, 255, 0.018);
+    }
+
+    .contact-support-copy {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .contact-support-icon {
+        display: grid;
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.18);
+        border-radius: 13px;
+        background: rgba(214, 168, 75, 0.055);
+    }
+
+        .contact-support-icon > span {
+            display: grid;
+            width: 23px;
+            height: 23px;
+            place-items: center;
+            border: 1px solid rgba(214, 168, 75, 0.23);
+            border-radius: 50%;
+            font-size: 0.65rem;
+            font-weight: 900;
+        }
+
+    .contact-support-label {
+        display: block;
+        margin-bottom: 0.18rem;
+        color: var(--cinema-gold-light);
+        font-size: 0.5rem;
+        font-weight: 900;
+        letter-spacing: 0.11em;
+    }
+
+    .contact-support-copy h2 {
+        margin: 0 0 0.35rem;
+        color: var(--cinema-text);
+        font-size: 1rem;
+    }
+
+    .contact-support-copy p {
+        max-width: 720px;
+        margin: 0;
+        color: var(--cinema-text-muted);
+        font-size: 0.68rem;
+        line-height: 1.6;
+    }
+
+    .contact-support-panel > .btn {
+        flex: 0 0 auto;
+    }
+
+
+    /* =====================================================
+       BOTTOM CTA
+       ===================================================== */
+
+    .contact-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-top: clamp(3rem, 6vw, 5rem);
+        padding: clamp(2rem, 5vw, 3.5rem);
+        border: 1px solid rgba(214, 168, 75, 0.14);
+        border-radius: var(--cinema-radius-xl);
+        background: radial-gradient( circle at 100% 50%, rgba(214, 168, 75, 0.07), transparent 30% ), linear-gradient( 145deg, rgba(20, 27, 39, 0.86), rgba(9, 13, 20, 0.95) );
+    }
+
+        .contact-bottom h2 {
+            margin-bottom: 0.5rem;
+            font-size: clamp( 1.8rem, 4vw, 2.6rem );
+        }
+
+        .contact-bottom p {
+            max-width: 560px;
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.76rem;
+            line-height: 1.65;
+        }
+
+        .contact-bottom > .btn {
+            display: flex;
+            flex: 0 0 auto;
+            min-width: 205px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+            .contact-bottom > .btn > span:last-child {
+                transition: transform var(--cinema-transition);
+            }
+
+            .contact-bottom > .btn:hover > span:last-child {
+                transform: translateX(5px);
+            }
+
+
+    /* =====================================================
+       ANIMATIONS
+       ===================================================== */
+
+    @@keyframes contact-orbit-spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes contact-message-float {
+        0%,
+        100% {
+            transform: rotate(-3deg) translateY(0);
+        }
+
+        50% {
+            transform: rotate(-1deg) translateY(-10px);
+        }
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @@media (max-width: 900px) {
+        .contact-hero {
+            grid-template-columns: 1fr;
+            min-height: 0;
+        }
+
+        .contact-hero-art {
+            display: none;
+        }
+    }
+
+    @@media (max-width: 700px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-section-heading {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .contact-support-panel,
+        .contact-bottom {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+            .contact-support-panel > .btn,
+            .contact-bottom > .btn {
+                width: 100%;
+            }
+    }
+
+    @@media (max-width: 575.98px) {
+        .contact-hero {
+            padding: 2.2rem 1.2rem;
+            border-radius: var(--cinema-radius-lg);
+        }
+
+            .contact-hero h1 {
+                font-size: 3rem;
+            }
+
+        .contact-hero-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+            .contact-hero-actions .btn {
+                width: 100%;
+            }
+
+        .contact-card {
+            min-height: 300px;
+        }
+
+        .contact-support-copy {
+            flex-direction: column;
+        }
+
+        .contact-bottom {
+            padding: 2rem 1.2rem;
+            border-radius: var(--cinema-radius-lg);
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .contact-orbit,
+        .contact-message-art {
+            animation: none;
+        }
+
+        .contact-card {
+            transition: none;
+        }
+    }
+</style>

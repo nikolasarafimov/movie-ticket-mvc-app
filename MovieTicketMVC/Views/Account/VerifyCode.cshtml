@@ -1,40 +1,1114 @@
 ﻿@model MovieTicketMVC.Models.VerifyCodeViewModel
+
 @{
-    ViewBag.Title = "Verify";
+    ViewBag.Title = "Потврда на идентитет";
 }
 
-<main aria-labelledby="title">
-    <h2 id="title">@ViewBag.Title.</h2>
+<main class="verify-page"
+      aria-labelledby="verify-title">
 
-    @using (Html.BeginForm("VerifyCode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { role = "form" })) {
-        @Html.AntiForgeryToken()
-        @Html.Hidden("provider", @Model.Provider)
-        @Html.Hidden("rememberMe", @Model.RememberMe)
-        <h4>Enter verification code</h4>
-        <hr />
-        @Html.ValidationSummary("", new { @class = "text-danger" })
-        <div class="row">
-            @Html.LabelFor(m => m.Code, new { @class = "col-md-2 col-form-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.Code, new { @class = "form-control" })
+    <section class="verify-shell">
+
+        <div class="verify-visual"
+             aria-hidden="true">
+
+            <div class="verify-grid">
             </div>
-        </div>
-        <div class="row">
-            <div class="offset-md-2 col-md-10">
-                <div class="checkbox">
-                    @Html.CheckBoxFor(m => m.RememberBrowser)
-                    @Html.LabelFor(m => m.RememberBrowser)
+
+            <div class="verify-orbit verify-orbit-large">
+            </div>
+
+            <div class="verify-orbit verify-orbit-small">
+            </div>
+
+
+            <div class="verify-code-art">
+
+                <div class="verify-code-art-label">
+                    SECURITY CODE
                 </div>
+
+                <div class="verify-code-art-digits">
+
+                    <span>•</span>
+                    <span>•</span>
+                    <span>•</span>
+                    <span>•</span>
+                    <span>•</span>
+                    <span>•</span>
+
+                </div>
+
+                <div class="verify-code-art-line">
+                </div>
+
+                <div class="verify-code-art-status">
+
+                    <span></span>
+
+                    ENCRYPTED VERIFICATION
+
+                </div>
+
             </div>
-        </div>
-        <div class="row">
-            <div class="offset-md-2 col-md-10">
-                <input type="submit" class="btn btn-outline-dark" value="Submit" />
+
+
+            <div class="verify-visual-copy">
+
+                <span>
+                    IDENTITY VERIFICATION
+                </span>
+
+                <strong>
+                    Уште еден чекор
+                </strong>
+
+                <p>
+                    Внеси го verification кодот
+                    за безбедно да го завршиш
+                    процесот на најава.
+                </p>
+
             </div>
+
         </div>
-    }
+
+
+        <div class="verify-content">
+
+            <a class="verify-brand"
+               href="@Url.Action("Index", "Home")">
+
+                <span></span>
+
+                MOVIETICKET
+            </a>
+
+
+            <div class="verify-progress"
+                 aria-label="Процес за двофакторска автентикација">
+
+                <div class="verify-progress-step completed">
+
+                    <span aria-hidden="true">
+                        ✓
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Метод
+                        </strong>
+
+                        <small>
+                            Избран provider
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="verify-progress-line completed">
+                </div>
+
+
+                <div class="verify-progress-step active">
+
+                    <span>
+                        02
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Код
+                        </strong>
+
+                        <small>
+                            Потврди пристап
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="verify-heading">
+
+                <div class="cinema-eyebrow">
+                    ENTER VERIFICATION CODE
+                </div>
+
+                <h1 id="verify-title">
+                    Внеси го
+                    <span class="cinema-text-gradient">
+                        кодот
+                    </span>
+                </h1>
+
+                <p>
+                    Внеси го еднократниот verification код
+                    што го доби преку избраниот метод.
+                </p>
+
+            </div>
+
+
+            @if (!string.IsNullOrWhiteSpace(Model.Provider))
+            {
+                <div class="verify-provider">
+
+                    <div class="verify-provider-icon"
+                         aria-hidden="true">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <span>
+                            VERIFICATION METHOD
+                        </span>
+
+                        <strong>
+                            @Model.Provider
+                        </strong>
+
+                    </div>
+
+                </div>
+            }
+
+
+            @using (Html.BeginForm(
+                "VerifyCode",
+                "Account",
+                FormMethod.Post,
+                new
+                {
+                    role = "form",
+                    id = "verifyCodeForm",
+                    @class = "verify-form"
+                }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(
+                    m => m.Provider)
+
+                @Html.HiddenFor(
+                    m => m.ReturnUrl)
+
+                @Html.HiddenFor(
+                    m => m.RememberMe)
+
+
+                @Html.ValidationSummary(
+                    true,
+                    "",
+                    new
+                    {
+                        @class =
+                            "validation-summary-errors verify-validation"
+                    })
+
+
+                <div class="form-group verify-code-group">
+
+                    @Html.LabelFor(
+                        m => m.Code,
+                        "Verification код",
+                        new
+                        {
+                            @class =
+                                "form-label"
+                        })
+
+
+                    <div class="verify-input-wrapper">
+
+                        <span class="verify-input-icon"
+                              aria-hidden="true">
+                            #
+                        </span>
+
+                        @Html.TextBoxFor(
+                            m => m.Code,
+                            new
+                            {
+                                @class =
+                                    "form-control verify-code-input",
+                                autocomplete =
+                                    "one-time-code",
+                                inputmode =
+                                    "numeric",
+                                placeholder =
+                                    "Внеси го кодот",
+                                autofocus =
+                                    "autofocus",
+                                id =
+                                    "Code",
+                                aria_describedby =
+                                    "verificationCodeHelp"
+                            })
+
+                    </div>
+
+
+                    @Html.ValidationMessageFor(
+                        m => m.Code,
+                        "",
+                        new
+                        {
+                            @class =
+                                "text-danger"
+                        })
+
+
+                    <small id="verificationCodeHelp"
+                           class="verify-code-help">
+                        Кодот е еднократен и се користи
+                        само за ова најавување.
+                    </small>
+
+                </div>
+
+
+                <label class="verify-remember-card"
+                       for="RememberBrowser">
+
+                    @Html.CheckBoxFor(
+                        m => m.RememberBrowser,
+                        new
+                        {
+                            @class =
+                                "verify-remember-checkbox"
+                        })
+
+
+                    <span class="verify-custom-checkbox"
+                          aria-hidden="true">
+
+                        <span>
+                            ✓
+                        </span>
+
+                    </span>
+
+
+                    <span class="verify-remember-content">
+
+                        <strong>
+                            Запомни го овој прелистувач
+                        </strong>
+
+                        <small>
+                            Намали го бројот на 2FA проверки
+                            на овој уред.
+                        </small>
+
+                    </span>
+
+                </label>
+
+
+                <div class="verify-shared-device-note">
+
+                    <span aria-hidden="true">
+                        i
+                    </span>
+
+                    <p>
+                        Не ја избирај оваа опција ако користиш
+                        јавен или заеднички компјутер.
+                    </p>
+
+                </div>
+
+
+                <button type="submit"
+                        id="verifyButton"
+                        class="btn btn-primary verify-submit">
+
+                    <span id="verifyButtonText">
+                        Потврди и продолжи
+                    </span>
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
+
+                </button>
+            }
+
+
+            <div class="verify-security">
+
+                <span aria-hidden="true">
+                    ✓
+                </span>
+
+                <p>
+                    Пристапот до профилот ќе биде дозволен
+                    само откако кодот ќе биде успешно потврден.
+                </p>
+
+            </div>
+
+
+            <div class="verify-back">
+
+                <span aria-hidden="true">
+                    ←
+                </span>
+
+                @Html.ActionLink(
+                    "Назад кон најава",
+                    "Login",
+                    "Account")
+
+            </div>
+
+        </div>
+
+    </section>
+
 </main>
 
-@section Scripts {
+
+@section Scripts
+{
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        (function () {
+            var form =
+                document.getElementById(
+                    "verifyCodeForm");
+
+            var button =
+                document.getElementById(
+                    "verifyButton");
+
+            var buttonText =
+                document.getElementById(
+                    "verifyButtonText");
+
+            var codeInput =
+                document.getElementById(
+                    "Code");
+
+
+            if (codeInput) {
+                codeInput.addEventListener(
+                    "input",
+                    function () {
+
+                        var value =
+                            codeInput.value || "";
+
+                        codeInput.classList.toggle(
+                            "has-value",
+                            value.trim().length > 0);
+                    });
+            }
+
+
+            if (
+                form &&
+                button &&
+                buttonText
+            ) {
+                form.addEventListener(
+                    "submit",
+                    function () {
+
+                        if (
+                            typeof $ !== "undefined" &&
+                            $.validator &&
+                            !$(form).valid()
+                        ) {
+                            return;
+                        }
+
+                        button.disabled =
+                            true;
+
+                        buttonText.textContent =
+                            "Се потврдува...";
+                    });
+            }
+        })();
+    </script>
 }
+
+
+<style>
+    .verify-page {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .verify-shell {
+        display: grid;
+        grid-template-columns: minmax(300px, 0.85fr) minmax(430px, 1.15fr);
+        width: min(100%, 980px);
+        min-height: 680px;
+        overflow: hidden;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-xl);
+        background: #090d13;
+        box-shadow: var(--cinema-shadow-lg);
+    }
+
+
+    .verify-visual {
+        position: relative;
+        display: grid;
+        min-width: 0;
+        place-items: center;
+        overflow: hidden;
+        border-right: 1px solid var(--cinema-border);
+        background: radial-gradient( circle at 50% 40%, rgba(214, 168, 75, 0.12), transparent 30% ), radial-gradient( circle at 5% 100%, rgba(58, 100, 168, 0.15), transparent 32% ), linear-gradient( 145deg, #151e2b, #0a0f17 58%, #06090e );
+        isolation: isolate;
+    }
+
+    .verify-grid {
+        position: absolute;
+        z-index: -2;
+        inset: 0;
+        opacity: 0.25;
+        background-image: linear-gradient( rgba(255, 255, 255, 0.022) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px );
+        background-size: 44px 44px;
+    }
+
+
+    .verify-code-art {
+        position: absolute;
+        top: 135px;
+        left: 50%;
+        z-index: 4;
+        width: 280px;
+        padding: 1.5rem 1.4rem;
+        border: 1px solid rgba(214, 168, 75, 0.22);
+        border-radius: 20px;
+        background: linear-gradient( 145deg, rgba(29, 38, 52, 0.86), rgba(9, 13, 20, 0.92) );
+        box-shadow: 0 25px 65px rgba(0, 0, 0, 0.38), 0 0 40px rgba(214, 168, 75, 0.06);
+        transform: translateX(-50%) rotate(-2deg);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+
+        .verify-code-art::before,
+        .verify-code-art::after {
+            position: absolute;
+            top: 50%;
+            width: 22px;
+            height: 22px;
+            content: "";
+            border-radius: 50%;
+            background: #0a0f17;
+            transform: translateY(-50%);
+        }
+
+        .verify-code-art::before {
+            left: -12px;
+        }
+
+        .verify-code-art::after {
+            right: -12px;
+        }
+
+    .verify-code-art-label {
+        color: var(--cinema-gold-light);
+        font-size: 0.52rem;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+    }
+
+    .verify-code-art-digits {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 0.45rem;
+        margin: 1.5rem 0;
+    }
+
+        .verify-code-art-digits span {
+            display: grid;
+            height: 39px;
+            place-items: center;
+            color: var(--cinema-text-soft);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.025);
+            font-size: 1rem;
+        }
+
+    .verify-code-art-line {
+        height: 1px;
+        margin-bottom: 1rem;
+        background: repeating-linear-gradient( 90deg, rgba(255, 255, 255, 0.15) 0, rgba(255, 255, 255, 0.15) 6px, transparent 6px, transparent 12px );
+    }
+
+    .verify-code-art-status {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.48rem;
+        font-weight: 900;
+        letter-spacing: 0.09em;
+    }
+
+        .verify-code-art-status > span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--cinema-success);
+            box-shadow: 0 0 12px rgba(66, 199, 131, 0.65);
+        }
+
+
+    .verify-visual-copy {
+        position: absolute;
+        right: 2rem;
+        bottom: 3rem;
+        left: 2rem;
+        z-index: 4;
+        text-align: center;
+    }
+
+        .verify-visual-copy > span {
+            display: block;
+            margin-bottom: 0.45rem;
+            color: var(--cinema-gold-light);
+            font-size: 0.55rem;
+            font-weight: 900;
+            letter-spacing: 0.16em;
+        }
+
+        .verify-visual-copy strong {
+            display: block;
+            color: var(--cinema-text);
+            font-size: 1.3rem;
+        }
+
+        .verify-visual-copy p {
+            max-width: 280px;
+            margin: 0.55rem auto 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.72rem;
+            line-height: 1.6;
+        }
+
+
+    .verify-orbit {
+        position: absolute;
+        border: 1px solid rgba(214, 168, 75, 0.08);
+        border-radius: 50%;
+        animation: verify-orbit-spin 25s linear infinite;
+    }
+
+        .verify-orbit::after {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            width: 9px;
+            height: 9px;
+            content: "";
+            border-radius: 50%;
+            background: var(--cinema-gold);
+            box-shadow: 0 0 18px rgba(214, 168, 75, 0.7);
+        }
+
+    .verify-orbit-large {
+        top: 65px;
+        left: 50%;
+        width: 340px;
+        height: 340px;
+        transform: translateX(-50%);
+    }
+
+    .verify-orbit-small {
+        top: 115px;
+        left: 50%;
+        width: 240px;
+        height: 240px;
+        animation-direction: reverse;
+        animation-duration: 18s;
+        transform: translateX(-50%);
+    }
+
+
+    .verify-content {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        justify-content: center;
+        padding: clamp(2rem, 6vw, 4rem);
+        background: linear-gradient( 180deg, rgba(14, 19, 28, 0.99), rgba(8, 11, 17, 0.99) );
+    }
+
+
+    .verify-brand {
+        display: inline-flex;
+        align-self: flex-start;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 2.2rem;
+        color: var(--cinema-text);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.17em;
+    }
+
+        .verify-brand:hover {
+            color: var(--cinema-gold-light);
+        }
+
+        .verify-brand > span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cinema-gold);
+            box-shadow: 0 0 0 5px rgba(214, 168, 75, 0.09), 0 0 18px rgba(214, 168, 75, 0.55);
+        }
+
+
+    .verify-progress {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .verify-progress-step {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        opacity: 0.35;
+    }
+
+        .verify-progress-step.completed,
+        .verify-progress-step.active {
+            opacity: 1;
+        }
+
+        .verify-progress-step > span {
+            display: grid;
+            flex: 0 0 32px;
+            width: 32px;
+            height: 32px;
+            place-items: center;
+            color: var(--cinema-text-muted);
+            border: 1px solid var(--cinema-border-strong);
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 0.54rem;
+            font-weight: 900;
+        }
+
+        .verify-progress-step.completed > span {
+            color: #9ae8bd;
+            border-color: rgba(66, 199, 131, 0.24);
+            background: rgba(66, 199, 131, 0.07);
+        }
+
+        .verify-progress-step.active > span {
+            color: var(--cinema-gold-light);
+            border-color: rgba(214, 168, 75, 0.30);
+            background: rgba(214, 168, 75, 0.07);
+        }
+
+        .verify-progress-step strong {
+            display: block;
+            color: var(--cinema-text-soft);
+            font-size: 0.68rem;
+        }
+
+        .verify-progress-step small {
+            display: block;
+            margin-top: 0.05rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.57rem;
+        }
+
+    .verify-progress-line {
+        width: 58px;
+        height: 1px;
+        margin: 0 0.8rem;
+        background: var(--cinema-border-strong);
+    }
+
+        .verify-progress-line.completed {
+            background: linear-gradient( 90deg, rgba(66, 199, 131, 0.48), rgba(214, 168, 75, 0.48) );
+        }
+
+
+    .verify-heading {
+        margin-bottom: 1.4rem;
+    }
+
+        .verify-heading h1 {
+            margin-bottom: 0.9rem;
+            font-size: clamp( 2.3rem, 5vw, 3.4rem );
+            line-height: 1.02;
+            letter-spacing: -0.05em;
+        }
+
+        .verify-heading p {
+            max-width: 500px;
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.84rem;
+            line-height: 1.7;
+        }
+
+
+    .verify-provider {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1.3rem;
+        padding: 0.75rem 0.9rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.018);
+    }
+
+    .verify-provider-icon {
+        display: grid;
+        flex: 0 0 34px;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.18);
+        border-radius: 10px;
+        background: rgba(66, 199, 131, 0.055);
+        font-size: 0.58rem;
+        font-weight: 900;
+    }
+
+    .verify-provider span {
+        display: block;
+        margin-bottom: 0.12rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.5rem;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+    }
+
+    .verify-provider strong {
+        display: block;
+        color: var(--cinema-text-soft);
+        font-size: 0.75rem;
+    }
+
+
+    .verify-validation {
+        margin-bottom: 1rem;
+    }
+
+        .verify-validation:empty {
+            display: none;
+        }
+
+    .verify-code-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .verify-input-wrapper {
+        position: relative;
+    }
+
+    .verify-code-input {
+        min-height: 58px;
+        padding: 0.75rem 1rem 0.75rem 3.1rem;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        transition: border-color var(--cinema-transition), box-shadow var(--cinema-transition), background-color var(--cinema-transition);
+    }
+
+        .verify-code-input.has-value {
+            border-color: rgba(214, 168, 75, 0.35);
+            background: rgba(214, 168, 75, 0.025);
+        }
+
+    .verify-input-icon {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        left: 1rem;
+        display: grid;
+        width: 23px;
+        height: 23px;
+        place-items: center;
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.17);
+        border-radius: 7px;
+        background: rgba(214, 168, 75, 0.05);
+        font-size: 0.65rem;
+        font-weight: 900;
+        pointer-events: none;
+        transform: translateY(-50%);
+    }
+
+    .verify-code-help {
+        display: block;
+        margin-top: 0.45rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.66rem;
+    }
+
+
+    .verify-remember-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin: 0;
+        padding: 1rem;
+        cursor: pointer;
+        border: 1px solid var(--cinema-border);
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.018);
+        transition: transform var(--cinema-transition), border-color var(--cinema-transition), background-color var(--cinema-transition);
+    }
+
+        .verify-remember-card:hover {
+            border-color: rgba(214, 168, 75, 0.22);
+            background: rgba(214, 168, 75, 0.025);
+            transform: translateY(-2px);
+        }
+
+    .verify-remember-checkbox {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .verify-custom-checkbox {
+        display: grid;
+        flex: 0 0 34px;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 1px solid var(--cinema-border-strong);
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.025);
+        transition: border-color var(--cinema-transition), background-color var(--cinema-transition), box-shadow var(--cinema-transition);
+    }
+
+        .verify-custom-checkbox > span {
+            color: transparent;
+            font-size: 0.65rem;
+            font-weight: 900;
+            transition: color var(--cinema-transition);
+        }
+
+    .verify-remember-checkbox:checked + .verify-custom-checkbox {
+        border-color: rgba(66, 199, 131, 0.38);
+        background: rgba(66, 199, 131, 0.10);
+        box-shadow: 0 0 0 3px rgba(66, 199, 131, 0.05);
+    }
+
+        .verify-remember-checkbox:checked + .verify-custom-checkbox > span {
+            color: #9ae8bd;
+        }
+
+    .verify-remember-checkbox:focus-visible + .verify-custom-checkbox {
+        box-shadow: 0 0 0 3px rgba(214, 168, 75, 0.13);
+    }
+
+    .verify-remember-content {
+        min-width: 0;
+    }
+
+        .verify-remember-content strong {
+            display: block;
+            color: var(--cinema-text);
+            font-size: 0.8rem;
+        }
+
+        .verify-remember-content small {
+            display: block;
+            margin-top: 0.2rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.66rem;
+            line-height: 1.45;
+        }
+
+
+    .verify-shared-device-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.55rem;
+        margin: 0.65rem 0 1.4rem;
+        padding: 0.65rem 0.75rem;
+    }
+
+        .verify-shared-device-note > span {
+            display: grid;
+            flex: 0 0 21px;
+            width: 21px;
+            height: 21px;
+            place-items: center;
+            color: var(--cinema-warning);
+            border: 1px solid rgba(246, 200, 95, 0.18);
+            border-radius: 50%;
+            background: rgba(246, 200, 95, 0.05);
+            font-family: Georgia, serif;
+            font-size: 0.58rem;
+        }
+
+        .verify-shared-device-note p {
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.63rem;
+            line-height: 1.5;
+        }
+
+
+    .verify-submit {
+        display: flex;
+        width: 100%;
+        min-height: 52px;
+        align-items: center;
+        justify-content: space-between;
+        padding-right: 1.1rem;
+        padding-left: 1.1rem;
+    }
+
+        .verify-submit > span:last-child {
+            transition: transform var(--cinema-transition);
+        }
+
+        .verify-submit:hover > span:last-child {
+            transform: translateX(5px);
+        }
+
+
+    .verify-security {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        margin-top: 1.5rem;
+        padding: 0.8rem;
+        border: 1px solid rgba(66, 199, 131, 0.14);
+        border-radius: 11px;
+        background: rgba(66, 199, 131, 0.035);
+    }
+
+        .verify-security > span {
+            display: grid;
+            flex: 0 0 25px;
+            width: 25px;
+            height: 25px;
+            place-items: center;
+            color: #9ae8bd;
+            border: 1px solid rgba(66, 199, 131, 0.18);
+            border-radius: 50%;
+            background: rgba(66, 199, 131, 0.06);
+            font-size: 0.58rem;
+            font-weight: 900;
+        }
+
+        .verify-security p {
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.67rem;
+            line-height: 1.55;
+        }
+
+
+    .verify-back {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        margin-top: 1.5rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.75rem;
+    }
+
+        .verify-back > span {
+            transition: transform var(--cinema-transition);
+        }
+
+        .verify-back a {
+            color: var(--cinema-text-soft);
+            font-weight: 700;
+        }
+
+        .verify-back:hover > span {
+            transform: translateX(-4px);
+        }
+
+        .verify-back a:hover {
+            color: var(--cinema-gold-light);
+        }
+
+
+    @@keyframes verify-orbit-spin {
+        from {
+            transform: translateX(-50%) rotate(0deg);
+        }
+
+        to {
+            transform: translateX(-50%) rotate(360deg);
+        }
+    }
+
+
+    @@media (max-width: 820px) {
+        .verify-shell {
+            grid-template-columns: 1fr;
+            min-height: 0;
+        }
+
+        .verify-visual {
+            display: none;
+        }
+
+        .verify-content {
+            min-height: 660px;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .verify-shell {
+            border-radius: var(--cinema-radius-lg);
+        }
+
+        .verify-content {
+            min-height: 0;
+            padding: 2rem 1.2rem;
+        }
+
+        .verify-progress-step div {
+            display: none;
+        }
+
+        .verify-progress-line {
+            flex: 1;
+            width: auto;
+            margin: 0 0.6rem;
+        }
+
+        .verify-heading h1 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .verify-orbit {
+            animation: none;
+        }
+    }
+</style>

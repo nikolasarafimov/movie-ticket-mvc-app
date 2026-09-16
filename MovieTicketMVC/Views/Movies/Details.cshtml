@@ -1,37 +1,1364 @@
-﻿@model MovieTicketMVC.Models.Movie
+﻿@using System
+@using System.Linq
+@model MovieTicketMVC.Models.Movie
 
 @{
-    ViewBag.Title = "Movie Details";
-    string url = Url.Content(Model.LocalTrailerPath);
-    string ext = System.IO.Path.GetExtension(Model.LocalTrailerPath).ToLowerInvariant();
-    string mime = ext switch
+    ViewBag.Title = Model.Title;
+
+    var hasTrailer =
+        !string.IsNullOrWhiteSpace(
+            Model.LocalTrailerPath);
+
+    var trailerUrl =
+        string.Empty;
+
+    var trailerMime =
+        "video/mp4";
+
+    if (hasTrailer)
     {
-        ".webm" => "video/webm",
-        ".ogg" => "video/ogg",
-        _ => "video/mp4"
-    };
+        trailerUrl =
+            Url.Content(
+                Model.LocalTrailerPath);
+
+        var extension =
+            System.IO.Path.GetExtension(
+                Model.LocalTrailerPath);
+
+        if (!string.IsNullOrWhiteSpace(extension))
+        {
+            extension =
+                extension.ToLowerInvariant();
+
+            if (extension == ".webm")
+            {
+                trailerMime =
+                    "video/webm";
+            }
+            else if (extension == ".ogg")
+            {
+                trailerMime =
+                    "video/ogg";
+            }
+        }
+    }
+
+    var isCurrent =
+        Model.ReleaseDate.Date <=
+        DateTime.Today;
+
+    var daysUntilRelease =
+        (Model.ReleaseDate.Date - DateTime.Today)
+            .Days;
+
+    var genre =
+        string.IsNullOrWhiteSpace(
+            Model.Genre)
+            ? "Филм"
+            : Model.Genre.Trim();
+
+    var language =
+        string.IsNullOrWhiteSpace(
+            Model.Language)
+            ? "Непознат"
+            : Model.Language.Trim();
+
+    var description =
+        string.IsNullOrWhiteSpace(
+            Model.Description)
+            ? "Нема достапен опис за овој филм."
+            : Model.Description.Trim();
+
+    var actors =
+        string.IsNullOrWhiteSpace(
+            Model.Actors)
+            ? new string[0]
+            : Model.Actors
+                .Split(
+                    new[] { ',' },
+                    StringSplitOptions.RemoveEmptyEntries)
+                .Select(actor =>
+                    actor.Trim())
+                .Where(actor =>
+                    !string.IsNullOrWhiteSpace(actor))
+                .ToArray();
+
+    var isAdmin =
+        User != null &&
+        User.Identity != null &&
+        User.Identity.IsAuthenticated &&
+        User.IsInRole("Admin");
 }
 
-<h2>@Model.Title</h2>
+<main class="movie-details-page"
+      aria-labelledby="movie-title">
 
-<p><strong>Должина:</strong> @Model.LengthInMinutes минути</p>
-<p><strong>Почеток на проекција:</strong> @Model.ReleaseDate.ToString("dd.MM.yyyy")</p>
-<p><strong>Жанр:</strong> @Model.Genre</p>
-<p><strong>Опис:</strong> @Model.Description</p>
-<p><strong>Рестрикција:</strong> @(Model.IsForAdults == null ? "N/A" : (Model.IsForAdults == true ? " 18+" : " Нема"))</p>
-<p><strong>Рејтинг:</strong> @(Model.Rating.HasValue ? Model.Rating.Value.ToString("0.##") : "N/A")</p>
-<p><strong>Актери:</strong> @Model.Actors</p>
-<p><strong>Трејлер:</strong></p>
-@if (!string.IsNullOrEmpty(Model.LocalTrailerPath))
-{
-    <video width="600" controls>
-        <source src="@url" type="@mime" />
-        Your browser does not support the video tag.
-    </video>
-}
-else
-{
-    <p>No trailer available.</p>
-}
+    <section class="movie-details-hero">
 
-<p><strong>Јазик:</strong> @Model.Language</p>
+        <div class="movie-details-hero-content">
+
+            <div class="movie-details-badges">
+
+                <span class="movie-details-status">
+                    <span class="movie-details-status-dot"></span>
+
+                    @(isCurrent
+                        ? "СЕ ПРИКАЖУВА"
+                        : "НАСКОРО")
+                </span>
+
+                <span class="movie-details-genre">
+                    @genre
+                </span>
+
+                @if (Model.IsForAdults == true)
+                {
+                    <span class="movie-details-age adult">
+                        18+
+                    </span>
+                }
+                else
+                {
+                    <span class="movie-details-age">
+                        ALL
+                    </span>
+                }
+
+            </div>
+
+
+            <h1 id="movie-title">
+                @Model.Title
+            </h1>
+
+
+            <div class="movie-details-rating-row">
+
+                <div class="movie-details-rating">
+
+                    <span class="movie-details-star"
+                          aria-hidden="true">
+                        ★
+                    </span>
+
+                    <strong>
+                        @(Model.Rating.HasValue
+                            ? Model.Rating.Value.ToString("0.0")
+                            : "N/A")
+                    </strong>
+
+                    @if (Model.Rating.HasValue)
+                    {
+                        <small>
+                            / 10
+                        </small>
+                    }
+
+                </div>
+
+                <span class="movie-details-separator">
+                    ·
+                </span>
+
+                <span>
+                    @Model.LengthInMinutes мин.
+                </span>
+
+                <span class="movie-details-separator">
+                    ·
+                </span>
+
+                <span>
+                    @language
+                </span>
+
+            </div>
+
+
+            <p class="movie-details-description">
+                @description
+            </p>
+
+
+            <div class="movie-details-actions">
+
+                <a class="btn btn-primary movie-details-primary-action"
+                   href="@Url.Action("Buy", "Tickets")">
+
+                    @(isCurrent
+                        ? "Купи билет"
+                        : "Резервирај за премиера")
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
+                </a>
+
+                <a class="btn btn-outline-secondary"
+                   href="@Url.Action(
+                       isCurrent
+                           ? "Current"
+                           : "ComingSoon",
+                       "Movies")">
+                    Назад кон филмови
+                </a>
+
+            </div>
+
+
+            @if (!isCurrent &&
+                 daysUntilRelease > 0)
+            {
+                <div class="movie-details-premiere-note">
+
+                    <span class="movie-details-premiere-icon"
+                          aria-hidden="true">
+                        ◷
+                    </span>
+
+                    <div>
+                        <span>
+                            ПРЕМИЕРА
+                        </span>
+
+                        <strong>
+                            За @daysUntilRelease
+                            @(daysUntilRelease == 1
+                                ? "ден"
+                                : "дена")
+                        </strong>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+
+        <div class="movie-details-feature">
+
+            @if (hasTrailer)
+            {
+                <div class="movie-trailer-frame">
+
+                    <div class="movie-trailer-header">
+
+                        <div class="movie-trailer-label">
+                            <span></span>
+                            OFFICIAL TRAILER
+                        </div>
+
+                        <div class="movie-trailer-duration">
+                            @genre
+                        </div>
+
+                    </div>
+
+                    <div class="movie-trailer-video">
+
+                        <video controls
+                               preload="metadata"
+                               playsinline>
+
+                            <source src="@trailerUrl"
+                                    type="@trailerMime" />
+
+                            Вашиот прелистувач не поддржува HTML5 видео.
+                        </video>
+
+                    </div>
+
+                </div>
+            }
+            else
+            {
+                <div class="movie-no-trailer">
+
+                    <div class="movie-no-trailer-orbit
+                                movie-no-trailer-orbit-large">
+                    </div>
+
+                    <div class="movie-no-trailer-orbit
+                                movie-no-trailer-orbit-small">
+                    </div>
+
+                    <div class="movie-no-trailer-content">
+
+                        <span class="movie-no-trailer-label">
+                            MOVIETICKET PRESENTS
+                        </span>
+
+                        <strong>
+                            @Model.Title
+                        </strong>
+
+                        <span class="movie-no-trailer-genre">
+                            @genre
+                        </span>
+
+                    </div>
+
+                    <div class="movie-no-trailer-message">
+                        Трејлерот сè уште не е достапен
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+
+        <div class="movie-details-hero-glow"
+             aria-hidden="true">
+        </div>
+
+    </section>
+
+
+    <section class="movie-details-information"
+             aria-labelledby="information-title">
+
+        <div class="cinema-page-header">
+
+            <div>
+                <div class="cinema-eyebrow">
+                    MOVIE INFORMATION
+                </div>
+
+                <h2 id="information-title">
+                    Детали за
+                    <span class="cinema-text-gradient">
+                        филмот
+                    </span>
+                </h2>
+            </div>
+
+        </div>
+
+
+        <div class="movie-details-info-grid">
+
+            <article class="movie-info-card">
+
+                <span class="movie-info-label">
+                    ВРЕМЕТРАЕЊЕ
+                </span>
+
+                <strong>
+                    @Model.LengthInMinutes
+                </strong>
+
+                <small>
+                    минути
+                </small>
+
+            </article>
+
+
+            <article class="movie-info-card">
+
+                <span class="movie-info-label">
+                    ПРЕМИЕРА
+                </span>
+
+                <strong class="movie-info-date">
+                    @Model.ReleaseDate.ToString(
+                        "dd.MM")
+                </strong>
+
+                <small>
+                    @Model.ReleaseDate.ToString(
+                        "yyyy")
+                </small>
+
+            </article>
+
+
+            <article class="movie-info-card">
+
+                <span class="movie-info-label">
+                    ОЦЕНКА
+                </span>
+
+                <strong>
+                    @(Model.Rating.HasValue
+                        ? Model.Rating.Value.ToString("0.0")
+                        : "—")
+                </strong>
+
+                <small>
+                    @(Model.Rating.HasValue
+                        ? "од 10"
+                        : "нема оценка")
+                </small>
+
+            </article>
+
+
+            <article class="movie-info-card">
+
+                <span class="movie-info-label">
+                    ВОЗРАСНА КАТЕГОРИЈА
+                </span>
+
+                <strong>
+                    @(Model.IsForAdults == true
+                        ? "18+"
+                        : "ALL")
+                </strong>
+
+                <small>
+                    @(Model.IsForAdults == true
+                        ? "само за возрасни"
+                        : "без рестрикција")
+                </small>
+
+            </article>
+
+
+            <article class="movie-info-card">
+
+                <span class="movie-info-label">
+                    ЖАНР
+                </span>
+
+                <strong class="movie-info-text">
+                    @genre
+                </strong>
+
+                <small>
+                    категорија
+                </small>
+
+            </article>
+
+
+            <article class="movie-info-card">
+
+                <span class="movie-info-label">
+                    ЈАЗИК
+                </span>
+
+                <strong class="movie-info-text">
+                    @language
+                </strong>
+
+                <small>
+                    оригинален јазик
+                </small>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <section class="movie-details-story"
+             aria-labelledby="story-title">
+
+        <div class="movie-story-card">
+
+            <div class="movie-story-heading">
+
+                <div class="cinema-eyebrow">
+                    THE STORY
+                </div>
+
+                <h2 id="story-title">
+                    За филмот
+                </h2>
+
+            </div>
+
+            <div class="movie-story-copy">
+                <p>
+                    @description
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="movie-details-cast"
+             aria-labelledby="cast-title">
+
+        <div class="cinema-page-header">
+
+            <div>
+                <div class="cinema-eyebrow">
+                    CAST
+                </div>
+
+                <h2 id="cast-title">
+                    Актерска
+                    <span class="cinema-text-gradient">
+                        екипа
+                    </span>
+                </h2>
+            </div>
+
+        </div>
+
+        @if (actors.Any())
+        {
+            <div class="movie-cast-grid">
+
+                @for (var index = 0;
+                      index < actors.Length;
+                      index++)
+                {
+                    var actor =
+                        actors[index];
+
+                    var initials =
+                        string.Join(
+                            "",
+                            actor
+                                .Split(
+                                    new[] { ' ' },
+                                    StringSplitOptions.RemoveEmptyEntries)
+                                .Take(2)
+                                .Select(part =>
+                                    part.Substring(0, 1)
+                                        .ToUpperInvariant()));
+
+                    <article class="movie-cast-card">
+
+                        <div class="movie-cast-avatar"
+                             aria-hidden="true">
+                            @initials
+                        </div>
+
+                        <div>
+                            <span>
+                                CAST
+                            </span>
+
+                            <strong>
+                                @actor
+                            </strong>
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="cinema-empty-state movie-cast-empty">
+
+                <p>
+                    Нема достапни информации за актерската екипа.
+                </p>
+
+            </div>
+        }
+
+    </section>
+
+
+    @if (isAdmin)
+    {
+        <section class="movie-admin-panel">
+
+            <div>
+
+                <span class="movie-admin-label">
+                    ADMIN CONTROLS
+                </span>
+
+                <strong>
+                    Управување со филмот
+                </strong>
+
+                <p>
+                    Промени ги информациите или отстрани го
+                    филмот од каталогот.
+                </p>
+
+            </div>
+
+            <div class="movie-admin-actions">
+
+                <a class="btn btn-outline-primary"
+                   href="@Url.Action(
+                       "Edit",
+                       "Movies",
+                       new
+                       {
+                           id = Model.Id
+                       })">
+                    Уреди
+                </a>
+
+                <a class="btn btn-outline-danger"
+                   href="@Url.Action(
+                       "Delete",
+                       "Movies",
+                       new
+                       {
+                           id = Model.Id
+                       })">
+                    Избриши
+                </a>
+
+            </div>
+
+        </section>
+    }
+
+</main>
+
+<style>
+    .movie-details-page {
+        display: flex;
+        flex-direction: column;
+        gap: 5rem;
+    }
+
+
+    /* =====================================================
+       HERO
+       ===================================================== */
+
+    .movie-details-hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(440px, 1.1fr);
+        align-items: center;
+        gap: clamp(2rem, 5vw, 5rem);
+        min-height: 600px;
+        padding: clamp(2rem, 5vw, 4.5rem);
+        overflow: hidden;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-xl);
+        background: radial-gradient( circle at 90% 10%, rgba(214, 168, 75, 0.11), transparent 30% ), radial-gradient( circle at 20% 90%, rgba(68, 104, 158, 0.11), transparent 30% ), linear-gradient( 135deg, rgba(18, 25, 37, 0.99), rgba(7, 10, 15, 0.99) );
+        box-shadow: var(--cinema-shadow-lg);
+        isolation: isolate;
+    }
+
+        .movie-details-hero::before {
+            position: absolute;
+            z-index: -2;
+            inset: 0;
+            content: "";
+            pointer-events: none;
+            opacity: 0.2;
+            background-image: linear-gradient( rgba(255, 255, 255, 0.025) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px );
+            background-size: 48px 48px;
+            mask-image: linear-gradient( 90deg, #000, transparent );
+        }
+
+    .movie-details-hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .movie-details-badges {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 1.4rem;
+    }
+
+    .movie-details-status,
+    .movie-details-genre,
+    .movie-details-age {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+    }
+
+    .movie-details-status {
+        gap: 0.45rem;
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.22);
+        background: rgba(66, 199, 131, 0.07);
+    }
+
+    .movie-details-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #63d99a;
+        box-shadow: 0 0 12px rgba(66, 199, 131, 0.7);
+    }
+
+    .movie-details-genre {
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.22);
+        background: rgba(214, 168, 75, 0.07);
+    }
+
+    .movie-details-age {
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.22);
+        background: rgba(66, 199, 131, 0.07);
+    }
+
+        .movie-details-age.adult {
+            color: #ff9ba4;
+            border-color: rgba(239, 102, 115, 0.25);
+            background: rgba(239, 102, 115, 0.08);
+        }
+
+    .movie-details-hero h1 {
+        max-width: 720px;
+        margin-bottom: 1.3rem;
+        font-size: clamp( 2.7rem, 5.2vw, 5rem );
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+    }
+
+    .movie-details-rating-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 1.6rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.92rem;
+    }
+
+    .movie-details-rating {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.25rem;
+    }
+
+    .movie-details-star {
+        margin-right: 0.2rem;
+        color: var(--cinema-gold-light);
+    }
+
+    .movie-details-rating strong {
+        color: var(--cinema-text);
+        font-size: 1.1rem;
+    }
+
+    .movie-details-rating small {
+        color: var(--cinema-text-muted);
+    }
+
+    .movie-details-separator {
+        color: rgba(255, 255, 255, 0.25);
+    }
+
+    .movie-details-description {
+        max-width: 680px;
+        margin-bottom: 2rem;
+        color: var(--cinema-text-soft);
+        font-size: 1.02rem;
+        line-height: 1.85;
+    }
+
+    .movie-details-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .movie-details-primary-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+        .movie-details-primary-action span {
+            transition: transform var(--cinema-transition);
+        }
+
+        .movie-details-primary-action:hover span {
+            transform: translateX(5px);
+        }
+
+    .movie-details-premiere-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin-top: 2rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.025);
+    }
+
+    .movie-details-premiere-icon {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.2);
+        border-radius: 50%;
+        background: rgba(214, 168, 75, 0.07);
+    }
+
+    .movie-details-premiere-note div > span {
+        display: block;
+        margin-bottom: 0.1rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.57rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+    }
+
+    .movie-details-premiere-note strong {
+        color: var(--cinema-text);
+        font-size: 0.86rem;
+    }
+
+
+    /* =====================================================
+       TRAILER
+       ===================================================== */
+
+    .movie-details-feature {
+        position: relative;
+        z-index: 2;
+        min-width: 0;
+    }
+
+    .movie-trailer-frame {
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 24px;
+        background: rgba(6, 9, 14, 0.92);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        transform: perspective(1300px) rotateY(-3deg);
+        transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1), border-color 300ms ease;
+    }
+
+        .movie-trailer-frame:hover {
+            border-color: rgba(214, 168, 75, 0.22);
+            transform: perspective(1300px) rotateY(0deg) translateY(-4px);
+        }
+
+    .movie-trailer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--cinema-border);
+        background: rgba(255, 255, 255, 0.025);
+    }
+
+    .movie-trailer-label {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: var(--cinema-text-soft);
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+    }
+
+        .movie-trailer-label span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ef6673;
+            box-shadow: 0 0 10px rgba(239, 102, 115, 0.7);
+        }
+
+    .movie-trailer-duration {
+        color: var(--cinema-text-muted);
+        font-size: 0.68rem;
+    }
+
+    .movie-trailer-video {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 16 / 9;
+        background: #000;
+    }
+
+        .movie-trailer-video video {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            border-radius: 0;
+            object-fit: cover;
+            box-shadow: none;
+        }
+
+
+    /* =====================================================
+       NO TRAILER
+       ===================================================== */
+
+    .movie-no-trailer {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 420px;
+        padding: 2rem;
+        overflow: hidden;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        background: radial-gradient( circle at 50% 50%, rgba(214, 168, 75, 0.09), transparent 35% ), linear-gradient( 145deg, #131b27, #070a0f );
+        box-shadow: var(--cinema-shadow-lg);
+    }
+
+    .movie-no-trailer-content {
+        position: relative;
+        z-index: 3;
+        max-width: 380px;
+    }
+
+    .movie-no-trailer-label {
+        display: block;
+        margin-bottom: 1rem;
+        color: var(--cinema-gold-light);
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.17em;
+    }
+
+    .movie-no-trailer-content strong {
+        display: block;
+        color: var(--cinema-text);
+        font-size: clamp( 2rem, 4vw, 3rem );
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+    }
+
+    .movie-no-trailer-genre {
+        display: block;
+        margin-top: 0.8rem;
+        color: var(--cinema-text-muted);
+    }
+
+    .movie-no-trailer-message {
+        position: absolute;
+        right: 1.2rem;
+        bottom: 1rem;
+        left: 1.2rem;
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .movie-no-trailer-orbit {
+        position: absolute;
+        border: 1px solid rgba(214, 168, 75, 0.09);
+        border-radius: 50%;
+        animation: movie-orbit-spin 26s linear infinite;
+    }
+
+        .movie-no-trailer-orbit::after {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            content: "";
+            border-radius: 50%;
+            background: var(--cinema-gold);
+            box-shadow: 0 0 18px rgba(214, 168, 75, 0.75);
+        }
+
+    .movie-no-trailer-orbit-large {
+        width: 380px;
+        height: 380px;
+    }
+
+    .movie-no-trailer-orbit-small {
+        width: 260px;
+        height: 260px;
+        animation-direction: reverse;
+        animation-duration: 18s;
+    }
+
+    .movie-details-hero-glow {
+        position: absolute;
+        z-index: -1;
+        right: -160px;
+        bottom: -220px;
+        width: 480px;
+        height: 480px;
+        border-radius: 50%;
+        background: rgba(214, 168, 75, 0.07);
+        filter: blur(20px);
+    }
+
+
+    /* =====================================================
+       INFORMATION
+       ===================================================== */
+
+    .movie-details-information {
+        position: relative;
+    }
+
+    .movie-details-info-grid {
+        display: grid;
+        grid-template-columns: repeat( 6, minmax(0, 1fr) );
+        gap: 1rem;
+    }
+
+    .movie-info-card {
+        position: relative;
+        display: flex;
+        min-width: 0;
+        min-height: 145px;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.2rem;
+        overflow: hidden;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-md);
+        background: linear-gradient( 145deg, rgba(20, 27, 39, 0.95), rgba(10, 14, 21, 0.95) );
+        box-shadow: var(--cinema-shadow-sm);
+        transition: transform var(--cinema-transition), border-color var(--cinema-transition);
+    }
+
+        .movie-info-card::before {
+            position: absolute;
+            top: -45px;
+            right: -45px;
+            width: 110px;
+            height: 110px;
+            content: "";
+            border: 1px solid rgba(214, 168, 75, 0.07);
+            border-radius: 50%;
+        }
+
+        .movie-info-card:hover {
+            border-color: rgba(214, 168, 75, 0.25);
+            transform: translateY(-4px);
+        }
+
+    .movie-info-label {
+        margin-bottom: auto;
+        color: var(--cinema-text-muted);
+        font-size: 0.58rem;
+        font-weight: 800;
+        letter-spacing: 0.09em;
+    }
+
+    .movie-info-card > strong {
+        margin-top: 1.1rem;
+        color: var(--cinema-text);
+        font-size: 1.8rem;
+        line-height: 1;
+    }
+
+        .movie-info-card > strong.movie-info-text {
+            overflow: hidden;
+            font-size: 1.05rem;
+            line-height: 1.2;
+            text-overflow: ellipsis;
+        }
+
+        .movie-info-card > strong.movie-info-date {
+            font-size: 1.45rem;
+        }
+
+    .movie-info-card > small {
+        margin-top: 0.35rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.68rem;
+    }
+
+
+    /* =====================================================
+       STORY
+       ===================================================== */
+
+    .movie-story-card {
+        display: grid;
+        grid-template-columns: minmax(230px, 0.35fr) minmax(0, 0.65fr);
+        gap: 3rem;
+        padding: clamp(1.7rem, 5vw, 3.5rem);
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-lg);
+        background: radial-gradient( circle at 0% 100%, rgba(214, 168, 75, 0.07), transparent 30% ), rgba(15, 21, 31, 0.78);
+        box-shadow: var(--cinema-shadow);
+    }
+
+    .movie-story-heading h2 {
+        margin-bottom: 0;
+    }
+
+    .movie-story-copy p {
+        margin: 0;
+        color: var(--cinema-text-soft);
+        font-size: 1.04rem;
+        line-height: 1.95;
+    }
+
+
+    /* =====================================================
+       CAST
+       ===================================================== */
+
+    .movie-cast-grid {
+        display: grid;
+        grid-template-columns: repeat( auto-fit, minmax(210px, 1fr) );
+        gap: 1rem;
+    }
+
+    .movie-cast-card {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 1rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-md);
+        background: rgba(15, 21, 31, 0.74);
+        box-shadow: var(--cinema-shadow-sm);
+        transition: transform var(--cinema-transition), border-color var(--cinema-transition), background-color var(--cinema-transition);
+    }
+
+        .movie-cast-card:hover {
+            border-color: rgba(214, 168, 75, 0.24);
+            background: rgba(20, 27, 39, 0.92);
+            transform: translateY(-3px);
+        }
+
+    .movie-cast-avatar {
+        display: grid;
+        flex: 0 0 48px;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.2);
+        border-radius: 50%;
+        background: linear-gradient( 145deg, rgba(214, 168, 75, 0.12), rgba(214, 168, 75, 0.035) );
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+    }
+
+    .movie-cast-card div:last-child {
+        min-width: 0;
+    }
+
+        .movie-cast-card div:last-child span {
+            display: block;
+            margin-bottom: 0.15rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.55rem;
+            font-weight: 800;
+            letter-spacing: 0.09em;
+        }
+
+        .movie-cast-card div:last-child strong {
+            display: block;
+            overflow: hidden;
+            color: var(--cinema-text);
+            font-size: 0.88rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+    .movie-cast-empty {
+        padding: 2rem;
+    }
+
+        .movie-cast-empty p {
+            margin: 0;
+        }
+
+
+    /* =====================================================
+       ADMIN
+       ===================================================== */
+
+    .movie-admin-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        padding: 1.4rem 1.6rem;
+        border: 1px solid rgba(214, 168, 75, 0.14);
+        border-radius: var(--cinema-radius-lg);
+        background: rgba(214, 168, 75, 0.035);
+    }
+
+    .movie-admin-label {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: var(--cinema-gold-light);
+        font-size: 0.57rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+    }
+
+    .movie-admin-panel strong {
+        display: block;
+        color: var(--cinema-text);
+    }
+
+    .movie-admin-panel p {
+        margin: 0.25rem 0 0;
+        color: var(--cinema-text-muted);
+        font-size: 0.85rem;
+    }
+
+    .movie-admin-actions {
+        display: flex;
+        flex: 0 0 auto;
+        gap: 0.6rem;
+    }
+
+    .btn-outline-danger {
+        color: #ff8d97;
+        border-color: rgba(239, 102, 115, 0.35);
+        background: transparent;
+    }
+
+        .btn-outline-danger:hover {
+            color: #fff;
+            border-color: #d94c5b;
+            background: #b83c49;
+        }
+
+
+    /* =====================================================
+       ANIMATIONS
+       ===================================================== */
+
+    @@keyframes movie-orbit-spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @@media (max-width: 1199.98px) {
+        .movie-details-hero {
+            grid-template-columns: minmax(0, 0.9fr) minmax(380px, 1.1fr);
+        }
+
+        .movie-details-info-grid {
+            grid-template-columns: repeat( 3, minmax(0, 1fr) );
+        }
+    }
+
+
+    @@media (max-width: 991.98px) {
+        .movie-details-page {
+            gap: 4rem;
+        }
+
+        .movie-details-hero {
+            grid-template-columns: 1fr;
+        }
+
+        .movie-details-hero-content {
+            max-width: 800px;
+        }
+
+        .movie-details-feature {
+            width: 100%;
+        }
+
+        .movie-trailer-frame {
+            transform: none;
+        }
+
+        .movie-story-card {
+            grid-template-columns: 1fr;
+            gap: 1.2rem;
+        }
+    }
+
+
+    @@media (max-width: 767.98px) {
+        .movie-details-hero {
+            padding: 1.6rem 1.3rem;
+        }
+
+            .movie-details-hero h1 {
+                font-size: 2.7rem;
+            }
+
+        .movie-details-info-grid {
+            grid-template-columns: repeat( 2, minmax(0, 1fr) );
+        }
+
+        .movie-no-trailer {
+            min-height: 350px;
+        }
+
+        .movie-admin-panel {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+
+    @@media (max-width: 575.98px) {
+        .movie-details-page {
+            gap: 3.25rem;
+        }
+
+        .movie-details-hero h1 {
+            font-size: 2.25rem;
+        }
+
+        .movie-details-rating-row {
+            gap: 0.45rem;
+        }
+
+        .movie-details-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+            .movie-details-actions .btn {
+                width: 100%;
+            }
+
+        .movie-details-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .movie-story-card {
+            padding: 1.5rem 1.2rem;
+        }
+
+        .movie-admin-actions {
+            width: 100%;
+        }
+
+            .movie-admin-actions .btn {
+                flex: 1;
+            }
+    }
+
+
+    @@media (prefers-reduced-motion: reduce) {
+        .movie-no-trailer-orbit {
+            animation: none;
+        }
+
+        .movie-trailer-frame {
+            transform: none;
+        }
+    }
+</style>

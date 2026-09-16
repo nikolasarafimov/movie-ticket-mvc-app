@@ -1,81 +1,1128 @@
-﻿@model MovieTicketMVC.Models.Ticket
+﻿@using System
+@using System.Collections.Generic
+@using System.Linq
+@using System.Text.RegularExpressions
+@model MovieTicketMVC.Models.Ticket
 
 @{
-    ViewBag.Title = "Summary";
-}
+    ViewBag.Title = "Детали за билет";
 
-<h2>Резултат од купување</h2>
+    var isAdmin =
+        User != null &&
+        User.Identity != null &&
+        User.Identity.IsAuthenticated &&
+        User.IsInRole("Admin");
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
+    var groupedSeats =
+        new SortedDictionary<int, List<int>>();
 
-<table class="table table-bordered">
-    <tr>
-        <th>Филм:</th>
-        <td>@Model.Movie.Title</td>
-    </tr>
-    <tr>
-        <th>Датум:</th>
-        <td>@Model.SelectedDay.ToString("dd.MM.yyyy")</td>
-    </tr>
-    <tr>
-        <th>Време:</th>
-        <td>@Model.SelectedTime</td>
-    </tr>
-    <tr>
-        <th>Седишта:</th>
-        <td>
-            @if (!string.IsNullOrEmpty(Model.SelectedSeats))
+    var invalidSeats =
+        new List<string>();
+
+    var seatPattern =
+        new Regex(
+            @"^R([1-9]|10)C([1-9]|10)$",
+            RegexOptions.IgnoreCase);
+
+    var seatCount =
+        0;
+
+    var premiumSeats =
+        0;
+
+    var standardSeats =
+        0;
+
+    if (!string.IsNullOrWhiteSpace(
+            Model.SelectedSeats))
+    {
+        var seatIds =
+            Model.SelectedSeats.Split(
+                new[] { ',' },
+                StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var rawSeatId in seatIds)
+        {
+            var seatId =
+                rawSeatId
+                    .Trim()
+                    .ToUpperInvariant();
+
+            var match =
+                seatPattern.Match(
+                    seatId);
+
+            if (!match.Success)
             {
-                var seatData = Model.SelectedSeats
-                    .Split(',')
-                    .Select(seatId =>
-                    {
-                        var parts = seatId.Split('C');
-                        var rowPart = parts[0].Substring(1);
-                        var colPart = parts[1];
+                invalidSeats.Add(
+                    seatId);
 
-                        return new
-                        {
-                            Row = int.Parse(rowPart),
-                            Col = int.Parse(colPart)
-                        };
-                    })
-                    .ToList();
+                continue;
+            }
 
-                var seatGroups = seatData
-                    .GroupBy(s => s.Row)
-                    .OrderBy(g => g.Key); 
+            int row;
+            int column;
 
-                foreach (var group in seatGroups)
+            if (!int.TryParse(
+                    match.Groups[1].Value,
+                    out row) ||
+                !int.TryParse(
+                    match.Groups[2].Value,
+                    out column))
+            {
+                invalidSeats.Add(
+                    seatId);
+
+                continue;
+            }
+
+            if (!groupedSeats.ContainsKey(
+                    row))
+            {
+                groupedSeats[row] =
+                    new List<int>();
+            }
+
+            if (!groupedSeats[row].Contains(
+                    column))
+            {
+                groupedSeats[row].Add(
+                    column);
+
+                seatCount++;
+
+                if (row <= 2)
                 {
-                    var columns = group.OrderBy(x => x.Col).Select(x => x.Col).ToList();
-
-                    <p>
-                        Ред @group.Key: @string.Join(", ", columns)
-                    </p>
+                    premiumSeats++;
+                }
+                else
+                {
+                    standardSeats++;
                 }
             }
-            else
-            {
-                <span>Нема селектирани седишта!</span>
-            }
-        </td>
-    </tr>
-    <tr>
-        <th>Вкупна цена:</th>
-        <td>@Model.TotalPrice ден.</td>
-    </tr>
-    <tr>
-        <th>Емаил адреса:</th>
-        <td>@Model.Email</td>
-    </tr>
-</table>
+        }
+    }
 
-<p>
-    <a href="@Url.Action("Index", "Tickets")" class="btn btn-info">Прикажи ги сите купени билети</a>
-</p>
+    var movieTitle =
+        Model.Movie != null
+            ? Model.Movie.Title
+            : "Непознат филм";
+
+    var projectionDateTime =
+        Model.SelectedDay.Date;
+
+    TimeSpan projectionTime;
+
+    if (TimeSpan.TryParse(
+            Model.SelectedTime,
+            out projectionTime))
+    {
+        projectionDateTime =
+            projectionDateTime.Add(
+                projectionTime);
+    }
+
+    var isUpcoming =
+        projectionDateTime >=
+        DateTime.Now;
+}
+
+<main class="ticket-summary-page"
+      aria-labelledby="ticket-summary-title">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="ticket-success-message"
+             role="alert">
+
+            <span aria-hidden="true">
+                ✓
+            </span>
+
+            <div>
+
+                <strong>
+                    Резервацијата е успешна
+                </strong>
+
+                <p>
+                    @TempData["SuccessMessage"]
+                </p>
+
+            </div>
+
+        </div>
+    }
+
+
+    <section class="ticket-summary-header">
+
+        <div>
+
+            <div class="cinema-eyebrow">
+                BOOKING CONFIRMATION
+            </div>
+
+            <h1 id="ticket-summary-title">
+                Твојот
+                <span class="cinema-text-gradient">
+                    билет
+                </span>
+            </h1>
+
+            <p>
+                Сите детали за резервираната проекција
+                се прикажани подолу.
+            </p>
+
+        </div>
+
+        <a class="btn btn-outline-secondary"
+           href="@Url.Action(
+               "Index",
+               "Tickets")">
+
+            @(isAdmin
+                ? "Сите билети"
+                : "Мои билети")
+
+        </a>
+
+    </section>
+
+
+    <section class="digital-ticket">
+
+        <div class="digital-ticket-main">
+
+            <div class="digital-ticket-top">
+
+                <div>
+
+                    <span class="digital-ticket-brand">
+                        MOVIETICKET
+                    </span>
+
+                    <span class="digital-ticket-id">
+                        BOOKING #@Model.Id
+                    </span>
+
+                </div>
+
+                <div class="digital-ticket-status @(isUpcoming ? "active" : "past")">
+
+                    <span></span>
+
+                    @(isUpcoming
+                        ? "АКТИВЕН БИЛЕТ"
+                        : "ЗАВРШЕНА ПРОЕКЦИЈА")
+
+                </div>
+
+            </div>
+
+
+            <div class="digital-ticket-film">
+
+                <span>
+                    NOW SHOWING
+                </span>
+
+                <h2>
+                    @movieTitle
+                </h2>
+
+            </div>
+
+
+            <div class="digital-ticket-primary-info">
+
+                <div>
+
+                    <span>
+                        DATE
+                    </span>
+
+                    <strong>
+                        @Model.SelectedDay.ToString(
+                            "dd.MM.yyyy")
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        TIME
+                    </span>
+
+                    <strong>
+                        @Model.SelectedTime
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        SEATS
+                    </span>
+
+                    <strong>
+                        @seatCount
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="digital-ticket-seat-section">
+
+                <span class="digital-ticket-section-label">
+                    RESERVED SEATS
+                </span>
+
+                @if (groupedSeats.Any())
+                {
+                    <div class="digital-ticket-seat-grid">
+
+                        @foreach (var group in groupedSeats)
+                        {
+                            var columns =
+                                group.Value
+                                    .OrderBy(column => column)
+                                    .ToList();
+
+                            foreach (var column in columns)
+                            {
+                                <div class="digital-ticket-seat">
+
+                                    <span>
+                                        ROW
+                                    </span>
+
+                                    <strong>
+                                        @group.Key
+                                    </strong>
+
+                                    <span>
+                                        SEAT
+                                    </span>
+
+                                    <strong>
+                                        @column
+                                    </strong>
+
+                                </div>
+                            }
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <p class="digital-ticket-no-seats">
+                        Нема валидни селектирани седишта.
+                    </p>
+                }
+
+                @if (invalidSeats.Any())
+                {
+                    <div class="digital-ticket-invalid">
+                        Невалидни записи:
+                        @string.Join(
+                            ", ",
+                            invalidSeats)
+                    </div>
+                }
+
+            </div>
+
+
+            <div class="digital-ticket-customer">
+
+                <span>
+                    TICKET HOLDER
+                </span>
+
+                <strong>
+                    @Model.Email
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <aside class="digital-ticket-stub">
+
+            <div class="digital-ticket-stub-brand">
+                MOVIETICKET
+            </div>
+
+
+            <div class="digital-ticket-stub-date">
+
+                <span>
+                    @Model.SelectedDay
+                    .ToString("MMM")
+                    .ToUpperInvariant()
+                </span>
+
+                <strong>
+                    @Model.SelectedDay.ToString("dd")
+                </strong>
+
+                <small>
+                    @Model.SelectedDay.ToString("yyyy")
+                </small>
+
+            </div>
+
+
+            <div class="digital-ticket-stub-time">
+
+                <span>
+                    SHOWTIME
+                </span>
+
+                <strong>
+                    @Model.SelectedTime
+                </strong>
+
+            </div>
+
+
+            <div class="digital-ticket-barcode"
+                 aria-hidden="true">
+
+                @for (var barcode = 0;
+                      barcode < 25;
+                      barcode++)
+                {
+                    <span></span>
+                }
+
+            </div>
+
+
+            <span class="digital-ticket-stub-id">
+                #@Model.Id
+            </span>
+
+        </aside>
+
+    </section>
+
+
+    <section class="ticket-summary-information">
+
+        <div class="ticket-summary-info-card">
+
+            <span>
+                PREMIUM
+            </span>
+
+            <strong>
+                @premiumSeats
+            </strong>
+
+            <small>
+                × 500 ден.
+            </small>
+
+        </div>
+
+
+        <div class="ticket-summary-info-card">
+
+            <span>
+                STANDARD
+            </span>
+
+            <strong>
+                @standardSeats
+            </strong>
+
+            <small>
+                × 250 ден.
+            </small>
+
+        </div>
+
+
+        <div class="ticket-summary-info-card highlight">
+
+            <span>
+                ВКУПНА ЦЕНА
+            </span>
+
+            <strong>
+                @Model.TotalPrice
+            </strong>
+
+            <small>
+                ден.
+            </small>
+
+        </div>
+
+    </section>
+
+
+    <section class="ticket-summary-footer">
+
+        <div>
+
+            <span class="ticket-summary-footer-label">
+                BOOKING DETAILS
+            </span>
+
+            <strong>
+                Билетот е поврзан со
+                @Model.Email
+            </strong>
+
+            <p>
+                Чувај ја потврдата за пристап до
+                деталите за резервацијата.
+            </p>
+
+        </div>
+
+        <div class="ticket-summary-actions">
+
+            <a class="btn btn-outline-secondary"
+               href="@Url.Action(
+                   "Index",
+                   "Tickets")">
+
+                @(isAdmin
+                    ? "Назад кон сите билети"
+                    : "Назад кон моите билети")
+
+            </a>
+
+            @if (!isAdmin)
+            {
+                <a class="btn btn-primary"
+                   href="@Url.Action(
+                       "Buy",
+                       "Tickets")">
+                    Купи нов билет
+                </a>
+            }
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<style>
+    .ticket-summary-page {
+        width: min(100%, 1050px);
+        margin: 0 auto;
+    }
+
+
+    /* SUCCESS */
+
+    .ticket-success-message {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.9rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem 1.2rem;
+        border: 1px solid rgba(66, 199, 131, 0.22);
+        border-radius: var(--cinema-radius-md);
+        background: rgba(66, 199, 131, 0.07);
+        box-shadow: var(--cinema-shadow-sm);
+        animation: ticket-success-enter 450ms cubic-bezier( 0.22, 1, 0.36, 1 );
+    }
+
+        .ticket-success-message > span {
+            display: grid;
+            flex: 0 0 40px;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            color: #9ae8bd;
+            border: 1px solid rgba(66, 199, 131, 0.24);
+            border-radius: 50%;
+            background: rgba(66, 199, 131, 0.08);
+            font-weight: 900;
+        }
+
+        .ticket-success-message strong {
+            color: #a5e9c1;
+        }
+
+        .ticket-success-message p {
+            margin: 0.15rem 0 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.8rem;
+        }
+
+    @@keyframes ticket-success-enter {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    /* HEADER */
+
+    .ticket-summary-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+        .ticket-summary-header > div {
+            max-width: 700px;
+        }
+
+        .ticket-summary-header h1 {
+            margin-bottom: 0.8rem;
+        }
+
+        .ticket-summary-header p {
+            margin: 0;
+            color: var(--cinema-text-muted);
+        }
+
+
+    /* DIGITAL TICKET */
+
+    .digital-ticket {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 220px;
+        overflow: hidden;
+        border: 1px solid rgba(214, 168, 75, 0.18);
+        border-radius: 28px;
+        background: linear-gradient( 150deg, rgba(23, 31, 44, 0.99), rgba(7, 10, 15, 0.99) );
+        box-shadow: var(--cinema-shadow-lg);
+    }
+
+        .digital-ticket::before {
+            position: absolute;
+            top: -200px;
+            left: 15%;
+            width: 500px;
+            height: 500px;
+            content: "";
+            pointer-events: none;
+            border-radius: 50%;
+            background: rgba(214, 168, 75, 0.04);
+            filter: blur(10px);
+        }
+
+    .digital-ticket-main {
+        position: relative;
+        z-index: 1;
+        min-width: 0;
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    .digital-ticket-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 3.5rem;
+    }
+
+    .digital-ticket-brand {
+        display: block;
+        margin-bottom: 0.3rem;
+        color: var(--cinema-gold-light);
+        font-size: 0.66rem;
+        font-weight: 900;
+        letter-spacing: 0.18em;
+    }
+
+    .digital-ticket-id {
+        color: var(--cinema-text-muted);
+        font-size: 0.6rem;
+        letter-spacing: 0.08em;
+    }
+
+    .digital-ticket-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.56rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+    }
+
+        .digital-ticket-status > span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .digital-ticket-status.active {
+            color: #9ae8bd;
+            border: 1px solid rgba(66, 199, 131, 0.20);
+            background: rgba(66, 199, 131, 0.07);
+        }
+
+            .digital-ticket-status.active > span {
+                background: var(--cinema-success);
+                box-shadow: 0 0 12px rgba(66, 199, 131, 0.65);
+            }
+
+        .digital-ticket-status.past {
+            color: var(--cinema-text-muted);
+            border: 1px solid var(--cinema-border);
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+            .digital-ticket-status.past > span {
+                background: #737c89;
+            }
+
+
+    /* MOVIE */
+
+    .digital-ticket-film {
+        margin-bottom: 2rem;
+    }
+
+        .digital-ticket-film > span {
+            display: block;
+            margin-bottom: 0.55rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.58rem;
+            font-weight: 900;
+            letter-spacing: 0.13em;
+        }
+
+        .digital-ticket-film h2 {
+            max-width: 720px;
+            margin: 0;
+            font-size: clamp( 2rem, 5vw, 3.6rem );
+            line-height: 1;
+            letter-spacing: -0.05em;
+        }
+
+
+    /* PRIMARY INFO */
+
+    .digital-ticket-primary-info {
+        display: grid;
+        grid-template-columns: repeat( 3, minmax(0, 1fr) );
+        gap: 0.9rem;
+        margin-bottom: 2rem;
+    }
+
+        .digital-ticket-primary-info > div {
+            padding: 1rem;
+            border: 1px solid var(--cinema-border);
+            border-radius: 13px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .digital-ticket-primary-info span,
+        .digital-ticket-section-label,
+        .digital-ticket-customer > span {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.55rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+        }
+
+        .digital-ticket-primary-info strong {
+            color: var(--cinema-text);
+            font-size: 0.9rem;
+        }
+
+
+    /* SEATS */
+
+    .digital-ticket-seat-section {
+        margin-bottom: 1.8rem;
+    }
+
+    .digital-ticket-seat-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+    }
+
+    .digital-ticket-seat {
+        display: grid;
+        grid-template-columns: auto auto;
+        gap: 0.1rem 0.5rem;
+        min-width: 92px;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid rgba(66, 199, 131, 0.17);
+        border-radius: 10px;
+        background: rgba(66, 199, 131, 0.05);
+    }
+
+        .digital-ticket-seat span {
+            color: var(--cinema-text-muted);
+            font-size: 0.47rem;
+            font-weight: 900;
+        }
+
+        .digital-ticket-seat strong {
+            color: #a5e9c1;
+            font-size: 0.72rem;
+        }
+
+    .digital-ticket-no-seats {
+        color: var(--cinema-text-muted);
+        font-size: 0.8rem;
+    }
+
+    .digital-ticket-invalid {
+        margin-top: 0.7rem;
+        color: #ff8b96;
+        font-size: 0.7rem;
+    }
+
+
+    /* CUSTOMER */
+
+    .digital-ticket-customer {
+        padding-top: 1.2rem;
+        border-top: 1px dashed var(--cinema-border-strong);
+    }
+
+        .digital-ticket-customer strong {
+            display: block;
+            overflow-wrap: anywhere;
+            color: var(--cinema-text-soft);
+            font-size: 0.8rem;
+        }
+
+
+    /* STUB */
+
+    .digital-ticket-stub {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 2rem 1.3rem;
+        border-left: 1px dashed rgba(255, 255, 255, 0.15);
+        background: radial-gradient( circle at 50% 30%, rgba(214, 168, 75, 0.08), transparent 35% ), rgba(255, 255, 255, 0.016);
+    }
+
+        .digital-ticket-stub::before,
+        .digital-ticket-stub::after {
+            position: absolute;
+            left: -16px;
+            width: 31px;
+            height: 31px;
+            content: "";
+            border: 1px solid var(--cinema-border);
+            border-radius: 50%;
+            background: var(--cinema-bg);
+        }
+
+        .digital-ticket-stub::before {
+            top: -16px;
+        }
+
+        .digital-ticket-stub::after {
+            bottom: -16px;
+        }
+
+    .digital-ticket-stub-brand {
+        color: var(--cinema-gold-light);
+        font-size: 0.55rem;
+        font-weight: 900;
+        letter-spacing: 0.17em;
+    }
+
+    .digital-ticket-stub-date {
+        text-align: center;
+    }
+
+        .digital-ticket-stub-date > span {
+            display: block;
+            color: var(--cinema-gold-light);
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+        }
+
+        .digital-ticket-stub-date strong {
+            display: block;
+            margin: 0.2rem 0;
+            color: var(--cinema-text);
+            font-size: 4rem;
+            line-height: 0.95;
+            letter-spacing: -0.07em;
+        }
+
+        .digital-ticket-stub-date small {
+            color: var(--cinema-text-muted);
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+        }
+
+    .digital-ticket-stub-time {
+        text-align: center;
+    }
+
+        .digital-ticket-stub-time span {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.52rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+        }
+
+        .digital-ticket-stub-time strong {
+            color: var(--cinema-text);
+            font-size: 1.2rem;
+        }
+
+    .digital-ticket-barcode {
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        gap: 2px;
+        width: 120px;
+        height: 90px;
+        opacity: 0.55;
+    }
+
+        .digital-ticket-barcode span {
+            width: 2px;
+            background: var(--cinema-text-soft);
+        }
+
+            .digital-ticket-barcode span:nth-child(2n) {
+                width: 1px;
+            }
+
+            .digital-ticket-barcode span:nth-child(3n) {
+                width: 4px;
+            }
+
+            .digital-ticket-barcode span:nth-child(5n) {
+                width: 5px;
+            }
+
+    .digital-ticket-stub-id {
+        color: var(--cinema-text-muted);
+        font-size: 0.6rem;
+        letter-spacing: 0.1em;
+    }
+
+
+    /* INFO CARDS */
+
+    .ticket-summary-information {
+        display: grid;
+        grid-template-columns: repeat( 3, minmax(0, 1fr) );
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .ticket-summary-info-card {
+        padding: 1.2rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-md);
+        background: rgba(15, 21, 31, 0.75);
+        box-shadow: var(--cinema-shadow-sm);
+    }
+
+        .ticket-summary-info-card > span {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.54rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+        }
+
+        .ticket-summary-info-card strong {
+            color: var(--cinema-text);
+            font-size: 1.55rem;
+        }
+
+        .ticket-summary-info-card small {
+            margin-left: 0.3rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.68rem;
+        }
+
+        .ticket-summary-info-card.highlight {
+            border-color: rgba(214, 168, 75, 0.24);
+            background: rgba(214, 168, 75, 0.045);
+        }
+
+            .ticket-summary-info-card.highlight strong {
+                color: var(--cinema-gold-light);
+            }
+
+
+    /* FOOTER */
+
+    .ticket-summary-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        padding: 1.4rem 1.5rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-lg);
+        background: rgba(15, 21, 31, 0.68);
+    }
+
+    .ticket-summary-footer-label {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: var(--cinema-gold-light);
+        font-size: 0.54rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+    }
+
+    .ticket-summary-footer strong {
+        display: block;
+        color: var(--cinema-text);
+        font-size: 0.86rem;
+    }
+
+    .ticket-summary-footer p {
+        margin: 0.25rem 0 0;
+        color: var(--cinema-text-muted);
+        font-size: 0.72rem;
+    }
+
+    .ticket-summary-actions {
+        display: flex;
+        flex: 0 0 auto;
+        gap: 0.65rem;
+    }
+
+
+    /* RESPONSIVE */
+
+    @@media (max-width: 800px) {
+        .ticket-summary-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .digital-ticket {
+            grid-template-columns: 1fr;
+        }
+
+        .digital-ticket-stub {
+            display: grid;
+            grid-template-columns: repeat( 4, auto );
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem;
+            border-top: 1px dashed rgba(255, 255, 255, 0.15);
+            border-left: 0;
+        }
+
+            .digital-ticket-stub::before,
+            .digital-ticket-stub::after {
+                top: -16px;
+            }
+
+            .digital-ticket-stub::before {
+                left: -16px;
+            }
+
+            .digital-ticket-stub::after {
+                right: -16px;
+                left: auto;
+                bottom: auto;
+            }
+
+        .digital-ticket-stub-date {
+            display: flex;
+            align-items: baseline;
+            gap: 0.45rem;
+        }
+
+            .digital-ticket-stub-date strong {
+                font-size: 2rem;
+            }
+
+        .digital-ticket-barcode {
+            width: 90px;
+            height: 45px;
+        }
+
+        .ticket-summary-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .digital-ticket-main {
+            padding: 1.4rem 1rem;
+        }
+
+        .digital-ticket-top {
+            align-items: flex-start;
+            flex-direction: column;
+            margin-bottom: 2.5rem;
+        }
+
+        .digital-ticket-primary-info {
+            grid-template-columns: 1fr;
+        }
+
+        .digital-ticket-stub {
+            grid-template-columns: repeat( 2, 1fr );
+        }
+
+        .digital-ticket-barcode {
+            display: none;
+        }
+
+        .ticket-summary-information {
+            grid-template-columns: 1fr;
+        }
+
+        .ticket-summary-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+            .ticket-summary-actions .btn {
+                width: 100%;
+            }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .ticket-success-message {
+            animation: none;
+        }
+    }
+</style>

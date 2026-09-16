@@ -10,10 +10,9 @@ namespace MovieTicketMVC.Models
         [Required]
         public string Title { get; set; }
 
-        [Required]
+        [Range(1, 600, ErrorMessage = "Времетраењето мора да биде помеѓу 1 и 600 минути.")]
         public int LengthInMinutes { get; set; }
 
-        [Required]
         [DataType(DataType.Date)]
         public DateTime ReleaseDate { get; set; }
 

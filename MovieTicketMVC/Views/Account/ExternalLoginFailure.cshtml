@@ -1,10 +1,555 @@
 ﻿@{
-    ViewBag.Title = "Login Failure";
+    ViewBag.Title = "Неуспешна најава";
 }
 
-<main>
-    <hgroup>
-        <h2>@ViewBag.Title.</h2>
-        <h3 class="text-danger">Unsuccessful login with service.</h3>
-    </hgroup>
+<main class="external-failure-page"
+      aria-labelledby="external-failure-title">
+
+    <section class="external-failure-shell">
+
+        <a class="external-failure-brand"
+           href="@Url.Action("Index", "Home")">
+
+            <span></span>
+
+            MOVIETICKET
+        </a>
+
+
+        <div class="external-failure-visual"
+             aria-hidden="true">
+
+            <div class="external-failure-orbit
+                        external-failure-orbit-large">
+            </div>
+
+            <div class="external-failure-orbit
+                        external-failure-orbit-small">
+            </div>
+
+
+            <div class="external-failure-icon">
+
+                <span></span>
+
+            </div>
+
+
+            <div class="external-failure-signal
+                        external-failure-signal-one">
+            </div>
+
+            <div class="external-failure-signal
+                        external-failure-signal-two">
+            </div>
+
+        </div>
+
+
+        <div class="external-failure-content">
+
+            <div class="cinema-eyebrow external-failure-eyebrow">
+                AUTHENTICATION INTERRUPTED
+            </div>
+
+            <h1 id="external-failure-title">
+                Најавата не беше
+                <span class="external-failure-accent">
+                    успешна
+                </span>
+            </h1>
+
+            <p class="external-failure-description">
+                MovieTicket не успеа да го заврши
+                најавувањето преку надворешниот сервис.
+                Твојот профил не е најавен преку овој обид.
+            </p>
+
+
+            <div class="external-failure-panel">
+
+                <div class="external-failure-panel-icon"
+                     aria-hidden="true">
+                    !
+                </div>
+
+                <div>
+
+                    <span>
+                        LOGIN STATUS
+                    </span>
+
+                    <strong>
+                        External authentication failed
+                    </strong>
+
+                    <p>
+                        Врати се на страницата за најава
+                        и избери достапен начин за пристап
+                        до профилот.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="external-failure-actions">
+
+                <a class="btn btn-primary external-failure-login"
+                   href="@Url.Action(
+                       "Login",
+                       "Account")">
+
+                    <span>
+                        Назад кон најава
+                    </span>
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
+
+                </a>
+
+
+                <a class="btn btn-outline-secondary"
+                   href="@Url.Action(
+                       "Index",
+                       "Home")">
+
+                    Почетна
+
+                </a>
+
+            </div>
+
+
+            <div class="external-failure-help">
+
+                <span aria-hidden="true">
+                    i
+                </span>
+
+                <p>
+                    Ако проблемот се повторува, можеш да
+                    се најавиш со стандардниот MovieTicket
+                    e-mail и password flow.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
 </main>
+
+
+<style>
+    .external-failure-page {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .external-failure-shell {
+        position: relative;
+        width: min(100%, 760px);
+        padding: clamp(2rem, 6vw, 4rem);
+        overflow: hidden;
+        text-align: center;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-xl);
+        background: radial-gradient( circle at 50% 18%, rgba(215, 76, 88, 0.10), transparent 30% ), radial-gradient( circle at 0% 100%, rgba(61, 101, 166, 0.10), transparent 30% ), linear-gradient( 145deg, rgba(18, 25, 37, 0.99), rgba(7, 10, 15, 0.99) );
+        box-shadow: var(--cinema-shadow-lg);
+        isolation: isolate;
+    }
+
+        .external-failure-shell::before {
+            position: absolute;
+            z-index: -2;
+            inset: 0;
+            content: "";
+            opacity: 0.24;
+            background-image: linear-gradient( rgba(255, 255, 255, 0.02) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px );
+            background-size: 48px 48px;
+            mask-image: linear-gradient( 180deg, #000, transparent 78% );
+        }
+
+
+    /* =====================================================
+       BRAND
+       ===================================================== */
+
+    .external-failure-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 2.3rem;
+        color: var(--cinema-text);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.17em;
+    }
+
+        .external-failure-brand:hover {
+            color: var(--cinema-gold-light);
+        }
+
+        .external-failure-brand > span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cinema-gold);
+            box-shadow: 0 0 0 5px rgba(214, 168, 75, 0.09), 0 0 18px rgba(214, 168, 75, 0.55);
+        }
+
+
+    /* =====================================================
+       VISUAL
+       ===================================================== */
+
+    .external-failure-visual {
+        position: relative;
+        display: grid;
+        width: 220px;
+        height: 180px;
+        margin: 0 auto 2rem;
+        place-items: center;
+    }
+
+    .external-failure-icon {
+        position: relative;
+        z-index: 5;
+        display: grid;
+        width: 92px;
+        height: 92px;
+        place-items: center;
+        border: 1px solid rgba(215, 76, 88, 0.34);
+        border-radius: 50%;
+        background: radial-gradient( circle, rgba(215, 76, 88, 0.15), rgba(215, 76, 88, 0.04) );
+        box-shadow: 0 0 0 12px rgba(215, 76, 88, 0.025), 0 0 60px rgba(215, 76, 88, 0.12);
+        animation: external-failure-enter 650ms cubic-bezier( 0.22, 1, 0.36, 1 );
+    }
+
+        .external-failure-icon::before,
+        .external-failure-icon::after {
+            position: absolute;
+            width: 39px;
+            height: 4px;
+            content: "";
+            border-radius: 999px;
+            background: #ff8f99;
+            box-shadow: 0 0 16px rgba(255, 111, 123, 0.30);
+        }
+
+        .external-failure-icon::before {
+            transform: rotate(45deg);
+        }
+
+        .external-failure-icon::after {
+            transform: rotate(-45deg);
+        }
+
+        .external-failure-icon > span {
+            display: none;
+        }
+
+
+    /* =====================================================
+       ORBITS
+       ===================================================== */
+
+    .external-failure-orbit {
+        position: absolute;
+        border: 1px solid rgba(215, 76, 88, 0.09);
+        border-radius: 50%;
+        animation: external-failure-orbit 24s linear infinite;
+    }
+
+        .external-failure-orbit::after {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            content: "";
+            border-radius: 50%;
+            background: var(--cinema-danger);
+            box-shadow: 0 0 16px rgba(215, 76, 88, 0.65);
+        }
+
+    .external-failure-orbit-large {
+        width: 180px;
+        height: 180px;
+    }
+
+    .external-failure-orbit-small {
+        width: 135px;
+        height: 135px;
+        animation-direction: reverse;
+        animation-duration: 17s;
+    }
+
+
+    /* =====================================================
+       SIGNALS
+       ===================================================== */
+
+    .external-failure-signal {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #ff8f99;
+        box-shadow: 0 0 12px rgba(215, 76, 88, 0.65);
+        animation: external-failure-pulse 2.5s ease-in-out infinite;
+    }
+
+    .external-failure-signal-one {
+        top: 30px;
+        left: 30px;
+    }
+
+    .external-failure-signal-two {
+        right: 30px;
+        bottom: 35px;
+        animation-delay: 0.9s;
+    }
+
+
+    /* =====================================================
+       CONTENT
+       ===================================================== */
+
+    .external-failure-content {
+        position: relative;
+        z-index: 3;
+    }
+
+    .external-failure-eyebrow {
+        color: #ff929c;
+    }
+
+    .external-failure-content h1 {
+        max-width: 640px;
+        margin: 0 auto 1rem;
+        font-size: clamp( 2.4rem, 6vw, 3.8rem );
+        line-height: 1;
+        letter-spacing: -0.05em;
+    }
+
+    .external-failure-accent {
+        background: linear-gradient( 135deg, #ffb1b7, #e96873 );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .external-failure-description {
+        max-width: 570px;
+        margin: 0 auto 2rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.88rem;
+        line-height: 1.75;
+    }
+
+
+    /* =====================================================
+       STATUS PANEL
+       ===================================================== */
+
+    .external-failure-panel {
+        display: flex;
+        max-width: 560px;
+        align-items: flex-start;
+        gap: 0.9rem;
+        margin: 0 auto 1.6rem;
+        padding: 1rem;
+        text-align: left;
+        border: 1px solid rgba(215, 76, 88, 0.17);
+        border-radius: 14px;
+        background: rgba(215, 76, 88, 0.035);
+    }
+
+    .external-failure-panel-icon {
+        display: grid;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        color: #ff9ca5;
+        border: 1px solid rgba(215, 76, 88, 0.25);
+        border-radius: 12px;
+        background: rgba(215, 76, 88, 0.07);
+        font-size: 0.85rem;
+        font-weight: 900;
+    }
+
+    .external-failure-panel
+    div:last-child > span {
+        display: block;
+        margin-bottom: 0.2rem;
+        color: #ef8a93;
+        font-size: 0.51rem;
+        font-weight: 900;
+        letter-spacing: 0.11em;
+    }
+
+    .external-failure-panel strong {
+        display: block;
+        color: var(--cinema-text);
+        font-size: 0.82rem;
+    }
+
+    .external-failure-panel p {
+        margin: 0.25rem 0 0;
+        color: var(--cinema-text-muted);
+        font-size: 0.68rem;
+        line-height: 1.55;
+    }
+
+
+    /* =====================================================
+       ACTIONS
+       ===================================================== */
+
+    .external-failure-actions {
+        display: flex;
+        max-width: 560px;
+        justify-content: center;
+        gap: 0.7rem;
+        margin: 0 auto;
+    }
+
+    .external-failure-login {
+        display: inline-flex;
+        min-width: 220px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+        .external-failure-login > span:last-child {
+            transition: transform var(--cinema-transition);
+        }
+
+        .external-failure-login:hover > span:last-child {
+            transform: translateX(5px);
+        }
+
+
+    /* =====================================================
+       HELP
+       ===================================================== */
+
+    .external-failure-help {
+        display: flex;
+        max-width: 560px;
+        align-items: flex-start;
+        gap: 0.6rem;
+        margin: 2rem auto 0;
+        padding-top: 1.2rem;
+        text-align: left;
+        border-top: 1px solid var(--cinema-border);
+    }
+
+        .external-failure-help > span {
+            display: grid;
+            flex: 0 0 25px;
+            width: 25px;
+            height: 25px;
+            place-items: center;
+            color: var(--cinema-gold-light);
+            border: 1px solid rgba(214, 168, 75, 0.17);
+            border-radius: 50%;
+            background: rgba(214, 168, 75, 0.05);
+            font-family: Georgia, serif;
+            font-size: 0.68rem;
+            font-weight: bold;
+        }
+
+        .external-failure-help p {
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.66rem;
+            line-height: 1.55;
+        }
+
+
+    /* =====================================================
+       ANIMATIONS
+       ===================================================== */
+
+    @@keyframes external-failure-enter {
+        from {
+            opacity: 0;
+            transform: scale(0.45) rotate(-15deg);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+    }
+
+    @@keyframes external-failure-orbit {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes external-failure-pulse {
+        0%,
+        100% {
+            opacity: 0.25;
+            transform: scale(0.7);
+        }
+
+        50% {
+            opacity: 1;
+            transform: scale(1.25);
+        }
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @@media (max-width: 575.98px) {
+        .external-failure-shell {
+            padding: 2rem 1.1rem;
+            border-radius: var(--cinema-radius-lg);
+        }
+
+        .external-failure-content h1 {
+            font-size: 2.3rem;
+        }
+
+        .external-failure-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+            .external-failure-actions .btn {
+                width: 100%;
+            }
+
+        .external-failure-login {
+            min-width: 0;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .external-failure-icon,
+        .external-failure-orbit,
+        .external-failure-signal {
+            animation: none;
+        }
+    }
+</style>

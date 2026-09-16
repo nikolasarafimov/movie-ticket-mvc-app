@@ -1,36 +1,105 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using MovieTicketMVC.Services;
 
 namespace MovieTicketMVC.Hubs
 {
+    [Authorize]
     public class SeatHub : Hub
     {
-        public bool LockSeat(int movieId, string day, string time, string seatId)
+        public bool LockSeat(
+            int movieId,
+            string day,
+            string time,
+            string seatId)
         {
-            bool ok = SeatLockService.TryLock(movieId, DateTime.Parse(day), time, seatId, Context.ConnectionId);
-            
-            if (ok)
+            DateTime selectedDay;
+
+            if (!TryParseDay(day, out selectedDay))
             {
-                Clients.Others.SeatLocked(movieId, day, time, seatId);
+                return false;
             }
-            return ok;
+
+            var locked = SeatLockService.TryLock(
+                movieId,
+                selectedDay,
+                time,
+                seatId,
+                Context.ConnectionId);
+
+            if (locked)
+            {
+                Clients.Others.SeatLocked(
+                    movieId,
+                    selectedDay.ToString("yyyy-MM-dd"),
+                    time,
+                    seatId);
+            }
+
+            return locked;
         }
 
-        public void UnlockSeat(int movieId, string day, string time, string seatId)
+        public bool UnlockSeat(
+            int movieId,
+            string day,
+            string time,
+            string seatId)
         {
-            SeatLockService.Unlock(movieId, DateTime.Parse(day), time, seatId, Context.ConnectionId);
-            Clients.Others.SeatUnlocked(movieId, day, time, seatId);
+            DateTime selectedDay;
+
+            if (!TryParseDay(day, out selectedDay))
+            {
+                return false;
+            }
+
+            var unlocked = SeatLockService.Unlock(
+                movieId,
+                selectedDay,
+                time,
+                seatId,
+                Context.ConnectionId);
+
+            if (unlocked)
+            {
+                Clients.Others.SeatUnlocked(
+                    movieId,
+                    selectedDay.ToString("yyyy-MM-dd"),
+                    time,
+                    seatId);
+            }
+
+            return unlocked;
         }
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            SeatLockService.ReleaseAll(Context.ConnectionId);
+            var releasedLocks =
+                SeatLockService.ReleaseAll(Context.ConnectionId);
+
+            foreach (var releasedLock in releasedLocks)
+            {
+                Clients.Others.SeatUnlocked(
+                    releasedLock.MovieId,
+                    releasedLock.Day.ToString("yyyy-MM-dd"),
+                    releasedLock.Time,
+                    releasedLock.SeatId);
+            }
+
             return base.OnDisconnected(stopCalled);
+        }
+
+        private static bool TryParseDay(
+            string value,
+            out DateTime day)
+        {
+            return DateTime.TryParseExact(
+                value,
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out day);
         }
     }
 }

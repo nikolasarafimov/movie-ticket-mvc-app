@@ -1,83 +1,278 @@
-﻿<!DOCTYPE html>
+﻿@using System
+
+@{
+    var currentController =
+        Convert.ToString(
+            ViewContext.RouteData.Values["controller"]);
+
+    var currentAction =
+        Convert.ToString(
+            ViewContext.RouteData.Values["action"]);
+
+    var activeMovieSection =
+        Convert.ToString(
+            ViewBag.ActiveMovieSection);
+
+    if (string.IsNullOrWhiteSpace(activeMovieSection))
+    {
+        if (string.Equals(
+                currentAction,
+                "Current",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            activeMovieSection = "Current";
+        }
+        else if (string.Equals(
+                     currentAction,
+                     "ComingSoon",
+                     StringComparison.OrdinalIgnoreCase))
+        {
+            activeMovieSection = "ComingSoon";
+        }
+    }
+
+    var isAuthenticated =
+        User != null &&
+        User.Identity != null &&
+        User.Identity.IsAuthenticated;
+
+    var isAdmin =
+        isAuthenticated &&
+        User.IsInRole("Admin");
+
+    var isHome =
+        string.Equals(
+            currentController,
+            "Home",
+            StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(
+            currentAction,
+            "Index",
+            StringComparison.OrdinalIgnoreCase);
+
+    var isCurrentMovies =
+        string.Equals(
+            currentController,
+            "Movies",
+            StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(
+            activeMovieSection,
+            "Current",
+            StringComparison.OrdinalIgnoreCase);
+
+    var isComingSoonMovies =
+        string.Equals(
+            currentController,
+            "Movies",
+            StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(
+            activeMovieSection,
+            "ComingSoon",
+            StringComparison.OrdinalIgnoreCase);
+
+    var isBuyTicket =
+        string.Equals(
+            currentController,
+            "Tickets",
+            StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(
+            currentAction,
+            "Buy",
+            StringComparison.OrdinalIgnoreCase);
+
+    var isTicketHistory =
+        string.Equals(
+            currentController,
+            "Tickets",
+            StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(
+            currentAction,
+            "Buy",
+            StringComparison.OrdinalIgnoreCase);
+
+    var isContact =
+        string.Equals(
+            currentController,
+            "Home",
+            StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(
+            currentAction,
+            "Contact",
+            StringComparison.OrdinalIgnoreCase);
+}
+
+<!DOCTYPE html>
 <html lang="mk">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewBag.Title</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <meta name="theme-color"
+          content="#07090d" />
+
+    <meta name="description"
+          content="MovieTicket - модерен систем за преглед на филмови, избор на седишта и купување кино билети." />
+
+    <title>
+        @(string.IsNullOrWhiteSpace(
+            Convert.ToString(ViewBag.Title))
+                ? "MovieTicket"
+                : ViewBag.Title + " - MovieTicket")
+    </title>
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body>
-    @{
-        var currentController = ViewContext.RouteData.Values["controller"] as string;
-        var currentAction = ViewContext.RouteData.Values["action"] as string;
-        var activeMovieSection = ViewBag.ActiveMovieSection as string ?? currentAction;
-    }
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark"
+         aria-label="Главна навигација">
+
         <div class="container">
-            <a class="navbar-brand" href="@Url.Action("Index", "Home")">КИНО БИЛЕТАРА</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+
+            <a class="navbar-brand"
+               href="@Url.Action("Index", "Home")"
+               aria-label="MovieTicket - Почетна">
+                MOVIETICKET
+            </a>
+
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar"
+                    aria-expanded="false"
+                    aria-label="Отвори навигација">
+
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="mainNavbar">
+
+            <div class="collapse navbar-collapse"
+                 id="mainNavbar">
+
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                     <li class="nav-item">
-                        <a class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active" : "")"
-                           href="@Url.Action("Index","Home")">Почетна</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(currentController == "Movies" && (activeMovieSection == "Current") ? "active" : "")"
-                           href="@Url.Action("Current","Movies")">
-                            Актуелни филмови
+                        <a class="nav-link @(isHome ? "active" : "")"
+                           href="@Url.Action("Index", "Home")"
+                           @(isHome ? Html.Raw("aria-current=\"page\"") : null)>
+                            Почетна
                         </a>
                     </li>
+
                     <li class="nav-item">
-                        <a class="nav-link @(currentController == "Movies" && (activeMovieSection == "ComingSoon") ? "active" : "")"
-                           href="@Url.Action("ComingSoon","Movies")">
+                        <a class="nav-link @(isCurrentMovies ? "active" : "")"
+                           href="@Url.Action("Current", "Movies")"
+                           @(isCurrentMovies ? Html.Raw("aria-current=\"page\"") : null)>
+                            Актуелни
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link @(isComingSoonMovies ? "active" : "")"
+                           href="@Url.Action("ComingSoon", "Movies")"
+                           @(isComingSoonMovies ? Html.Raw("aria-current=\"page\"") : null)>
                             Наскоро
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(currentController == "Tickets" && currentAction == "Buy" ? "active" : "")"
-                           href="@Url.Action("Buy","Tickets")">
-                            Купи билет
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(currentController == "Home" && currentAction == "Contact" ? "active" : "")"
-                           href="@Url.Action("Contact","Home")">Контакт</a>
-                    </li>
-                    @if (User.IsInRole("Admin"))
+
+                    @if (isAuthenticated)
                     {
                         <li class="nav-item">
-                            <a class="nav-link @(currentController == "Tickets" && currentAction == "Index" ? "active" : "")"
-                               href="@Url.Action("Index","Tickets")">
-                                Сите купени билети
+                            <a class="nav-link @(isTicketHistory ? "active" : "")"
+                               href="@Url.Action("Index", "Tickets")"
+                               @(isTicketHistory ? Html.Raw("aria-current=\"page\"") : null)>
+
+                                @(isAdmin
+                                    ? "Сите билети"
+                                    : "Мои билети")
                             </a>
                         </li>
                     }
+
+                    <li class="nav-item">
+                        <a class="nav-link @(isContact ? "active" : "")"
+                           href="@Url.Action("Contact", "Home")"
+                           @(isContact ? Html.Raw("aria-current=\"page\"") : null)>
+                            Контакт
+                        </a>
+                    </li>
+
                 </ul>
-                @Html.Partial("_LoginPartial")
+
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2">
+
+                    @Html.Partial("_LoginPartial")
+
+                    <a class="btn btn-primary btn-sm ms-lg-2 @(isBuyTicket ? "active" : "")"
+                       href="@Url.Action("Buy", "Tickets")">
+                        Купи билет
+                    </a>
+
+                </div>
+
             </div>
         </div>
     </nav>
 
-    <div class="container body-content" style="margin-top: 20px;">
+    <div class="body-content">
+
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Билети</p>
-        </footer>
+
     </div>
+
+    <footer>
+        <div class="container">
+
+            <hr />
+
+            <div class="d-flex flex-column flex-md-row
+                        justify-content-between
+                        align-items-center
+                        gap-3
+                        py-3">
+
+                <div>
+                    <p>
+                        <strong>MovieTicket</strong>
+                        · Cinema booking experience
+                    </p>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <a href="@Url.Action("Current", "Movies")">
+                        Филмови
+                    </a>
+
+                    <a href="@Url.Action("Buy", "Tickets")">
+                        Билети
+                    </a>
+
+                    <a href="@Url.Action("Contact", "Home")">
+                        Контакт
+                    </a>
+
+                </div>
+
+                <div>
+                    <p>
+                        &copy; @DateTime.Now.Year MovieTicket
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
 
-    <script src="~/Scripts/jquery.signalR-2.4.2.min.js"></script>
-    <script src="/signalr/hubs"></script>
-
-    @RenderSection("scripts", required: false)
+    @RenderSection(
+        "scripts",
+        required: false)
 </body>
 </html>

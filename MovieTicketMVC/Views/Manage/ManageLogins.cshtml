@@ -1,72 +1,1314 @@
 ﻿@model MovieTicketMVC.Models.ManageLoginsViewModel
-@using Microsoft.Owin.Security
+
 @{
-    ViewBag.Title = "Manage your external logins";
+    ViewBag.Title = "Поврзани профили";
+
+    var hasCurrentLogins =
+        Model.CurrentLogins != null &&
+        Model.CurrentLogins.Count > 0;
+
+    var hasOtherLogins =
+        Model.OtherLogins != null &&
+        Model.OtherLogins.Count > 0;
+
+    var currentLoginCount =
+        hasCurrentLogins
+            ? Model.CurrentLogins.Count
+            : 0;
+
+    var availableLoginCount =
+        hasOtherLogins
+            ? Model.OtherLogins.Count
+            : 0;
 }
 
-<main aria-labelledby="title">
-<h2 id="title">@ViewBag.Title.</h2>
+<main class="manage-logins-page"
+      aria-labelledby="manage-logins-title">
 
-    <p class="text-success">@ViewBag.StatusMessage</p>
-    @{
-        var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
-        if (loginProviders.Count() == 0) {
-            <div>
-                <p>
-                    There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkId=313242">this article</a>
-                    for details on setting up this ASP.NET application to support logging in via external services.
-                </p>
+    <section class="manage-logins-hero">
+
+        <div class="manage-logins-hero-glow"
+             aria-hidden="true">
+        </div>
+
+        <div class="manage-logins-hero-content">
+
+            <a class="manage-logins-back"
+               href="@Url.Action("Index", "Manage")">
+
+                <span aria-hidden="true">
+                    ←
+                </span>
+
+                Account settings
+            </a>
+
+
+            <div class="cinema-eyebrow">
+                SIGN-IN METHODS
             </div>
-        }
-        else
-        {
-            if (Model.CurrentLogins.Count > 0)
-            {
-                <h4>Registered Logins</h4>
-                <table class="table">
-                    <tbody>
-                        @foreach (var account in Model.CurrentLogins)
-                        {
-                            <tr>
-                                <td>@account.LoginProvider</td>
-                                <td>
-                                    @if (ViewBag.ShowRemoveButton)
-                                    {
-                                        using (Html.BeginForm("RemoveLogin", "Manage"))
-                                        {
-                                            @Html.AntiForgeryToken()
-                                            <div>
-                                                @Html.Hidden("loginProvider", account.LoginProvider)
-                                                @Html.Hidden("providerKey", account.ProviderKey)
-                                                <input type="submit" class="btn btn-outline-dark" value="Remove" title="Remove this @account.LoginProvider login from your account" />
-                                            </div>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        @: &nbsp;
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            if (Model.OtherLogins.Count > 0)
-            {
-                using (Html.BeginForm("LinkLogin", "Manage"))
-                {
-                    @Html.AntiForgeryToken()
-                    <div id="socialLoginList">
-                    <p>
-                        @foreach (AuthenticationDescription p in Model.OtherLogins)
-                        {
-                            <button type="submit" class="btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
-                        }
-                    </p>
+
+            <h1 id="manage-logins-title">
+                Поврзани
+                <span class="cinema-text-gradient">
+                    профили
+                </span>
+            </h1>
+
+            <p>
+                Управувај со надворешните профили што можат
+                да се користат за пристап до твојот
+                MovieTicket account.
+            </p>
+
+        </div>
+
+
+        <div class="manage-logins-hero-art"
+             aria-hidden="true">
+
+            <div class="manage-logins-orbit
+                        manage-logins-orbit-large">
+            </div>
+
+            <div class="manage-logins-orbit
+                        manage-logins-orbit-small">
+            </div>
+
+
+            <div class="manage-logins-node
+                        manage-logins-node-primary">
+                M
+            </div>
+
+            <div class="manage-logins-node
+                        manage-logins-node-secondary">
+                ✓
+            </div>
+
+            <div class="manage-logins-connector">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    @if (!string.IsNullOrWhiteSpace(
+        ViewBag.StatusMessage as string))
+    {
+        <div class="manage-logins-status"
+             role="status">
+
+            <div class="manage-logins-status-icon"
+                 aria-hidden="true">
+                ✓
+            </div>
+
+            <div>
+
+                <span>
+                    ACCOUNT UPDATE
+                </span>
+
+                <p>
+                    @ViewBag.StatusMessage
+                </p>
+
+            </div>
+
+        </div>
+    }
+
+
+    <section class="manage-logins-overview"
+             aria-label="Преглед на поврзани профили">
+
+        <article class="manage-logins-stat">
+
+            <span>
+                CONNECTED
+            </span>
+
+            <strong>
+                @currentLoginCount
+            </strong>
+
+            <small>
+                активни поврзувања
+            </small>
+
+        </article>
+
+
+        <article class="manage-logins-stat">
+
+            <span>
+                AVAILABLE
+            </span>
+
+            <strong>
+                @availableLoginCount
+            </strong>
+
+            <small>
+                достапни providers
+            </small>
+
+        </article>
+
+
+        <article class="manage-logins-stat">
+
+            <span>
+                STATUS
+            </span>
+
+            <div class="manage-logins-stat-status">
+
+                <i></i>
+
+                SECURE
+
+            </div>
+
+            <small>
+                protected account access
+            </small>
+
+        </article>
+
+    </section>
+
+
+    @if (hasCurrentLogins)
+    {
+        <section class="manage-logins-section">
+
+            <div class="manage-logins-section-heading">
+
+                <div>
+
+                    <div class="cinema-eyebrow">
+                        CONNECTED ACCOUNTS
                     </div>
+
+                    <h2>
+                        Активни поврзувања
+                    </h2>
+
+                </div>
+
+                <p>
+                    Овие профили моментално можат да се
+                    користат како начин за најава.
+                </p>
+
+            </div>
+
+
+            <div class="manage-logins-list">
+
+                @foreach (var account in Model.CurrentLogins)
+                {
+                    var providerName =
+                        !string.IsNullOrWhiteSpace(
+                            account.LoginProvider)
+                            ? account.LoginProvider
+                            : "Provider";
+
+                    var providerInitial =
+                        providerName
+                            .Substring(0, 1)
+                            .ToUpperInvariant();
+
+                    <article class="manage-login-card">
+
+                        <div class="manage-login-provider-icon"
+                             aria-hidden="true">
+
+                            @providerInitial
+
+                        </div>
+
+
+                        <div class="manage-login-provider-info">
+
+                            <span>
+                                CONNECTED PROVIDER
+                            </span>
+
+                            <h3>
+                                @providerName
+                            </h3>
+
+                            <div class="manage-login-connected-status">
+
+                                <i></i>
+
+                                Connected
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="manage-login-actions">
+
+                            @if (ViewBag.ShowRemoveButton == true)
+                            {
+                                using (Html.BeginForm(
+                                    "RemoveLogin",
+                                    "Manage",
+                                    FormMethod.Post,
+                                    new
+                                    {
+                                        role = "form",
+                                        @class =
+                                            "manage-login-remove-form"
+                                    }))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    @Html.Hidden(
+                                        "loginProvider",
+                                        account.LoginProvider)
+
+                                    @Html.Hidden(
+                                        "providerKey",
+                                        account.ProviderKey)
+
+                                    <button type="submit"
+                                            class="btn btn-outline-danger
+                                                   manage-login-remove"
+                                            title="Отстрани го ова поврзување">
+
+                                        <span>
+                                            Отстрани
+                                        </span>
+
+                                        <span aria-hidden="true">
+                                            ×
+                                        </span>
+
+                                    </button>
+                                }
+                            }
+                            else
+                            {
+                                <div class="manage-login-required">
+
+                                    <span aria-hidden="true">
+                                        i
+                                    </span>
+
+                                    <p>
+                                        Ова е твојот единствен
+                                        начин за најава и не може
+                                        да биде отстранет.
+                                    </p>
+
+                                </div>
+                            }
+
+                        </div>
+
+                    </article>
                 }
+
+            </div>
+
+        </section>
+    }
+
+
+    @if (hasOtherLogins)
+    {
+        <section class="manage-logins-section
+                        manage-logins-connect-section">
+
+            <div class="manage-logins-section-heading">
+
+                <div>
+
+                    <div class="cinema-eyebrow">
+                        ADD SIGN-IN METHOD
+                    </div>
+
+                    <h2>
+                        Поврзи друг профил
+                    </h2>
+
+                </div>
+
+                <p>
+                    Додај уште еден достапен external provider
+                    како алтернативен начин за пристап.
+                </p>
+
+            </div>
+
+
+            @using (Html.BeginForm(
+                "LinkLogin",
+                "Manage",
+                FormMethod.Post,
+                new
+                {
+                    role = "form",
+                    @class = "manage-logins-connect-form"
+                }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="manage-logins-provider-grid">
+
+                    @foreach (var provider in Model.OtherLogins)
+                    {
+                        var providerName =
+                            !string.IsNullOrWhiteSpace(
+                                provider.Caption)
+                                ? provider.Caption
+                                : provider.AuthenticationType;
+
+                        var providerInitial =
+                            !string.IsNullOrWhiteSpace(
+                                providerName)
+                                ? providerName
+                                    .Substring(0, 1)
+                                    .ToUpperInvariant()
+                                : "+";
+
+                        <button type="submit"
+                                class="manage-logins-provider-card"
+                                name="provider"
+                                value="@provider.AuthenticationType"
+                                title="Поврзи @providerName профил">
+
+                            <span class="manage-logins-provider-card-icon"
+                                  aria-hidden="true">
+                                @providerInitial
+                            </span>
+
+                            <span class="manage-logins-provider-card-copy">
+
+                                <small>
+                                    CONNECT ACCOUNT
+                                </small>
+
+                                <strong>
+                                    @providerName
+                                </strong>
+
+                                <span>
+                                    Додај како начин за најава
+                                </span>
+
+                            </span>
+
+                            <span class="manage-logins-provider-arrow"
+                                  aria-hidden="true">
+                                →
+                            </span>
+
+                        </button>
+                    }
+
+                </div>
             }
+
+        </section>
+    }
+
+
+    @if (!hasCurrentLogins && !hasOtherLogins)
+    {
+        <section class="manage-logins-empty"
+                 role="status">
+
+            <div class="manage-logins-empty-visual"
+                 aria-hidden="true">
+
+                <div class="manage-logins-empty-ring">
+                </div>
+
+                <div class="manage-logins-empty-icon">
+
+                    <span></span>
+                    <span></span>
+
+                </div>
+
+            </div>
+
+
+            <div class="cinema-eyebrow">
+                NO EXTERNAL PROVIDERS
+            </div>
+
+            <h2>
+                Нема конфигурирани
+                external logins
+            </h2>
+
+            <p>
+                Во моментот MovieTicket нема активни
+                надворешни authentication providers
+                достапни за поврзување.
+            </p>
+
+
+            <a class="btn btn-outline-secondary"
+               href="@Url.Action("Index", "Manage")">
+
+                <span aria-hidden="true">
+                    ←
+                </span>
+
+                Назад кон account settings
+
+            </a>
+
+        </section>
+    }
+
+
+    <section class="manage-logins-security-note">
+
+        <div class="manage-logins-security-icon"
+             aria-hidden="true">
+            ✓
+        </div>
+
+        <div>
+
+            <span>
+                ACCOUNT SECURITY
+            </span>
+
+            <strong>
+                Не го отстранувај последниот начин за најава
+            </strong>
+
+            <p>
+                MovieTicket го блокира отстранувањето кога
+                external login-от е единствениот достапен
+                начин за пристап до профилот.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<style>
+    .manage-logins-page {
+        width: 100%;
+    }
+
+
+    /* =====================================================
+       HERO
+       ===================================================== */
+
+    .manage-logins-hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        min-height: 330px;
+        align-items: center;
+        gap: 2rem;
+        padding: clamp(2rem, 5vw, 4rem);
+        overflow: hidden;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-xl);
+        background: radial-gradient( circle at 82% 30%, rgba(214, 168, 75, 0.11), transparent 27% ), radial-gradient( circle at 0% 100%, rgba(57, 99, 166, 0.14), transparent 33% ), linear-gradient( 145deg, #151e2b, #090e16 58%, #06090e );
+        box-shadow: var(--cinema-shadow);
+        isolation: isolate;
+    }
+
+        .manage-logins-hero::before {
+            position: absolute;
+            z-index: -2;
+            inset: 0;
+            content: "";
+            opacity: 0.23;
+            background-image: linear-gradient( rgba(255, 255, 255, 0.022) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px );
+            background-size: 48px 48px;
+            mask-image: linear-gradient( 90deg, #000, transparent );
+        }
+
+    .manage-logins-hero-glow {
+        position: absolute;
+        z-index: -1;
+        top: -170px;
+        right: -100px;
+        width: 430px;
+        height: 430px;
+        border-radius: 50%;
+        background: rgba(214, 168, 75, 0.06);
+        filter: blur(20px);
+    }
+
+    .manage-logins-hero-content {
+        position: relative;
+        z-index: 3;
+        max-width: 720px;
+    }
+
+    .manage-logins-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin-bottom: 2rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+        .manage-logins-back > span {
+            transition: transform var(--cinema-transition);
+        }
+
+        .manage-logins-back:hover {
+            color: var(--cinema-gold-light);
+        }
+
+            .manage-logins-back:hover > span {
+                transform: translateX(-4px);
+            }
+
+    .manage-logins-hero h1 {
+        margin-bottom: 1rem;
+        font-size: clamp( 3rem, 7vw, 5rem );
+        line-height: 0.96;
+        letter-spacing: -0.06em;
+    }
+
+    .manage-logins-hero-content > p {
+        max-width: 610px;
+        margin: 0;
+        color: var(--cinema-text-soft);
+        font-size: 0.94rem;
+        line-height: 1.75;
+    }
+
+
+    /* =====================================================
+       HERO ART
+       ===================================================== */
+
+    .manage-logins-hero-art {
+        position: relative;
+        display: grid;
+        width: 260px;
+        height: 240px;
+        place-items: center;
+    }
+
+    .manage-logins-orbit {
+        position: absolute;
+        border: 1px solid rgba(214, 168, 75, 0.09);
+        border-radius: 50%;
+        animation: manage-logins-orbit-spin 25s linear infinite;
+    }
+
+        .manage-logins-orbit::after {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            content: "";
+            border-radius: 50%;
+            background: var(--cinema-gold);
+            box-shadow: 0 0 16px rgba(214, 168, 75, 0.66);
+        }
+
+    .manage-logins-orbit-large {
+        width: 225px;
+        height: 225px;
+    }
+
+    .manage-logins-orbit-small {
+        width: 160px;
+        height: 160px;
+        animation-direction: reverse;
+        animation-duration: 18s;
+    }
+
+    .manage-logins-node {
+        position: absolute;
+        z-index: 4;
+        display: grid;
+        width: 66px;
+        height: 66px;
+        place-items: center;
+        border-radius: 20px;
+        font-weight: 900;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.32);
+    }
+
+    .manage-logins-node-primary {
+        left: 37px;
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.27);
+        background: linear-gradient( 145deg, rgba(214, 168, 75, 0.15), rgba(214, 168, 75, 0.045) );
+        font-size: 1.25rem;
+    }
+
+    .manage-logins-node-secondary {
+        right: 37px;
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.24);
+        background: linear-gradient( 145deg, rgba(66, 199, 131, 0.13), rgba(66, 199, 131, 0.04) );
+        font-size: 0.9rem;
+    }
+
+    .manage-logins-connector {
+        position: absolute;
+        z-index: 3;
+        display: flex;
+        width: 80px;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+
+        .manage-logins-connector::before {
+            position: absolute;
+            right: 0;
+            left: 0;
+            height: 1px;
+            content: "";
+            background: linear-gradient( 90deg, rgba(214, 168, 75, 0.35), rgba(66, 199, 131, 0.40) );
+        }
+
+        .manage-logins-connector > span {
+            position: relative;
+            z-index: 2;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--cinema-gold-light);
+            box-shadow: 0 0 12px rgba(214, 168, 75, 0.58);
+            animation: manage-logins-signal 1.8s ease-in-out infinite;
+        }
+
+            .manage-logins-connector > span:nth-child(2) {
+                animation-delay: 0.3s;
+            }
+
+            .manage-logins-connector > span:nth-child(3) {
+                animation-delay: 0.6s;
+            }
+
+
+    /* =====================================================
+       STATUS
+       ===================================================== */
+
+    .manage-logins-status {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+        margin-top: 1.2rem;
+        padding: 1rem 1.1rem;
+        border: 1px solid rgba(66, 199, 131, 0.17);
+        border-radius: var(--cinema-radius-md);
+        background: rgba(66, 199, 131, 0.045);
+    }
+
+    .manage-logins-status-icon {
+        display: grid;
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+        place-items: center;
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.20);
+        border-radius: 10px;
+        background: rgba(66, 199, 131, 0.07);
+        font-size: 0.65rem;
+        font-weight: 900;
+    }
+
+    .manage-logins-status span {
+        display: block;
+        margin-bottom: 0.15rem;
+        color: #8fd8ad;
+        font-size: 0.51rem;
+        font-weight: 900;
+        letter-spacing: 0.11em;
+    }
+
+    .manage-logins-status p {
+        margin: 0;
+        color: var(--cinema-text-soft);
+        font-size: 0.76rem;
+        line-height: 1.55;
+    }
+
+
+    /* =====================================================
+       OVERVIEW
+       ===================================================== */
+
+    .manage-logins-overview {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 1.2rem;
+    }
+
+    .manage-logins-stat {
+        min-width: 0;
+        padding: 1.15rem 1.25rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-lg);
+        background: linear-gradient( 145deg, rgba(20, 27, 39, 0.88), rgba(10, 14, 21, 0.93) );
+        box-shadow: var(--cinema-shadow-sm);
+    }
+
+        .manage-logins-stat > span {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.52rem;
+            font-weight: 900;
+            letter-spacing: 0.13em;
+        }
+
+        .manage-logins-stat > strong {
+            display: block;
+            color: var(--cinema-text);
+            font-size: 1.45rem;
+        }
+
+        .manage-logins-stat > small {
+            display: block;
+            margin-top: 0.2rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.62rem;
+        }
+
+    .manage-logins-stat-status {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-height: 35px;
+        color: #96ddb3;
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+    }
+
+        .manage-logins-stat-status i {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cinema-success);
+            box-shadow: 0 0 12px rgba(66, 199, 131, 0.55);
+        }
+
+
+    /* =====================================================
+       SECTIONS
+       ===================================================== */
+
+    .manage-logins-section {
+        margin-top: clamp(3rem, 6vw, 5rem);
+    }
+
+    .manage-logins-connect-section {
+        margin-top: 3rem;
+    }
+
+    .manage-logins-section-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-bottom: 1.4rem;
+    }
+
+        .manage-logins-section-heading h2 {
+            margin: 0;
+            font-size: clamp( 1.8rem, 4vw, 2.5rem );
+        }
+
+        .manage-logins-section-heading > p {
+            max-width: 440px;
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.75rem;
+            line-height: 1.65;
+            text-align: right;
+        }
+
+
+    /* =====================================================
+       CURRENT LOGINS
+       ===================================================== */
+
+    .manage-logins-list {
+        display: grid;
+        gap: 0.8rem;
+    }
+
+    .manage-login-card {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) minmax(190px, auto);
+        align-items: center;
+        gap: 1.2rem;
+        padding: 1.2rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-lg);
+        background: linear-gradient( 145deg, rgba(20, 27, 39, 0.87), rgba(9, 13, 20, 0.94) );
+        box-shadow: var(--cinema-shadow-sm);
+        transition: transform var(--cinema-transition), border-color var(--cinema-transition), box-shadow var(--cinema-transition);
+    }
+
+        .manage-login-card:hover {
+            border-color: rgba(214, 168, 75, 0.19);
+            box-shadow: var(--cinema-shadow);
+            transform: translateY(-3px);
+        }
+
+    .manage-login-provider-icon {
+        display: grid;
+        flex: 0 0 56px;
+        width: 56px;
+        height: 56px;
+        place-items: center;
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.21);
+        border-radius: 16px;
+        background: rgba(214, 168, 75, 0.06);
+        font-size: 1rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .manage-login-provider-info > span {
+        display: block;
+        margin-bottom: 0.2rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.49rem;
+        font-weight: 900;
+        letter-spacing: 0.11em;
+    }
+
+    .manage-login-provider-info h3 {
+        margin: 0 0 0.4rem;
+        color: var(--cinema-text);
+        font-size: 1.05rem;
+    }
+
+    .manage-login-connected-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #90d9ae;
+        font-size: 0.62rem;
+        font-weight: 700;
+    }
+
+        .manage-login-connected-status i {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--cinema-success);
+            box-shadow: 0 0 9px rgba(66, 199, 131, 0.55);
+        }
+
+    .manage-login-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .manage-login-remove-form {
+        margin: 0;
+    }
+
+    .manage-login-remove {
+        display: inline-flex;
+        min-width: 130px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .manage-login-required {
+        display: flex;
+        max-width: 260px;
+        align-items: flex-start;
+        gap: 0.55rem;
+    }
+
+        .manage-login-required > span {
+            display: grid;
+            flex: 0 0 24px;
+            width: 24px;
+            height: 24px;
+            place-items: center;
+            color: var(--cinema-warning);
+            border: 1px solid rgba(246, 200, 95, 0.18);
+            border-radius: 50%;
+            background: rgba(246, 200, 95, 0.05);
+            font-family: Georgia, serif;
+            font-size: 0.62rem;
+        }
+
+        .manage-login-required p {
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.64rem;
+            line-height: 1.5;
+        }
+
+
+    /* =====================================================
+       AVAILABLE PROVIDERS
+       ===================================================== */
+
+    .manage-logins-connect-form {
+        margin: 0;
+    }
+
+    .manage-logins-provider-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+    }
+
+    .manage-logins-provider-card {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.9rem;
+        width: 100%;
+        padding: 1.1rem;
+        text-align: left;
+        color: inherit;
+        cursor: pointer;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-lg);
+        background: linear-gradient( 145deg, rgba(20, 27, 39, 0.87), rgba(9, 13, 20, 0.94) );
+        box-shadow: var(--cinema-shadow-sm);
+        transition: transform var(--cinema-transition), border-color var(--cinema-transition), background-color var(--cinema-transition), box-shadow var(--cinema-transition);
+    }
+
+        .manage-logins-provider-card:hover {
+            border-color: rgba(214, 168, 75, 0.23);
+            box-shadow: var(--cinema-shadow);
+            transform: translateY(-3px);
+        }
+
+        .manage-logins-provider-card:focus-visible {
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(214, 168, 75, 0.14);
+        }
+
+    .manage-logins-provider-card-icon {
+        display: grid;
+        width: 48px;
+        height: 48px;
+        place-items: center;
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.18);
+        border-radius: 14px;
+        background: rgba(214, 168, 75, 0.055);
+        font-size: 0.88rem;
+        font-weight: 900;
+    }
+
+    .manage-logins-provider-card-copy {
+        min-width: 0;
+    }
+
+        .manage-logins-provider-card-copy > small {
+            display: block;
+            margin-bottom: 0.15rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.48rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+        }
+
+        .manage-logins-provider-card-copy > strong {
+            display: block;
+            color: var(--cinema-text);
+            font-size: 0.84rem;
+        }
+
+        .manage-logins-provider-card-copy > span {
+            display: block;
+            margin-top: 0.2rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.62rem;
+        }
+
+    .manage-logins-provider-arrow {
+        color: var(--cinema-gold-light);
+        font-size: 1rem;
+        transition: transform var(--cinema-transition);
+    }
+
+    .manage-logins-provider-card:hover
+    .manage-logins-provider-arrow {
+        transform: translateX(4px);
+    }
+
+
+    /* =====================================================
+       EMPTY STATE
+       ===================================================== */
+
+    .manage-logins-empty {
+        margin-top: 2rem;
+        padding: clamp(2.5rem, 6vw, 4.5rem);
+        text-align: center;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-xl);
+        background: radial-gradient( circle at 50% 15%, rgba(214, 168, 75, 0.06), transparent 28% ), rgba(255, 255, 255, 0.015);
+    }
+
+    .manage-logins-empty-visual {
+        position: relative;
+        display: grid;
+        width: 130px;
+        height: 130px;
+        margin: 0 auto 1.7rem;
+        place-items: center;
+    }
+
+    .manage-logins-empty-ring {
+        position: absolute;
+        width: 125px;
+        height: 125px;
+        border: 1px solid rgba(214, 168, 75, 0.10);
+        border-radius: 50%;
+    }
+
+    .manage-logins-empty-icon {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .manage-logins-empty-icon > span {
+            display: block;
+            width: 25px;
+            height: 25px;
+            border: 2px solid var(--cinema-gold-light);
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+
+            .manage-logins-empty-icon > span:first-child::after {
+                position: absolute;
+                top: 11px;
+                left: 21px;
+                width: 13px;
+                height: 2px;
+                content: "";
+                background: var(--cinema-gold-light);
+            }
+
+    .manage-logins-empty h2 {
+        margin-bottom: 0.8rem;
+        color: var(--cinema-text);
+    }
+
+    .manage-logins-empty > p {
+        max-width: 520px;
+        margin: 0 auto 1.5rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.8rem;
+        line-height: 1.7;
+    }
+
+
+    /* =====================================================
+       SECURITY NOTE
+       ===================================================== */
+
+    .manage-logins-security-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.9rem;
+        margin-top: 1.2rem;
+        padding: 1.1rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-lg);
+        background: rgba(255, 255, 255, 0.018);
+    }
+
+    .manage-logins-security-icon {
+        display: grid;
+        flex: 0 0 38px;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.18);
+        border-radius: 11px;
+        background: rgba(66, 199, 131, 0.055);
+        font-size: 0.65rem;
+        font-weight: 900;
+    }
+
+    .manage-logins-security-note
+    div:last-child > span {
+        display: block;
+        margin-bottom: 0.15rem;
+        color: #8fd8ad;
+        font-size: 0.5rem;
+        font-weight: 900;
+        letter-spacing: 0.11em;
+    }
+
+    .manage-logins-security-note strong {
+        display: block;
+        color: var(--cinema-text);
+        font-size: 0.78rem;
+    }
+
+    .manage-logins-security-note p {
+        max-width: 760px;
+        margin: 0.25rem 0 0;
+        color: var(--cinema-text-muted);
+        font-size: 0.67rem;
+        line-height: 1.6;
+    }
+
+
+    /* =====================================================
+       ANIMATIONS
+       ===================================================== */
+
+    @@keyframes manage-logins-orbit-spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
         }
     }
-</main>
+
+    @@keyframes manage-logins-signal {
+        0%,
+        100% {
+            opacity: 0.25;
+            transform: scale(0.75);
+        }
+
+        50% {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @@media (max-width: 900px) {
+        .manage-logins-hero {
+            grid-template-columns: 1fr;
+            min-height: 0;
+        }
+
+        .manage-logins-hero-art {
+            display: none;
+        }
+
+        .manage-logins-provider-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 760px) {
+        .manage-logins-overview {
+            grid-template-columns: 1fr;
+        }
+
+        .manage-logins-section-heading {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+            .manage-logins-section-heading > p {
+                max-width: 600px;
+                text-align: left;
+            }
+
+        .manage-login-card {
+            grid-template-columns: auto minmax(0, 1fr);
+        }
+
+        .manage-login-actions {
+            grid-column: 1 / -1;
+            justify-content: flex-start;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--cinema-border);
+        }
+
+        .manage-login-remove-form,
+        .manage-login-remove {
+            width: 100%;
+        }
+
+        .manage-login-required {
+            max-width: none;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .manage-logins-hero {
+            padding: 2rem 1.2rem;
+            border-radius: var(--cinema-radius-lg);
+        }
+
+            .manage-logins-hero h1 {
+                font-size: 3rem;
+            }
+
+        .manage-login-card {
+            padding: 1rem;
+        }
+
+        .manage-login-provider-icon {
+            width: 48px;
+            height: 48px;
+        }
+
+        .manage-logins-empty {
+            padding: 2.5rem 1.2rem;
+            border-radius: var(--cinema-radius-lg);
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .manage-logins-orbit,
+        .manage-logins-connector > span {
+            animation: none;
+        }
+
+        .manage-login-card,
+        .manage-logins-provider-card {
+            transition: none;
+        }
+    }
+</style>

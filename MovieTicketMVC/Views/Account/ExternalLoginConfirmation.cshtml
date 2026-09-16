@@ -1,38 +1,993 @@
-﻿@model MovieTicketMVC.Models.ExternalLoginConfirmationViewModel
+﻿@using System
+@model MovieTicketMVC.Models.ExternalLoginConfirmationViewModel
+
 @{
-    ViewBag.Title = "Register";
-}
-<main aria-labelledby="title">
-    <h2 id="title">@ViewBag.Title.</h2>
-    <h3>Associate your @ViewBag.LoginProvider account.</h3>
+    ViewBag.Title = "Заврши регистрација";
 
-    @using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+    var providerName =
+        ViewBag.LoginProvider as string;
+
+    if (string.IsNullOrWhiteSpace(providerName))
     {
-        @Html.AntiForgeryToken()
-
-        <h4>Association Form</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <p class="text-info">
-            You've successfully authenticated with <strong>@ViewBag.LoginProvider</strong>.
-            Please enter a user name for this site below and click the Register button to finish
-            logging in.
-        </p>
-        <div class="row">
-            @Html.LabelFor(m => m.Email, new { @class = "col-md-2 col-form-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="row">
-            <div class="offset-md-2 col-md-10">
-                <input type="submit" class="btn btn-outline-dark" value="Register" />
-            </div>
-        </div>
+        providerName =
+            "External provider";
     }
+}
+
+<main class="external-confirm-page"
+      aria-labelledby="external-confirm-title">
+
+    <section class="external-confirm-shell">
+
+        <div class="external-confirm-visual"
+             aria-hidden="true">
+
+            <div class="external-confirm-grid">
+            </div>
+
+            <div class="external-confirm-orbit
+                        external-confirm-orbit-large">
+            </div>
+
+            <div class="external-confirm-orbit
+                        external-confirm-orbit-small">
+            </div>
+
+
+            <div class="external-confirm-link-art">
+
+                <div class="external-confirm-account">
+                    <span>
+                        M
+                    </span>
+                </div>
+
+                <div class="external-confirm-link-line">
+
+                    <span></span>
+
+                    <span></span>
+
+                    <span></span>
+
+                </div>
+
+                <div class="external-confirm-provider">
+                    <span>
+                        ✓
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="external-confirm-visual-copy">
+
+                <span>
+                    ACCOUNT CONNECTION
+                </span>
+
+                <strong>
+                    Успешно поврзување
+                </strong>
+
+                <p>
+                    External authentication е завршена.
+                    Потребен е уште само e-mail за
+                    MovieTicket профилот.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="external-confirm-content">
+
+            <a class="external-confirm-brand"
+               href="@Url.Action("Index", "Home")">
+
+                <span></span>
+
+                MOVIETICKET
+            </a>
+
+
+            <div class="external-confirm-progress"
+                 aria-label="Процес за регистрација">
+
+                <div class="external-confirm-step completed">
+
+                    <span aria-hidden="true">
+                        ✓
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Authentication
+                        </strong>
+
+                        <small>
+                            Потврдено
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="external-confirm-progress-line">
+                </div>
+
+
+                <div class="external-confirm-step active">
+
+                    <span>
+                        02
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            MovieTicket
+                        </strong>
+
+                        <small>
+                            Заврши профил
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="external-confirm-heading">
+
+                <div class="cinema-eyebrow">
+                    COMPLETE YOUR ACCOUNT
+                </div>
+
+                <h1 id="external-confirm-title">
+                    Уште еден
+                    <span class="cinema-text-gradient">
+                        чекор
+                    </span>
+                </h1>
+
+                <p>
+                    Потврди ја e-mail адресата што сакаш
+                    да биде поврзана со твојот
+                    MovieTicket профил.
+                </p>
+
+            </div>
+
+
+            <div class="external-provider-success">
+
+                <div class="external-provider-success-icon"
+                     aria-hidden="true">
+                    ✓
+                </div>
+
+                <div>
+
+                    <span>
+                        AUTHENTICATED WITH
+                    </span>
+
+                    <strong>
+                        @providerName
+                    </strong>
+
+                    <p>
+                        Надворешната автентикација
+                        е успешно завршена.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            @using (Html.BeginForm(
+                "ExternalLoginConfirmation",
+                "Account",
+                new
+                {
+                    ReturnUrl =
+                        ViewBag.ReturnUrl
+                },
+                FormMethod.Post,
+                new
+                {
+                    role = "form",
+                    id = "externalConfirmationForm",
+                    @class = "external-confirm-form"
+                }))
+            {
+                @Html.AntiForgeryToken()
+
+
+                @Html.ValidationSummary(
+                    true,
+                    "",
+                    new
+                    {
+                        @class =
+                            "validation-summary-errors external-confirm-validation"
+                    })
+
+
+                <div class="form-group">
+
+                    @Html.LabelFor(
+                        m => m.Email,
+                        "E-mail адреса",
+                        new
+                        {
+                            @class =
+                                "form-label"
+                        })
+
+
+                    <div class="external-confirm-input-wrapper">
+
+                        <span class="external-confirm-input-icon"
+                              aria-hidden="true">
+                            &#64;
+                        </span>
+
+                        @Html.TextBoxFor(
+                            m => m.Email,
+                            new
+                            {
+                                @class =
+                                    "form-control external-confirm-input",
+                                type =
+                                    "email",
+                                autocomplete =
+                                    "email",
+                                placeholder =
+                                    "name@example.com",
+                                autofocus =
+                                    "autofocus"
+                            })
+
+                    </div>
+
+
+                    @Html.ValidationMessageFor(
+                        m => m.Email,
+                        "",
+                        new
+                        {
+                            @class =
+                                "text-danger"
+                        })
+
+
+                    <small class="external-confirm-email-help">
+                        Оваа адреса ќе биде користена за
+                        твојот MovieTicket профил и
+                        известувањата за билетите.
+                    </small>
+
+                </div>
+
+
+                <button type="submit"
+                        id="externalConfirmButton"
+                        class="btn btn-primary external-confirm-submit">
+
+                    <span id="externalConfirmButtonText">
+                        Заврши регистрација
+                    </span>
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
+
+                </button>
+            }
+
+
+            <div class="external-confirm-security">
+
+                <span aria-hidden="true">
+                    ✓
+                </span>
+
+                <p>
+                    Со продолжување, external account-от
+                    ќе биде поврзан со MovieTicket профилот
+                    креиран со оваа e-mail адреса.
+                </p>
+
+            </div>
+
+
+            <div class="external-confirm-back">
+
+                <span aria-hidden="true">
+                    ←
+                </span>
+
+                @Html.ActionLink(
+                    "Назад кон најава",
+                    "Login",
+                    "Account")
+
+            </div>
+
+        </div>
+
+    </section>
+
 </main>
 
-@section Scripts {
+
+@section Scripts
+{
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        (function () {
+            var form =
+                document.getElementById(
+                    "externalConfirmationForm");
+
+            var button =
+                document.getElementById(
+                    "externalConfirmButton");
+
+            var buttonText =
+                document.getElementById(
+                    "externalConfirmButtonText");
+
+
+            if (
+                !form ||
+                !button ||
+                !buttonText
+            ) {
+                return;
+            }
+
+
+            form.addEventListener(
+                "submit",
+                function () {
+
+                    if (
+                        typeof $ !== "undefined" &&
+                        $.validator &&
+                        !$(form).valid()
+                    ) {
+                        return;
+                    }
+
+                    button.disabled =
+                        true;
+
+                    buttonText.textContent =
+                        "Се креира профил...";
+                });
+        })();
+    </script>
 }
+
+
+<style>
+    .external-confirm-page {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .external-confirm-shell {
+        display: grid;
+        grid-template-columns: minmax(300px, 0.85fr) minmax(430px, 1.15fr);
+        width: min(100%, 980px);
+        min-height: 680px;
+        overflow: hidden;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-xl);
+        background: #090d13;
+        box-shadow: var(--cinema-shadow-lg);
+    }
+
+
+    /* =====================================================
+       VISUAL
+       ===================================================== */
+
+    .external-confirm-visual {
+        position: relative;
+        display: grid;
+        min-width: 0;
+        place-items: center;
+        overflow: hidden;
+        border-right: 1px solid var(--cinema-border);
+        background: radial-gradient( circle at 50% 40%, rgba(214, 168, 75, 0.12), transparent 31% ), radial-gradient( circle at 0% 100%, rgba(60, 103, 171, 0.15), transparent 33% ), linear-gradient( 145deg, #151e2b, #0a0f17 58%, #06090e );
+        isolation: isolate;
+    }
+
+    .external-confirm-grid {
+        position: absolute;
+        z-index: -2;
+        inset: 0;
+        opacity: 0.25;
+        background-image: linear-gradient( rgba(255, 255, 255, 0.022) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px );
+        background-size: 44px 44px;
+    }
+
+
+    /* =====================================================
+       CONNECTION ART
+       ===================================================== */
+
+    .external-confirm-link-art {
+        position: absolute;
+        top: 155px;
+        left: 50%;
+        z-index: 4;
+        display: flex;
+        align-items: center;
+        transform: translateX(-50%);
+    }
+
+    .external-confirm-account,
+    .external-confirm-provider {
+        display: grid;
+        flex: 0 0 74px;
+        width: 74px;
+        height: 74px;
+        place-items: center;
+        border-radius: 22px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.30);
+    }
+
+    .external-confirm-account {
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.26);
+        background: linear-gradient( 145deg, rgba(214, 168, 75, 0.14), rgba(214, 168, 75, 0.04) );
+    }
+
+        .external-confirm-account > span {
+            font-size: 1.35rem;
+            font-weight: 900;
+            letter-spacing: -0.06em;
+        }
+
+    .external-confirm-provider {
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.25);
+        background: linear-gradient( 145deg, rgba(66, 199, 131, 0.13), rgba(66, 199, 131, 0.04) );
+        font-size: 1.15rem;
+        font-weight: 900;
+    }
+
+    .external-confirm-link-line {
+        position: relative;
+        display: flex;
+        width: 90px;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+
+        .external-confirm-link-line::before {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            left: 0;
+            height: 1px;
+            content: "";
+            background: linear-gradient( 90deg, rgba(214, 168, 75, 0.32), rgba(66, 199, 131, 0.40) );
+            transform: translateY(-50%);
+        }
+
+        .external-confirm-link-line > span {
+            position: relative;
+            z-index: 2;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--cinema-gold-light);
+            box-shadow: 0 0 12px rgba(214, 168, 75, 0.55);
+            animation: external-confirm-pulse 1.8s ease-in-out infinite;
+        }
+
+            .external-confirm-link-line > span:nth-child(2) {
+                animation-delay: 0.3s;
+            }
+
+            .external-confirm-link-line > span:nth-child(3) {
+                animation-delay: 0.6s;
+            }
+
+
+    /* =====================================================
+       VISUAL COPY
+       ===================================================== */
+
+    .external-confirm-visual-copy {
+        position: absolute;
+        right: 2rem;
+        bottom: 3rem;
+        left: 2rem;
+        z-index: 4;
+        text-align: center;
+    }
+
+        .external-confirm-visual-copy > span {
+            display: block;
+            margin-bottom: 0.45rem;
+            color: var(--cinema-gold-light);
+            font-size: 0.55rem;
+            font-weight: 900;
+            letter-spacing: 0.16em;
+        }
+
+        .external-confirm-visual-copy strong {
+            display: block;
+            color: var(--cinema-text);
+            font-size: 1.3rem;
+        }
+
+        .external-confirm-visual-copy p {
+            max-width: 280px;
+            margin: 0.55rem auto 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.72rem;
+            line-height: 1.6;
+        }
+
+
+    /* =====================================================
+       ORBITS
+       ===================================================== */
+
+    .external-confirm-orbit {
+        position: absolute;
+        border: 1px solid rgba(214, 168, 75, 0.08);
+        border-radius: 50%;
+        animation: external-confirm-orbit-spin 26s linear infinite;
+    }
+
+        .external-confirm-orbit::after {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            width: 9px;
+            height: 9px;
+            content: "";
+            border-radius: 50%;
+            background: var(--cinema-gold);
+            box-shadow: 0 0 18px rgba(214, 168, 75, 0.7);
+        }
+
+    .external-confirm-orbit-large {
+        top: 75px;
+        left: 50%;
+        width: 330px;
+        height: 330px;
+        transform: translateX(-50%);
+    }
+
+    .external-confirm-orbit-small {
+        top: 125px;
+        left: 50%;
+        width: 230px;
+        height: 230px;
+        animation-direction: reverse;
+        animation-duration: 19s;
+        transform: translateX(-50%);
+    }
+
+
+    /* =====================================================
+       CONTENT
+       ===================================================== */
+
+    .external-confirm-content {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        justify-content: center;
+        padding: clamp(2rem, 6vw, 4rem);
+        background: linear-gradient( 180deg, rgba(14, 19, 28, 0.99), rgba(8, 11, 17, 0.99) );
+    }
+
+
+    /* =====================================================
+       BRAND
+       ===================================================== */
+
+    .external-confirm-brand {
+        display: inline-flex;
+        align-self: flex-start;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 2.2rem;
+        color: var(--cinema-text);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.17em;
+    }
+
+        .external-confirm-brand:hover {
+            color: var(--cinema-gold-light);
+        }
+
+        .external-confirm-brand > span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cinema-gold);
+            box-shadow: 0 0 0 5px rgba(214, 168, 75, 0.09), 0 0 18px rgba(214, 168, 75, 0.55);
+        }
+
+
+    /* =====================================================
+       PROGRESS
+       ===================================================== */
+
+    .external-confirm-progress {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .external-confirm-step {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        opacity: 0.35;
+    }
+
+        .external-confirm-step.active,
+        .external-confirm-step.completed {
+            opacity: 1;
+        }
+
+        .external-confirm-step > span {
+            display: grid;
+            flex: 0 0 32px;
+            width: 32px;
+            height: 32px;
+            place-items: center;
+            color: var(--cinema-text-muted);
+            border: 1px solid var(--cinema-border-strong);
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 0.54rem;
+            font-weight: 900;
+        }
+
+        .external-confirm-step.completed > span {
+            color: #9ae8bd;
+            border-color: rgba(66, 199, 131, 0.25);
+            background: rgba(66, 199, 131, 0.07);
+        }
+
+        .external-confirm-step.active > span {
+            color: var(--cinema-gold-light);
+            border-color: rgba(214, 168, 75, 0.30);
+            background: rgba(214, 168, 75, 0.07);
+        }
+
+        .external-confirm-step strong {
+            display: block;
+            color: var(--cinema-text-soft);
+            font-size: 0.66rem;
+        }
+
+        .external-confirm-step small {
+            display: block;
+            margin-top: 0.05rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.56rem;
+        }
+
+    .external-confirm-progress-line {
+        width: 60px;
+        height: 1px;
+        margin: 0 0.8rem;
+        background: linear-gradient( 90deg, rgba(66, 199, 131, 0.48), rgba(214, 168, 75, 0.48) );
+    }
+
+
+    /* =====================================================
+       HEADING
+       ===================================================== */
+
+    .external-confirm-heading {
+        margin-bottom: 1.4rem;
+    }
+
+        .external-confirm-heading h1 {
+            margin-bottom: 0.9rem;
+            font-size: clamp( 2.3rem, 5vw, 3.4rem );
+            line-height: 1.02;
+            letter-spacing: -0.05em;
+        }
+
+        .external-confirm-heading p {
+            max-width: 500px;
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.84rem;
+            line-height: 1.7;
+        }
+
+
+    /* =====================================================
+       PROVIDER SUCCESS
+       ===================================================== */
+
+    .external-provider-success {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        border: 1px solid rgba(66, 199, 131, 0.16);
+        border-radius: 13px;
+        background: rgba(66, 199, 131, 0.04);
+    }
+
+    .external-provider-success-icon {
+        display: grid;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.22);
+        border-radius: 12px;
+        background: rgba(66, 199, 131, 0.07);
+        font-size: 0.75rem;
+        font-weight: 900;
+    }
+
+    .external-provider-success
+    div:last-child > span {
+        display: block;
+        margin-bottom: 0.15rem;
+        color: #8cd7ab;
+        font-size: 0.51rem;
+        font-weight: 900;
+        letter-spacing: 0.11em;
+    }
+
+    .external-provider-success strong {
+        display: block;
+        color: var(--cinema-text);
+        font-size: 0.82rem;
+    }
+
+    .external-provider-success p {
+        margin: 0.25rem 0 0;
+        color: var(--cinema-text-muted);
+        font-size: 0.67rem;
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+       FORM
+       ===================================================== */
+
+    .external-confirm-validation {
+        margin-bottom: 1rem;
+    }
+
+        .external-confirm-validation:empty {
+            display: none;
+        }
+
+    .external-confirm-input-wrapper {
+        position: relative;
+    }
+
+    .external-confirm-input {
+        min-height: 52px;
+        padding-left: 3rem;
+    }
+
+    .external-confirm-input-icon {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        left: 1rem;
+        display: grid;
+        width: 20px;
+        height: 20px;
+        place-items: center;
+        color: var(--cinema-text-muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+        pointer-events: none;
+        transform: translateY(-50%);
+    }
+
+    .external-confirm-email-help {
+        display: block;
+        margin-top: 0.45rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.65rem;
+        line-height: 1.5;
+    }
+
+    .external-confirm-submit {
+        display: flex;
+        width: 100%;
+        min-height: 52px;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 0.4rem;
+        padding-right: 1.1rem;
+        padding-left: 1.1rem;
+    }
+
+        .external-confirm-submit > span:last-child {
+            transition: transform var(--cinema-transition);
+        }
+
+        .external-confirm-submit:hover > span:last-child {
+            transform: translateX(5px);
+        }
+
+
+    /* =====================================================
+       SECURITY
+       ===================================================== */
+
+    .external-confirm-security {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        margin-top: 1.5rem;
+        padding: 0.8rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: 11px;
+        background: rgba(255, 255, 255, 0.018);
+    }
+
+        .external-confirm-security > span {
+            display: grid;
+            flex: 0 0 25px;
+            width: 25px;
+            height: 25px;
+            place-items: center;
+            color: #9ae8bd;
+            border: 1px solid rgba(66, 199, 131, 0.18);
+            border-radius: 50%;
+            background: rgba(66, 199, 131, 0.06);
+            font-size: 0.58rem;
+            font-weight: 900;
+        }
+
+        .external-confirm-security p {
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.66rem;
+            line-height: 1.55;
+        }
+
+
+    /* =====================================================
+       BACK
+       ===================================================== */
+
+    .external-confirm-back {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        margin-top: 1.5rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.75rem;
+    }
+
+        .external-confirm-back > span {
+            transition: transform var(--cinema-transition);
+        }
+
+        .external-confirm-back a {
+            color: var(--cinema-text-soft);
+            font-weight: 700;
+        }
+
+        .external-confirm-back:hover > span {
+            transform: translateX(-4px);
+        }
+
+        .external-confirm-back a:hover {
+            color: var(--cinema-gold-light);
+        }
+
+
+    /* =====================================================
+       ANIMATIONS
+       ===================================================== */
+
+    @@keyframes external-confirm-orbit-spin {
+        from {
+            transform: translateX(-50%) rotate(0deg);
+        }
+
+        to {
+            transform: translateX(-50%) rotate(360deg);
+        }
+    }
+
+    @@keyframes external-confirm-pulse {
+        0%,
+        100% {
+            opacity: 0.25;
+            transform: scale(0.75);
+        }
+
+        50% {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @@media (max-width: 820px) {
+        .external-confirm-shell {
+            grid-template-columns: 1fr;
+            min-height: 0;
+        }
+
+        .external-confirm-visual {
+            display: none;
+        }
+
+        .external-confirm-content {
+            min-height: 640px;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .external-confirm-shell {
+            border-radius: var(--cinema-radius-lg);
+        }
+
+        .external-confirm-content {
+            min-height: 0;
+            padding: 2rem 1.2rem;
+        }
+
+        .external-confirm-step div {
+            display: none;
+        }
+
+        .external-confirm-progress-line {
+            flex: 1;
+            width: auto;
+            margin: 0 0.6rem;
+        }
+
+        .external-confirm-heading h1 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .external-confirm-orbit,
+        .external-confirm-link-line > span {
+            animation: none;
+        }
+    }
+</style>

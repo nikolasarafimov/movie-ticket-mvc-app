@@ -1,70 +1,949 @@
-﻿@model IEnumerable<MovieTicketMVC.Models.Ticket>
+﻿@using System
+@using System.Collections.Generic
+@using System.Linq
+@using System.Text.RegularExpressions
+@model IEnumerable<MovieTicketMVC.Models.Ticket>
 
 @{
-    ViewBag.Title = "All Tickets";
+    var isAdmin =
+        User != null &&
+        User.Identity != null &&
+        User.Identity.IsAuthenticated &&
+        User.IsInRole("Admin");
+
+    ViewBag.Title =
+        isAdmin
+            ? "Сите билети"
+            : "Мои билети";
+
+    var tickets =
+        Model != null
+            ? Model.ToList()
+            : new List<MovieTicketMVC.Models.Ticket>();
+
+    var seatPattern =
+        new Regex(
+            @"^R([1-9]|10)C([1-9]|10)$",
+            RegexOptions.IgnoreCase);
+
+    var upcomingTickets =
+        0;
+
+    foreach (var ticket in tickets)
+    {
+        var projectionDateTime =
+            ticket.SelectedDay.Date;
+
+        TimeSpan projectionTime;
+
+        if (TimeSpan.TryParse(
+                ticket.SelectedTime,
+                out projectionTime))
+        {
+            projectionDateTime =
+                projectionDateTime.Add(
+                    projectionTime);
+        }
+
+        if (projectionDateTime >= DateTime.Now)
+        {
+            upcomingTickets++;
+        }
+    }
+
+    var totalValue =
+        tickets.Any()
+            ? tickets.Sum(ticket => ticket.TotalPrice)
+            : 0;
 }
 
-<h2>Историја на купени билети</h2>
+<main class="ticket-wallet-page"
+      aria-labelledby="ticket-wallet-title">
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Филм</th>
-            <th>Датум</th>
-            <th>Време</th>
-            <th>Седишта</th>
-            <th>Цена</th>
-            <th>Емаил</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var t in Model)
-        {
-            <tr>
-                <td>@t.Movie.Title</td>
-                <td>@t.SelectedDay.ToString("dd.MM.yyyy")</td>
-                <td>@t.SelectedTime</td>
-                <td>
-                    @if (!string.IsNullOrEmpty(t.SelectedSeats))
+    <section class="ticket-wallet-hero">
+
+        <div>
+
+            <div class="cinema-eyebrow">
+                @(isAdmin
+                    ? "ADMIN · TICKET MANAGEMENT"
+                    : "MY MOVIETICKET WALLET")
+            </div>
+
+            <h1 id="ticket-wallet-title">
+                @(isAdmin
+                    ? "Сите купени "
+                    : "Мои ")
+
+                <span class="cinema-text-gradient">
+                    билети
+                </span>
+            </h1>
+
+            <p>
+                @(isAdmin
+                    ? "Преглед на сите резервации направени преку MovieTicket."
+                    : "Сите твои кино резервации се организирани на едно место.")
+            </p>
+
+        </div>
+
+
+        <div class="ticket-wallet-stats">
+
+            <div class="ticket-wallet-stat">
+
+                <span>
+                    ВКУПНО
+                </span>
+
+                <strong>
+                    @tickets.Count
+                </strong>
+
+                <small>
+                    билети
+                </small>
+
+            </div>
+
+
+            <div class="ticket-wallet-stat">
+
+                <span>
+                    ПРЕТСТОЈНИ
+                </span>
+
+                <strong>
+                    @upcomingTickets
+                </strong>
+
+                <small>
+                    проекции
+                </small>
+
+            </div>
+
+
+            <div class="ticket-wallet-stat">
+
+                <span>
+                    @(isAdmin
+                        ? "ВРЕДНОСТ"
+                        : "ВКУПНО")
+
+                </span>
+
+                <strong class="ticket-wallet-price">
+                    @totalValue
+                </strong>
+
+                <small>
+                    ден.
+                </small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    @if (tickets.Any())
+    {
+        <section class="ticket-wallet-grid"
+                 aria-label="Купени билети">
+
+            @foreach (var ticket in tickets)
+            {
+                var groupedSeats =
+                    new SortedDictionary<int, List<int>>();
+
+                var invalidSeats =
+                    new List<string>();
+
+                var seatCount =
+                    0;
+
+                if (!string.IsNullOrWhiteSpace(
+                        ticket.SelectedSeats))
+                {
+                    var seatIds =
+                        ticket.SelectedSeats.Split(
+                            new[] { ',' },
+                            StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var rawSeatId in seatIds)
                     {
-                        var seatData = t.SelectedSeats
-                            .Split(',')
-                            .Select(seatId =>
-                            {
-                                var parts = seatId.Split('C');
-                                var rowPart = parts[0].Substring(1); // remove 'R'
-                                var colPart = parts[1];
+                        var seatId =
+                            rawSeatId
+                                .Trim()
+                                .ToUpperInvariant();
 
-                                return new
-                                {
-                                    Row = int.Parse(rowPart),
-                                    Col = int.Parse(colPart)
-                                };
-                            })
-                            .ToList();
+                        var match =
+                            seatPattern.Match(
+                                seatId);
 
-                        var seatGroups = seatData
-                            .GroupBy(s => s.Row)
-                            .OrderBy(g => g.Key); 
-
-                        foreach (var group in seatGroups)
+                        if (!match.Success)
                         {
-                            var columns = group
-                                .OrderBy(x => x.Col)
-                                .Select(x => x.Col)
-                                .ToList();
+                            invalidSeats.Add(
+                                seatId);
 
-                            <p>Ред @group.Key: @string.Join(", ", columns)</p>
+                            continue;
+                        }
+
+                        int row;
+                        int column;
+
+                        if (!int.TryParse(
+                                match.Groups[1].Value,
+                                out row) ||
+                            !int.TryParse(
+                                match.Groups[2].Value,
+                                out column))
+                        {
+                            invalidSeats.Add(
+                                seatId);
+
+                            continue;
+                        }
+
+                        if (!groupedSeats.ContainsKey(
+                                row))
+                        {
+                            groupedSeats[row] =
+                                new List<int>();
+                        }
+
+                        if (!groupedSeats[row].Contains(
+                                column))
+                        {
+                            groupedSeats[row].Add(
+                                column);
+
+                            seatCount++;
                         }
                     }
-                    else
-                    {
-                        <span>Нема селектирани седишта!</span>
-                    }
-                </td>
-                <td>@t.TotalPrice ден.</td>
-                <td>@t.Email</td>
-            </tr>
+                }
+
+                var projectionDateTime =
+                    ticket.SelectedDay.Date;
+
+                TimeSpan parsedTime;
+
+                if (TimeSpan.TryParse(
+                        ticket.SelectedTime,
+                        out parsedTime))
+                {
+                    projectionDateTime =
+                        projectionDateTime.Add(
+                            parsedTime);
+                }
+
+                var isUpcoming =
+                    projectionDateTime >=
+                    DateTime.Now;
+
+                var movieTitle =
+                    ticket.Movie != null
+                        ? ticket.Movie.Title
+                        : "Непознат филм";
+
+                <article class="wallet-ticket @(isUpcoming ? "upcoming" : "past")">
+
+                    <div class="wallet-ticket-main">
+
+                        <div class="wallet-ticket-top">
+
+                            <div>
+
+                                <span class="wallet-ticket-status">
+
+                                    <span></span>
+
+                                    @(isUpcoming
+                                        ? "ПРЕТСТОЈНА ПРОЕКЦИЈА"
+                                        : "ЗАВРШЕНА ПРОЕКЦИЈА")
+
+                                </span>
+
+                                <span class="wallet-ticket-id">
+                                    TICKET #@ticket.Id
+                                </span>
+
+                            </div>
+
+                            <div class="wallet-ticket-brand">
+                                MOVIETICKET
+                            </div>
+
+                        </div>
+
+
+                        <div class="wallet-ticket-title">
+
+                            <span>
+                                MOVIE
+                            </span>
+
+                            <h2>
+                                @movieTitle
+                            </h2>
+
+                        </div>
+
+
+                        <div class="wallet-ticket-meta">
+
+                            <div>
+
+                                <span>
+                                    ДАТУМ
+                                </span>
+
+                                <strong>
+                                    @ticket.SelectedDay.ToString(
+                                        "dd.MM.yyyy")
+                                </strong>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    ТЕРМИН
+                                </span>
+
+                                <strong>
+                                    @ticket.SelectedTime
+                                </strong>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    СЕДИШТА
+                                </span>
+
+                                <strong>
+                                    @seatCount
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="wallet-ticket-seats">
+
+                            <span>
+                                ИЗБРАНИ МЕСТА
+                            </span>
+
+                            <div class="wallet-seat-list">
+
+                                @if (groupedSeats.Any())
+                                {
+                                    foreach (var group in groupedSeats)
+                                    {
+                                        var columns =
+                                            group.Value
+                                                .OrderBy(column => column)
+                                                .ToList();
+
+                                        foreach (var column in columns)
+                                        {
+                                            <span class="wallet-seat">
+                                                R@group.Key C@column
+                                            </span>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="wallet-empty-seats">
+                                        Нема селектирани седишта
+                                    </span>
+                                }
+
+                            </div>
+
+                            @if (invalidSeats.Any())
+                            {
+                                <div class="wallet-invalid-seats">
+                                    Невалидни записи:
+                                    @string.Join(
+                                        ", ",
+                                        invalidSeats)
+                                </div>
+                            }
+
+                        </div>
+
+
+                        @if (isAdmin)
+                        {
+                            <div class="wallet-ticket-customer">
+
+                                <span>
+                                    CUSTOMER
+                                </span>
+
+                                <strong>
+                                    @ticket.Email
+                                </strong>
+
+                            </div>
+                        }
+
+                    </div>
+
+
+                    <div class="wallet-ticket-stub">
+
+                        <div class="wallet-ticket-price">
+
+                            <span>
+                                TOTAL
+                            </span>
+
+                            <strong>
+                                @ticket.TotalPrice
+                            </strong>
+
+                            <small>
+                                ден.
+                            </small>
+
+                        </div>
+
+
+                        <div class="wallet-barcode"
+                             aria-hidden="true">
+
+                            @for (var barcode = 0;
+                                  barcode < 18;
+                                  barcode++)
+                            {
+                                <span></span>
+                            }
+
+                        </div>
+
+
+                        <a class="btn btn-primary wallet-ticket-action"
+                           href="@Url.Action(
+                               "Summary",
+                               "Tickets",
+                               new
+                               {
+                                   id = ticket.Id
+                               })">
+                            Детали
+                            <span aria-hidden="true">
+                                →
+                            </span>
+                        </a>
+
+                    </div>
+
+                </article>
+            }
+
+        </section>
+    }
+    else
+    {
+        <section class="cinema-empty-state ticket-wallet-empty">
+
+            <div class="ticket-wallet-empty-icon"
+                 aria-hidden="true">
+                ◇
+            </div>
+
+            <h2>
+                @(isAdmin
+                    ? "Нема купени билети"
+                    : "Твојот wallet е празен")
+            </h2>
+
+            <p>
+                @(isAdmin
+                    ? "Во моментов нема направени резервации во системот."
+                    : "Кога ќе резервираш кино билет, тој ќе се појави овде.")
+            </p>
+
+            @if (!isAdmin)
+            {
+                <a class="btn btn-primary"
+                   href="@Url.Action("Buy", "Tickets")">
+                    Купи билет
+                </a>
+            }
+
+        </section>
+    }
+
+</main>
+
+
+<style>
+    .ticket-wallet-page {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+
+    /* HERO */
+
+    .ticket-wallet-hero {
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 3rem;
+        padding: clamp(2rem, 5vw, 3.5rem);
+        overflow: hidden;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-xl);
+        background: radial-gradient( circle at 88% 10%, rgba(214, 168, 75, 0.12), transparent 30% ), radial-gradient( circle at 12% 100%, rgba(68, 104, 158, 0.10), transparent 30% ), linear-gradient( 135deg, rgba(19, 26, 38, 0.99), rgba(7, 10, 15, 0.99) );
+        box-shadow: var(--cinema-shadow);
+    }
+
+        .ticket-wallet-hero > div:first-child {
+            max-width: 720px;
         }
-    </tbody>
-</table>
+
+        .ticket-wallet-hero h1 {
+            margin-bottom: 1rem;
+        }
+
+        .ticket-wallet-hero p {
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 1.02rem;
+        }
+
+    .ticket-wallet-stats {
+        display: flex;
+        gap: 0.7rem;
+    }
+
+    .ticket-wallet-stat {
+        min-width: 100px;
+        padding: 0.9rem 1rem;
+        text-align: center;
+        border: 1px solid var(--cinema-border);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.025);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+        .ticket-wallet-stat > span {
+            display: block;
+            margin-bottom: 0.35rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.52rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+        }
+
+        .ticket-wallet-stat strong {
+            color: var(--cinema-text);
+            font-size: 1.65rem;
+            line-height: 1;
+        }
+
+            .ticket-wallet-stat strong.ticket-wallet-price {
+                color: var(--cinema-gold-light);
+            }
+
+        .ticket-wallet-stat small {
+            display: block;
+            margin-top: 0.3rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.62rem;
+        }
+
+
+    /* GRID */
+
+    .ticket-wallet-grid {
+        display: grid;
+        grid-template-columns: repeat( 2, minmax(0, 1fr) );
+        gap: 1.5rem;
+    }
+
+
+    /* TICKET */
+
+    .wallet-ticket {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 155px;
+        overflow: hidden;
+        min-height: 370px;
+        border: 1px solid var(--cinema-border);
+        border-radius: 24px;
+        background: linear-gradient( 155deg, rgba(22, 29, 41, 0.98), rgba(8, 11, 17, 0.99) );
+        box-shadow: var(--cinema-shadow);
+        transition: transform 300ms cubic-bezier( 0.22, 1, 0.36, 1 ), border-color 300ms ease, box-shadow 300ms ease;
+    }
+
+        .wallet-ticket:hover {
+            border-color: rgba(214, 168, 75, 0.25);
+            transform: translateY(-6px);
+            box-shadow: var(--cinema-shadow-lg);
+        }
+
+        .wallet-ticket.past {
+            opacity: 0.76;
+        }
+
+    .wallet-ticket-main {
+        min-width: 0;
+        padding: 1.4rem;
+    }
+
+    .wallet-ticket-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .wallet-ticket-status {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin-bottom: 0.35rem;
+        color: #9ae8bd;
+        font-size: 0.55rem;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+    }
+
+        .wallet-ticket-status > span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--cinema-success);
+            box-shadow: 0 0 12px rgba(66, 199, 131, 0.65);
+        }
+
+    .wallet-ticket.past
+    .wallet-ticket-status {
+        color: var(--cinema-text-muted);
+    }
+
+        .wallet-ticket.past
+        .wallet-ticket-status > span {
+            background: #6f7885;
+            box-shadow: none;
+        }
+
+    .wallet-ticket-id {
+        display: block;
+        color: var(--cinema-text-muted);
+        font-size: 0.58rem;
+        letter-spacing: 0.08em;
+    }
+
+    .wallet-ticket-brand {
+        color: var(--cinema-gold-light);
+        font-size: 0.57rem;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+    }
+
+    .wallet-ticket-title {
+        margin-bottom: 1.4rem;
+    }
+
+        .wallet-ticket-title > span {
+            display: block;
+            margin-bottom: 0.45rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.54rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+        }
+
+        .wallet-ticket-title h2 {
+            margin: 0;
+            font-size: clamp( 1.45rem, 2.5vw, 2rem );
+            line-height: 1.08;
+        }
+
+    .wallet-ticket-meta {
+        display: grid;
+        grid-template-columns: repeat( 3, minmax(0, 1fr) );
+        gap: 0.65rem;
+        margin-bottom: 1.2rem;
+    }
+
+        .wallet-ticket-meta > div {
+            min-width: 0;
+            padding: 0.7rem;
+            border: 1px solid var(--cinema-border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .wallet-ticket-meta span,
+        .wallet-ticket-seats > span,
+        .wallet-ticket-customer > span {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.52rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+        }
+
+        .wallet-ticket-meta strong {
+            color: var(--cinema-text-soft);
+            font-size: 0.75rem;
+        }
+
+    .wallet-ticket-seats {
+        margin-bottom: 1rem;
+    }
+
+    .wallet-seat-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+
+    .wallet-seat {
+        display: inline-flex;
+        align-items: center;
+        min-height: 26px;
+        padding: 0.2rem 0.5rem;
+        color: #a2e9c0;
+        border: 1px solid rgba(66, 199, 131, 0.18);
+        border-radius: 7px;
+        background: rgba(66, 199, 131, 0.06);
+        font-size: 0.62rem;
+        font-weight: 800;
+    }
+
+    .wallet-empty-seats {
+        color: var(--cinema-text-muted);
+        font-size: 0.7rem;
+    }
+
+    .wallet-invalid-seats {
+        margin-top: 0.5rem;
+        color: #ff8994;
+        font-size: 0.67rem;
+    }
+
+    .wallet-ticket-customer {
+        padding-top: 0.85rem;
+        border-top: 1px solid var(--cinema-border);
+    }
+
+        .wallet-ticket-customer strong {
+            display: block;
+            overflow: hidden;
+            color: var(--cinema-text-soft);
+            font-size: 0.73rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+
+    /* STUB */
+
+    .wallet-ticket-stub {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1.4rem 1rem;
+        border-left: 1px dashed rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.018);
+    }
+
+        .wallet-ticket-stub::before,
+        .wallet-ticket-stub::after {
+            position: absolute;
+            left: -13px;
+            width: 25px;
+            height: 25px;
+            content: "";
+            border: 1px solid var(--cinema-border);
+            border-radius: 50%;
+            background: var(--cinema-bg);
+        }
+
+        .wallet-ticket-stub::before {
+            top: -13px;
+        }
+
+        .wallet-ticket-stub::after {
+            bottom: -13px;
+        }
+
+    .wallet-ticket-price {
+        text-align: center;
+    }
+
+        .wallet-ticket-price > span {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.53rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+        }
+
+        .wallet-ticket-price strong {
+            display: block;
+            color: var(--cinema-gold-light);
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .wallet-ticket-price small {
+            color: var(--cinema-text-muted);
+            font-size: 0.65rem;
+        }
+
+    .wallet-barcode {
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        gap: 2px;
+        width: 90px;
+        height: 72px;
+        opacity: 0.48;
+    }
+
+        .wallet-barcode span {
+            width: 2px;
+            background: var(--cinema-text-soft);
+        }
+
+            .wallet-barcode span:nth-child(2n) {
+                width: 1px;
+            }
+
+            .wallet-barcode span:nth-child(3n) {
+                width: 4px;
+            }
+
+    .wallet-ticket-action {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-size: 0.72rem;
+    }
+
+
+    /* EMPTY */
+
+    .ticket-wallet-empty {
+        padding: clamp(3rem, 8vw, 5rem);
+    }
+
+    .ticket-wallet-empty-icon {
+        margin-bottom: 1rem;
+        color: var(--cinema-gold-light);
+        font-size: 2.8rem;
+    }
+
+
+    /* RESPONSIVE */
+
+    @@media (max-width: 1100px) {
+        .ticket-wallet-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 800px) {
+        .ticket-wallet-hero {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .ticket-wallet-stats {
+            width: 100%;
+        }
+
+        .ticket-wallet-stat {
+            flex: 1;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .ticket-wallet-hero {
+            padding: 1.6rem 1.2rem;
+        }
+
+        .ticket-wallet-stats {
+            display: grid;
+            grid-template-columns: repeat( 3, minmax(0, 1fr) );
+        }
+
+        .ticket-wallet-stat {
+            min-width: 0;
+            padding: 0.75rem 0.4rem;
+        }
+
+        .wallet-ticket {
+            grid-template-columns: 1fr;
+        }
+
+        .wallet-ticket-stub {
+            flex-direction: row;
+            padding: 1rem;
+            border-top: 1px dashed rgba(255, 255, 255, 0.14);
+            border-left: 0;
+        }
+
+            .wallet-ticket-stub::before,
+            .wallet-ticket-stub::after {
+                top: -13px;
+            }
+
+            .wallet-ticket-stub::before {
+                left: -13px;
+            }
+
+            .wallet-ticket-stub::after {
+                right: -13px;
+                left: auto;
+                bottom: auto;
+            }
+
+        .wallet-barcode {
+            display: none;
+        }
+
+        .wallet-ticket-action {
+            width: auto;
+            min-width: 120px;
+        }
+    }
+
+    @@media (max-width: 450px) {
+        .ticket-wallet-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .wallet-ticket-meta {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

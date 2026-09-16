@@ -1,102 +1,1490 @@
-﻿@model MovieTicketMVC.Models.Movie
+﻿@using System
+@model MovieTicketMVC.Models.Movie
 
 @{
-    ViewBag.Title = "Add movie";
-    var todayIso = DateTime.Today.ToString("yyyy-MM-dd");
+    ViewBag.Title = "Додади филм";
+
+    var releaseDateValue =
+        Model != null &&
+        Model.ReleaseDate != default(DateTime)
+            ? Model.ReleaseDate.ToString("yyyy-MM-dd")
+            : string.Empty;
 }
 
-<h2>Додади филм</h2>
+<main class="movie-editor-page"
+      aria-labelledby="movie-editor-title">
 
-@using (Html.BeginForm("Create", "Movies", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <section class="movie-editor-header">
 
-    <div class="form-group mb-3">
-        @Html.LabelFor(m => m.Title, "Наслов:")
-        @Html.EditorFor(m => m.Title, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
-    </div>
+        <div class="movie-editor-header-content">
 
-    <div class="form-group mb-3">
-        @Html.LabelFor(m => m.LengthInMinutes, "Должина (минути):")
-        @Html.EditorFor(m => m.LengthInMinutes, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(m => m.LengthInMinutes, "", new { @class = "text-danger" })
-    </div>
+            <div class="cinema-eyebrow">
+                ADMIN · MOVIE CATALOG
+            </div>
 
-    <div class="form-group mb-3">
-        @Html.Label("ReleaseDate", "Почеток на проекција:")
-        @Html.TextBox(
-            "ReleaseDate",      
-            "",                   
-            new
-              {
-                  @class = "form-control",
-              type = "date",
-              min = todayIso
-            }
-        )
-        @Html.ValidationMessage("ReleaseDate", "", new { @class = "text-danger" })
-    </div>
+            <h1 id="movie-editor-title">
+                Додади
+                <span class="cinema-text-gradient">
+                    нов филм
+                </span>
+            </h1>
 
-    <div class="form-group mb-3">
-        @Html.LabelFor(m => m.Description, "Опис:")
-        @Html.EditorFor(m => m.Description, new { htmlAttributes = new { @class = "form-control", rows = 3 } })
-        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
-    </div>
+            <p>
+                Внеси ги информациите за филмот, постави датум
+                на премиера и прикачи официјален trailer.
+            </p>
 
-    <div class="form-group mb-3">
-        @Html.LabelFor(m => m.Rating, "Рејтинг (0-10):")
-        @Html.EditorFor(m => m.Rating, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(m => m.Rating, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group mb-3">
-        @Html.LabelFor(m => m.Actors, "Актери (одделени со запирања):")
-        @Html.EditorFor(m => m.Actors, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(m => m.Actors, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group mb-3">
-        <label for="videoFile">Upload Trailer Video:</label>
-        <input type="file" name="videoFile" id="videoFile" class="form-control" accept="video/mp4,video/webm,video/ogg" />
-
-        @Html.ValidationMessage("videoFile", "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group mb-3">
-        @Html.LabelFor(m => m.Language, "Јазик / Произведено во:")
-        @Html.EditorFor(m => m.Language, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(m => m.Language, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group mb-3">
-        <label>Рестрикција:</label>
-        <div>
-            <label style="margin-right:20px;">
-                @Html.RadioButtonFor(m => m.IsForAdults, "true") 18+
-            </label>
-            <label>
-                @Html.RadioButtonFor(m => m.IsForAdults, "false") Под 18
-            </label>
         </div>
-        @Html.ValidationMessageFor(m => m.IsForAdults, "", new { @class = "text-danger" })
-    </div>
 
-    <div class="form-group mb-3">
-        @Html.LabelFor(m => m.Genre, "Жанр:")
-        @Html.TextBoxFor(m => m.Genre, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Genre, "", new { @class = "text-danger" })
-    </div>
+        <div class="movie-editor-header-badge"
+             aria-hidden="true">
 
-    @Html.HiddenFor(m => m.IsCurrentlyShowing, new { Value = false })
+            <span>
+                NEW
+            </span>
 
-    <div>
-        <input type="submit" value="Додади" class="btn btn-primary" style="margin-right:10px;" />
-        @Html.ActionLink("Врати се назад", "ComingSoon", "Movies", null, new { @class = "btn btn-secondary" })
-    </div>
-}
+            <strong>
+                +
+            </strong>
 
-@section Scripts {
+        </div>
+
+    </section>
+
+
+    @using (Html.BeginForm(
+        "Create",
+        "Movies",
+        FormMethod.Post,
+        new
+        {
+            enctype = "multipart/form-data",
+            role = "form",
+            id = "movieCreateForm",
+            @class = "movie-editor-form"
+        }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(
+            true,
+            "",
+            new
+            {
+                @class =
+                    "validation-summary-errors movie-editor-validation"
+            })
+
+
+        <div class="movie-editor-layout">
+
+            <div class="movie-editor-main">
+
+                <section class="cinema-panel movie-editor-section">
+
+                    <div class="movie-editor-section-heading">
+
+                        <span class="movie-editor-step">
+                            01
+                        </span>
+
+                        <div>
+                            <h2>
+                                Основни информации
+                            </h2>
+
+                            <p>
+                                Главните податоци што ќе се прикажуваат
+                                во каталогот.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="movie-editor-fields">
+
+                        <div class="form-group movie-editor-field-full">
+
+                            @Html.LabelFor(
+                                m => m.Title,
+                                "Наслов",
+                                new
+                                {
+                                    @class =
+                                        "form-label"
+                                })
+
+                            @Html.TextBoxFor(
+                                m => m.Title,
+                                new
+                                {
+                                    @class =
+                                        "form-control movie-editor-input",
+                                    autocomplete =
+                                        "off",
+                                    placeholder =
+                                        "На пример: Midnight Horizon"
+                                })
+
+                            @Html.ValidationMessageFor(
+                                m => m.Title,
+                                "",
+                                new
+                                {
+                                    @class =
+                                        "text-danger"
+                                })
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            @Html.LabelFor(
+                                m => m.Genre,
+                                "Жанр",
+                                new
+                                {
+                                    @class =
+                                        "form-label"
+                                })
+
+                            @Html.TextBoxFor(
+                                m => m.Genre,
+                                new
+                                {
+                                    @class =
+                                        "form-control",
+                                    autocomplete =
+                                        "off",
+                                    placeholder =
+                                        "Драма, Трилер..."
+                                })
+
+                            @Html.ValidationMessageFor(
+                                m => m.Genre,
+                                "",
+                                new
+                                {
+                                    @class =
+                                        "text-danger"
+                                })
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            @Html.LabelFor(
+                                m => m.Language,
+                                "Јазик / Произведено во",
+                                new
+                                {
+                                    @class =
+                                        "form-label"
+                                })
+
+                            @Html.TextBoxFor(
+                                m => m.Language,
+                                new
+                                {
+                                    @class =
+                                        "form-control",
+                                    autocomplete =
+                                        "off",
+                                    placeholder =
+                                        "Англиски"
+                                })
+
+                            @Html.ValidationMessageFor(
+                                m => m.Language,
+                                "",
+                                new
+                                {
+                                    @class =
+                                        "text-danger"
+                                })
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            @Html.LabelFor(
+                                m => m.LengthInMinutes,
+                                "Времетраење",
+                                new
+                                {
+                                    @class =
+                                        "form-label"
+                                })
+
+                            <div class="movie-editor-input-unit">
+
+                                @Html.TextBoxFor(
+                                    m => m.LengthInMinutes,
+                                    new
+                                    {
+                                        @class =
+                                            "form-control",
+                                        type =
+                                            "number",
+                                        min =
+                                            "1",
+                                        max =
+                                            "600",
+                                        placeholder =
+                                            "120"
+                                    })
+
+                                <span>
+                                    мин.
+                                </span>
+
+                            </div>
+
+                            @Html.ValidationMessageFor(
+                                m => m.LengthInMinutes,
+                                "",
+                                new
+                                {
+                                    @class =
+                                        "text-danger"
+                                })
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            @Html.LabelFor(
+                                m => m.Rating,
+                                "Оценка",
+                                new
+                                {
+                                    @class =
+                                        "form-label"
+                                })
+
+                            <div class="movie-editor-input-unit">
+
+                                @Html.TextBoxFor(
+                                    m => m.Rating,
+                                    new
+                                    {
+                                        @class =
+                                            "form-control",
+                                        type =
+                                            "number",
+                                        min =
+                                            "0",
+                                        max =
+                                            "10",
+                                        step =
+                                            "0.1",
+                                        placeholder =
+                                            "8.0"
+                                    })
+
+                                <span>
+                                    / 10
+                                </span>
+
+                            </div>
+
+                            @Html.ValidationMessageFor(
+                                m => m.Rating,
+                                "",
+                                new
+                                {
+                                    @class =
+                                        "text-danger"
+                                })
+
+                        </div>
+
+
+                        <div class="form-group movie-editor-field-full">
+
+                            @Html.LabelFor(
+                                m => m.ReleaseDate,
+                                "Датум на премиера",
+                                new
+                                {
+                                    @class =
+                                        "form-label"
+                                })
+
+                            @Html.TextBox(
+                                "ReleaseDate",
+                                releaseDateValue,
+                                new
+                                {
+                                    @class =
+                                        "form-control",
+                                    type =
+                                        "date"
+                                })
+
+                            <small class="movie-editor-help">
+                                Филмовите со иден датум автоматски
+                                се прикажуваат во „Наскоро“.
+                            </small>
+
+                            @Html.ValidationMessageFor(
+                                m => m.ReleaseDate,
+                                "",
+                                new
+                                {
+                                    @class =
+                                        "text-danger"
+                                })
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <section class="cinema-panel movie-editor-section">
+
+                    <div class="movie-editor-section-heading">
+
+                        <span class="movie-editor-step">
+                            02
+                        </span>
+
+                        <div>
+                            <h2>
+                                Содржина
+                            </h2>
+
+                            <p>
+                                Опис и актерска екипа за detail
+                                страницата на филмот.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        @Html.LabelFor(
+                            m => m.Description,
+                            "Опис",
+                            new
+                            {
+                                @class =
+                                    "form-label"
+                            })
+
+                        @Html.TextAreaFor(
+                            m => m.Description,
+                            7,
+                            50,
+                            new
+                            {
+                                @class =
+                                    "form-control movie-editor-description",
+                                placeholder =
+                                    "Краток опис на приказната..."
+                            })
+
+                        @Html.ValidationMessageFor(
+                            m => m.Description,
+                            "",
+                            new
+                            {
+                                @class =
+                                    "text-danger"
+                            })
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        @Html.LabelFor(
+                            m => m.Actors,
+                            "Актерска екипа",
+                            new
+                            {
+                                @class =
+                                    "form-label"
+                            })
+
+                        @Html.TextBoxFor(
+                            m => m.Actors,
+                            new
+                            {
+                                @class =
+                                    "form-control",
+                                autocomplete =
+                                    "off",
+                                placeholder =
+                                    "Actor One, Actor Two, Actor Three"
+                            })
+
+                        <small class="movie-editor-help">
+                            Оддели ги имињата со запирка.
+                        </small>
+
+                        @Html.ValidationMessageFor(
+                            m => m.Actors,
+                            "",
+                            new
+                            {
+                                @class =
+                                    "text-danger"
+                            })
+
+                    </div>
+
+                </section>
+
+
+                <section class="cinema-panel movie-editor-section">
+
+                    <div class="movie-editor-section-heading">
+
+                        <span class="movie-editor-step">
+                            03
+                        </span>
+
+                        <div>
+                            <h2>
+                                Возрасна категорија
+                            </h2>
+
+                            <p>
+                                Одреди дали филмот има ограничување
+                                за публика под 18 години.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <fieldset class="movie-age-selector">
+
+                        <legend class="visually-hidden">
+                            Возрасна рестрикција
+                        </legend>
+
+
+                        <label class="movie-age-option"
+                               for="IsForAdultsFalse">
+
+                            @Html.RadioButtonFor(
+                                m => m.IsForAdults,
+                                false,
+                                new
+                                {
+                                    @class =
+                                        "movie-age-radio",
+                                    id =
+                                        "IsForAdultsFalse"
+                                })
+
+                            <span class="movie-age-visual">
+
+                                <span class="movie-age-symbol">
+                                    ALL
+                                </span>
+
+                                <span class="movie-age-copy">
+
+                                    <strong>
+                                        Без рестрикција
+                                    </strong>
+
+                                    <small>
+                                        Достапен за сите возрасни категории
+                                    </small>
+
+                                </span>
+
+                            </span>
+
+                        </label>
+
+
+                        <label class="movie-age-option"
+                               for="IsForAdultsTrue">
+
+                            @Html.RadioButtonFor(
+                                m => m.IsForAdults,
+                                true,
+                                new
+                                {
+                                    @class =
+                                        "movie-age-radio",
+                                    id =
+                                        "IsForAdultsTrue"
+                                })
+
+                            <span class="movie-age-visual">
+
+                                <span class="movie-age-symbol adult">
+                                    18+
+                                </span>
+
+                                <span class="movie-age-copy">
+
+                                    <strong>
+                                        Само за возрасни
+                                    </strong>
+
+                                    <small>
+                                        Потребна е возраст од најмалку 18 години
+                                    </small>
+
+                                </span>
+
+                            </span>
+
+                        </label>
+
+
+                        <div>
+                            @Html.ValidationMessageFor(
+                                m => m.IsForAdults,
+                                "",
+                                new
+                                {
+                                    @class =
+                                        "text-danger"
+                                })
+                        </div>
+
+                    </fieldset>
+
+                </section>
+
+            </div>
+
+
+            <aside class="movie-editor-sidebar">
+
+                <section class="cinema-panel movie-upload-panel">
+
+                    <div class="movie-editor-section-heading compact">
+
+                        <span class="movie-editor-step">
+                            04
+                        </span>
+
+                        <div>
+                            <h2>
+                                Trailer
+                            </h2>
+
+                            <p>
+                                Видео за detail страницата.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <label for="videoFile"
+                           class="movie-upload-dropzone">
+
+                        <span class="movie-upload-icon"
+                              aria-hidden="true">
+                            ▶
+                        </span>
+
+                        <strong>
+                            Избери trailer видео
+                        </strong>
+
+                        <span>
+                            MP4, WebM или Ogg
+                        </span>
+
+                        <small>
+                            Максимум 200 MB
+                        </small>
+
+                        <span class="btn btn-outline-primary btn-sm movie-upload-button">
+                            Избери датотека
+                        </span>
+
+                    </label>
+
+
+                    <input type="file"
+                           name="videoFile"
+                           id="videoFile"
+                           class="movie-upload-input"
+                           accept="video/mp4,video/webm,video/ogg"
+                           required />
+
+
+                    <div id="videoFileInfo"
+                         class="movie-upload-file-info"
+                         hidden>
+
+                        <div class="movie-upload-file-icon">
+                            ▶
+                        </div>
+
+                        <div>
+
+                            <strong id="videoFileName">
+                            </strong>
+
+                            <span id="videoFileSize">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div id="videoClientError"
+                         class="text-danger movie-upload-client-error"
+                         hidden>
+                    </div>
+
+                    @Html.ValidationMessage(
+                        "videoFile",
+                        "",
+                        new
+                        {
+                            @class =
+                                "text-danger"
+                        })
+
+                </section>
+
+
+                <section class="cinema-panel movie-editor-summary">
+
+                    <span class="movie-editor-summary-label">
+                        PUBLISHING
+                    </span>
+
+                    <h3>
+                        Подготвен за каталог
+                    </h3>
+
+                    <p>
+                        По зачувувањето, филмот автоматски ќе се
+                        појави во соодветната секција според
+                        датумот на премиера.
+                    </p>
+
+                    <div class="movie-editor-summary-line"></div>
+
+                    <div class="movie-editor-summary-item">
+
+                        <span>
+                            Статус
+                        </span>
+
+                        <strong>
+                            Автоматски
+                        </strong>
+
+                    </div>
+
+                    <div class="movie-editor-summary-item">
+
+                        <span>
+                            Trailer
+                        </span>
+
+                        <strong>
+                            Задолжителен
+                        </strong>
+
+                    </div>
+
+                    <div class="movie-editor-summary-item">
+
+                        <span>
+                            Максимален upload
+                        </span>
+
+                        <strong>
+                            200 MB
+                        </strong>
+
+                    </div>
+
+                </section>
+
+            </aside>
+
+        </div>
+
+
+        <div class="movie-editor-actions">
+
+            <a class="btn btn-outline-secondary"
+               href="@Url.Action("Current", "Movies")">
+                Откажи
+            </a>
+
+            <button type="submit"
+                    id="movieSubmitButton"
+                    class="btn btn-primary movie-editor-submit">
+
+                <span>
+                    Додади филм
+                </span>
+
+                <span aria-hidden="true">
+                    →
+                </span>
+
+            </button>
+
+        </div>
+    }
+
+</main>
+
+
+@section scripts
+{
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        (function () {
+            var fileInput =
+                document.getElementById(
+                    "videoFile");
+
+            var fileInfo =
+                document.getElementById(
+                    "videoFileInfo");
+
+            var fileName =
+                document.getElementById(
+                    "videoFileName");
+
+            var fileSize =
+                document.getElementById(
+                    "videoFileSize");
+
+            var clientError =
+                document.getElementById(
+                    "videoClientError");
+
+            var form =
+                document.getElementById(
+                    "movieCreateForm");
+
+            var submitButton =
+                document.getElementById(
+                    "movieSubmitButton");
+
+            var maxFileSize =
+                200 * 1024 * 1024;
+
+            function formatFileSize(bytes) {
+                if (!bytes) {
+                    return "0 MB";
+                }
+
+                return (
+                    bytes /
+                    1024 /
+                    1024
+                ).toFixed(1) + " MB";
+            }
+
+            function clearClientError() {
+                clientError.textContent =
+                    "";
+
+                clientError.hidden =
+                    true;
+            }
+
+            function showClientError(message) {
+                clientError.textContent =
+                    message;
+
+                clientError.hidden =
+                    false;
+            }
+
+            fileInput.addEventListener(
+                "change",
+                function () {
+
+                    clearClientError();
+
+                    if (
+                        !fileInput.files ||
+                        fileInput.files.length === 0
+                    ) {
+                        fileInfo.hidden =
+                            true;
+
+                        return;
+                    }
+
+                    var file =
+                        fileInput.files[0];
+
+                    fileName.textContent =
+                        file.name;
+
+                    fileSize.textContent =
+                        formatFileSize(
+                            file.size);
+
+                    fileInfo.hidden =
+                        false;
+
+                    if (
+                        file.size >
+                        maxFileSize
+                    ) {
+                        showClientError(
+                            "Видео датотеката не смее да биде поголема од 200 MB.");
+                    }
+                });
+
+
+            form.addEventListener(
+                "submit",
+                function (event) {
+
+                    clearClientError();
+
+                    if (
+                        !fileInput.files ||
+                        fileInput.files.length === 0
+                    ) {
+                        event.preventDefault();
+
+                        showClientError(
+                            "Изберете trailer видео.");
+
+                        return;
+                    }
+
+                    if (
+                        fileInput.files[0].size >
+                        maxFileSize
+                    ) {
+                        event.preventDefault();
+
+                        showClientError(
+                            "Видео датотеката не смее да биде поголема од 200 MB.");
+
+                        return;
+                    }
+
+                    submitButton.disabled =
+                        true;
+
+                    submitButton.querySelector(
+                        "span:first-child"
+                    ).textContent =
+                        "Се зачувува...";
+                });
+        })();
+    </script>
 }
+
+
+<style>
+    .movie-editor-page {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+
+    /* =====================================================
+       HEADER
+       ===================================================== */
+
+    .movie-editor-header {
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 2rem;
+        padding: clamp(2rem, 5vw, 3.5rem);
+        overflow: hidden;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-xl);
+        background: radial-gradient( circle at 88% 15%, rgba(214, 168, 75, 0.13), transparent 28% ), linear-gradient( 135deg, rgba(20, 27, 39, 0.98), rgba(8, 11, 17, 0.99) );
+        box-shadow: var(--cinema-shadow);
+    }
+
+        .movie-editor-header::after {
+            position: absolute;
+            top: -150px;
+            right: -90px;
+            width: 340px;
+            height: 340px;
+            content: "";
+            border: 1px solid rgba(214, 168, 75, 0.08);
+            border-radius: 50%;
+        }
+
+    .movie-editor-header-content {
+        position: relative;
+        z-index: 1;
+        max-width: 760px;
+    }
+
+    .movie-editor-header h1 {
+        margin-bottom: 1rem;
+    }
+
+    .movie-editor-header p {
+        max-width: 650px;
+        margin: 0;
+        color: var(--cinema-text-muted);
+        font-size: 1.02rem;
+    }
+
+    .movie-editor-header-badge {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        flex: 0 0 120px;
+        place-items: center;
+        width: 120px;
+        height: 120px;
+        border: 1px solid rgba(214, 168, 75, 0.22);
+        border-radius: 28px;
+        background: rgba(214, 168, 75, 0.06);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+    }
+
+        .movie-editor-header-badge span {
+            position: absolute;
+            top: 1rem;
+            color: var(--cinema-gold-light);
+            font-size: 0.58rem;
+            font-weight: 900;
+            letter-spacing: 0.16em;
+        }
+
+        .movie-editor-header-badge strong {
+            color: var(--cinema-gold-light);
+            font-size: 3.4rem;
+            font-weight: 300;
+            line-height: 1;
+        }
+
+
+    /* =====================================================
+       FORM LAYOUT
+       ===================================================== */
+
+    .movie-editor-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .movie-editor-validation:empty {
+        display: none;
+    }
+
+    .movie-editor-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        align-items: start;
+        gap: 1.5rem;
+    }
+
+    .movie-editor-main {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .movie-editor-sidebar {
+        position: sticky;
+        top: 100px;
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .movie-editor-section {
+        padding: clamp(1.4rem, 3vw, 2rem);
+    }
+
+    .movie-editor-section-heading {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.8rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--cinema-border);
+    }
+
+        .movie-editor-section-heading.compact {
+            margin-bottom: 1.4rem;
+        }
+
+    .movie-editor-step {
+        display: grid;
+        flex: 0 0 40px;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.2);
+        border-radius: 12px;
+        background: rgba(214, 168, 75, 0.07);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.07em;
+    }
+
+    .movie-editor-section-heading h2 {
+        margin: 0 0 0.25rem;
+        font-size: 1.15rem;
+    }
+
+    .movie-editor-section-heading p {
+        margin: 0;
+        color: var(--cinema-text-muted);
+        font-size: 0.82rem;
+    }
+
+    .movie-editor-fields {
+        display: grid;
+        grid-template-columns: repeat( 2, minmax(0, 1fr) );
+        gap: 0 1rem;
+    }
+
+    .movie-editor-field-full {
+        grid-column: 1 / -1;
+    }
+
+    .movie-editor-input {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .movie-editor-description {
+        min-height: 180px;
+        line-height: 1.7;
+    }
+
+    .movie-editor-help {
+        display: block;
+        margin-top: 0.45rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.75rem;
+    }
+
+    .movie-editor-input-unit {
+        position: relative;
+    }
+
+        .movie-editor-input-unit .form-control {
+            padding-right: 4.5rem;
+        }
+
+        .movie-editor-input-unit > span {
+            position: absolute;
+            top: 50%;
+            right: 0.9rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            pointer-events: none;
+            transform: translateY(-50%);
+        }
+
+
+    /* =====================================================
+       AGE SELECTOR
+       ===================================================== */
+
+    .movie-age-selector {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    .movie-age-option {
+        display: block;
+        margin: 0 0 0.75rem;
+        cursor: pointer;
+    }
+
+        .movie-age-option:last-of-type {
+            margin-bottom: 0;
+        }
+
+    .movie-age-radio {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .movie-age-visual {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.02);
+        transition: border-color var(--cinema-transition), background-color var(--cinema-transition), transform var(--cinema-transition), box-shadow var(--cinema-transition);
+    }
+
+    .movie-age-option:hover
+    .movie-age-visual {
+        border-color: rgba(214, 168, 75, 0.22);
+        background: rgba(214, 168, 75, 0.035);
+        transform: translateY(-2px);
+    }
+
+    .movie-age-radio:checked + .movie-age-visual {
+        border-color: rgba(214, 168, 75, 0.52);
+        background: rgba(214, 168, 75, 0.07);
+        box-shadow: 0 0 0 3px rgba(214, 168, 75, 0.07);
+    }
+
+    .movie-age-radio:focus-visible + .movie-age-visual {
+        box-shadow: 0 0 0 4px rgba(214, 168, 75, 0.13);
+    }
+
+    .movie-age-symbol {
+        display: grid;
+        flex: 0 0 52px;
+        place-items: center;
+        width: 52px;
+        height: 52px;
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.2);
+        border-radius: 50%;
+        background: rgba(66, 199, 131, 0.07);
+        font-size: 0.68rem;
+        font-weight: 900;
+    }
+
+        .movie-age-symbol.adult {
+            color: #ff9ba4;
+            border-color: rgba(239, 102, 115, 0.22);
+            background: rgba(239, 102, 115, 0.07);
+        }
+
+    .movie-age-copy {
+        min-width: 0;
+    }
+
+        .movie-age-copy strong {
+            display: block;
+            color: var(--cinema-text);
+            font-size: 0.9rem;
+        }
+
+        .movie-age-copy small {
+            display: block;
+            margin-top: 0.2rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.75rem;
+        }
+
+
+    /* =====================================================
+       VIDEO UPLOAD
+       ===================================================== */
+
+    .movie-upload-panel {
+        overflow: hidden;
+    }
+
+    .movie-upload-dropzone {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 260px;
+        margin: 0;
+        padding: 1.5rem;
+        cursor: pointer;
+        text-align: center;
+        border: 1px dashed rgba(214, 168, 75, 0.3);
+        border-radius: 18px;
+        background: radial-gradient( circle at 50% 30%, rgba(214, 168, 75, 0.08), transparent 42% ), rgba(255, 255, 255, 0.015);
+        transition: border-color var(--cinema-transition), background-color var(--cinema-transition), transform var(--cinema-transition);
+    }
+
+        .movie-upload-dropzone:hover {
+            border-color: rgba(214, 168, 75, 0.58);
+            background: rgba(214, 168, 75, 0.035);
+            transform: translateY(-2px);
+        }
+
+    .movie-upload-icon {
+        display: grid;
+        place-items: center;
+        width: 62px;
+        height: 62px;
+        margin-bottom: 1rem;
+        color: var(--cinema-gold-light);
+        border: 1px solid rgba(214, 168, 75, 0.22);
+        border-radius: 50%;
+        background: rgba(214, 168, 75, 0.08);
+        box-shadow: 0 0 28px rgba(214, 168, 75, 0.08);
+        font-size: 1rem;
+    }
+
+    .movie-upload-dropzone > strong {
+        color: var(--cinema-text);
+        font-size: 0.95rem;
+    }
+
+    .movie-upload-dropzone > span:not( .movie-upload-icon ):not( .movie-upload-button ) {
+        margin-top: 0.3rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.76rem;
+    }
+
+    .movie-upload-dropzone > small {
+        margin-top: 0.15rem;
+        color: #626d7d;
+        font-size: 0.68rem;
+    }
+
+    .movie-upload-button {
+        margin-top: 1.1rem;
+    }
+
+    .movie-upload-input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .movie-upload-file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-top: 1rem;
+        padding: 0.8rem;
+        border: 1px solid rgba(66, 199, 131, 0.18);
+        border-radius: 12px;
+        background: rgba(66, 199, 131, 0.045);
+    }
+
+        .movie-upload-file-info[hidden] {
+            display: none;
+        }
+
+    .movie-upload-file-icon {
+        display: grid;
+        flex: 0 0 38px;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.2);
+        border-radius: 10px;
+        background: rgba(66, 199, 131, 0.08);
+        font-size: 0.7rem;
+    }
+
+    .movie-upload-file-info strong {
+        display: block;
+        overflow: hidden;
+        max-width: 220px;
+        color: var(--cinema-text);
+        font-size: 0.78rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .movie-upload-file-info span {
+        display: block;
+        margin-top: 0.15rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.67rem;
+    }
+
+    .movie-upload-client-error {
+        margin-top: 0.8rem;
+        font-size: 0.78rem;
+    }
+
+        .movie-upload-client-error[hidden] {
+            display: none;
+        }
+
+
+    /* =====================================================
+       SIDEBAR SUMMARY
+       ===================================================== */
+
+    .movie-editor-summary {
+        padding: 1.5rem;
+    }
+
+    .movie-editor-summary-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--cinema-gold-light);
+        font-size: 0.58rem;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+    }
+
+    .movie-editor-summary h3 {
+        margin-bottom: 0.6rem;
+        font-size: 1.15rem;
+    }
+
+    .movie-editor-summary > p {
+        margin-bottom: 1.2rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.78rem;
+        line-height: 1.65;
+    }
+
+    .movie-editor-summary-line {
+        height: 1px;
+        margin-bottom: 0.7rem;
+        background: var(--cinema-border);
+    }
+
+    .movie-editor-summary-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.55rem 0;
+    }
+
+        .movie-editor-summary-item span {
+            color: var(--cinema-text-muted);
+            font-size: 0.72rem;
+        }
+
+        .movie-editor-summary-item strong {
+            color: var(--cinema-text-soft);
+            font-size: 0.72rem;
+        }
+
+
+    /* =====================================================
+       ACTION BAR
+       ===================================================== */
+
+    .movie-editor-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding: 1rem 0;
+    }
+
+    .movie-editor-submit {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        min-width: 180px;
+    }
+
+        .movie-editor-submit span:last-child {
+            transition: transform var(--cinema-transition);
+        }
+
+        .movie-editor-submit:hover
+        span:last-child {
+            transform: translateX(4px);
+        }
+
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @@media (max-width: 991.98px) {
+        .movie-editor-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .movie-editor-sidebar {
+            position: static;
+            display: grid;
+            grid-template-columns: repeat( 2, minmax(0, 1fr) );
+        }
+    }
+
+    @@media (max-width: 767.98px) {
+        .movie-editor-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .movie-editor-header-badge {
+            display: none;
+        }
+
+        .movie-editor-fields {
+            grid-template-columns: 1fr;
+        }
+
+        .movie-editor-field-full {
+            grid-column: auto;
+        }
+
+        .movie-editor-sidebar {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .movie-editor-header {
+            padding: 1.6rem 1.2rem;
+        }
+
+        .movie-editor-section {
+            padding: 1.25rem 1rem;
+        }
+
+        .movie-editor-section-heading {
+            gap: 0.75rem;
+        }
+
+        .movie-age-visual {
+            align-items: flex-start;
+        }
+
+        .movie-editor-actions {
+            align-items: stretch;
+            flex-direction: column-reverse;
+        }
+
+            .movie-editor-actions .btn {
+                width: 100%;
+            }
+
+        .movie-editor-submit {
+            min-width: 0;
+        }
+    }
+</style>

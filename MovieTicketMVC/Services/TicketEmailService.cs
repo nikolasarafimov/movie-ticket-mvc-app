@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
 using System.Threading.Tasks;
 
 namespace MovieTicketMVC.Services
@@ -17,82 +18,163 @@ namespace MovieTicketMVC.Services
         {
             if (string.IsNullOrWhiteSpace(to))
             {
-                throw new ArgumentException("Recipient email is required.", nameof(to));
+                throw new ArgumentException(
+                    "Recipient email is required.",
+                    nameof(to));
             }
 
-            if (attachmentBytes == null || attachmentBytes.Length == 0)
+            if (attachmentBytes == null ||
+                attachmentBytes.Length == 0)
             {
-                throw new ArgumentException("Ticket attachment is required.", nameof(attachmentBytes));
+                throw new ArgumentException(
+                    "Ticket attachment is required.",
+                    nameof(attachmentBytes));
             }
 
             var smtpHost =
-                Environment.GetEnvironmentVariable("MOVIETICKET_SMTP_HOST")
-                ?? "smtp.gmail.com";
+                Environment.GetEnvironmentVariable(
+                    "MOVIETICKET_SMTP_HOST");
+
+            if (string.IsNullOrWhiteSpace(smtpHost))
+            {
+                smtpHost =
+                    "smtp.gmail.com";
+            }
+            else
+            {
+                smtpHost =
+                    smtpHost.Trim();
+            }
 
             var smtpPortValue =
-                Environment.GetEnvironmentVariable("MOVIETICKET_SMTP_PORT");
+                Environment.GetEnvironmentVariable(
+                    "MOVIETICKET_SMTP_PORT");
 
-            var smtpPort = 587;
+            var smtpPort =
+                587;
 
-            if (!string.IsNullOrWhiteSpace(smtpPortValue)
-                && !int.TryParse(smtpPortValue, out smtpPort))
+            if (!string.IsNullOrWhiteSpace(
+                    smtpPortValue))
             {
-                throw new InvalidOperationException(
-                    "MOVIETICKET_SMTP_PORT must contain a valid integer.");
+                if (!int.TryParse(
+                        smtpPortValue,
+                        out smtpPort) ||
+                    smtpPort < 1 ||
+                    smtpPort > 65535)
+                {
+                    throw new InvalidOperationException(
+                        "MOVIETICKET_SMTP_PORT must contain a valid port number between 1 and 65535.");
+                }
             }
 
             var smtpUsername =
-                GetRequiredEnvironmentVariable("MOVIETICKET_SMTP_USERNAME");
+                GetRequiredEnvironmentVariable(
+                    "MOVIETICKET_SMTP_USERNAME");
 
             var smtpPassword =
-                GetRequiredEnvironmentVariable("MOVIETICKET_SMTP_PASSWORD");
+                GetRequiredEnvironmentVariable(
+                    "MOVIETICKET_SMTP_PASSWORD");
 
             var fromAddress =
-                Environment.GetEnvironmentVariable("MOVIETICKET_SMTP_FROM");
+                Environment.GetEnvironmentVariable(
+                    "MOVIETICKET_SMTP_FROM");
 
-            if (string.IsNullOrWhiteSpace(fromAddress))
+            if (string.IsNullOrWhiteSpace(
+                    fromAddress))
             {
-                fromAddress = smtpUsername;
+                fromAddress =
+                    smtpUsername;
+            }
+            else
+            {
+                fromAddress =
+                    fromAddress.Trim();
             }
 
-            using (var message = new MailMessage())
+            var safeAttachmentName =
+                Path.GetFileName(
+                    attachmentName);
+
+            if (string.IsNullOrWhiteSpace(
+                    safeAttachmentName))
             {
-                message.From = new MailAddress(fromAddress, "MovieTicket App");
-                message.To.Add(to);
-                message.Subject = subject ?? string.Empty;
-                message.Body = body ?? string.Empty;
-                message.IsBodyHtml = false;
+                safeAttachmentName =
+                    "MovieTickets.pdf";
+            }
 
-                using (var attachmentStream = new MemoryStream(attachmentBytes))
+            using (var message =
+                new MailMessage())
+            {
+                message.From =
+                    new MailAddress(
+                        fromAddress,
+                        "MovieTicket App");
+
+                message.To.Add(
+                    new MailAddress(
+                        to.Trim()));
+
+                message.Subject =
+                    subject ?? string.Empty;
+
+                message.Body =
+                    body ?? string.Empty;
+
+                message.IsBodyHtml =
+                    false;
+
+                using (var attachmentStream =
+                    new MemoryStream(
+                        attachmentBytes))
                 using (var attachment =
-                    new Attachment(attachmentStream, attachmentName ?? "ticket.pdf"))
+                    new Attachment(
+                        attachmentStream,
+                        safeAttachmentName,
+                        MediaTypeNames.Application.Pdf))
                 {
-                    message.Attachments.Add(attachment);
+                    message.Attachments.Add(
+                        attachment);
 
-                    using (var client = new SmtpClient(smtpHost, smtpPort))
+                    using (var client =
+                        new SmtpClient(
+                            smtpHost,
+                            smtpPort))
                     {
-                        client.EnableSsl = true;
-                        client.UseDefaultCredentials = false;
-                        client.Credentials =
-                            new NetworkCredential(smtpUsername, smtpPassword);
+                        client.EnableSsl =
+                            true;
 
-                        await client.SendMailAsync(message);
+                        client.UseDefaultCredentials =
+                            false;
+
+                        client.Credentials =
+                            new NetworkCredential(
+                                smtpUsername,
+                                smtpPassword);
+
+                        await client.SendMailAsync(
+                            message);
                     }
                 }
             }
         }
 
-        private static string GetRequiredEnvironmentVariable(string name)
+        private static string
+            GetRequiredEnvironmentVariable(
+                string name)
         {
-            var value = Environment.GetEnvironmentVariable(name);
+            var value =
+                Environment.GetEnvironmentVariable(
+                    name);
 
-            if (string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(
+                    value))
             {
                 throw new InvalidOperationException(
-                    name + " environment variable is not configured.");
+                    name
+                    + " environment variable is not configured.");
             }
 
-            return value;
+            return value.Trim();
         }
     }
 }

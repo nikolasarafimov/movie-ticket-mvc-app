@@ -1,63 +1,1171 @@
-﻿@model IEnumerable<MovieTicketMVC.Models.Movie>
+﻿@using System
+@using System.Collections.Generic
+@using System.Linq
+@model IEnumerable<MovieTicketMVC.Models.Movie>
+
 @{
-    ViewBag.Title = "Coming Soon";
+    ViewBag.Title = "Наскоро";
+
+    var searchString =
+        Request["searchString"];
+
+    var ageFilter =
+        Request["ageFilter"];
+
+    var sortOrder =
+        Request["sortOrder"];
+
+    var movies =
+        Model != null
+            ? Model.ToList()
+            : new List<MovieTicketMVC.Models.Movie>();
+
+    var isAdmin =
+        User != null &&
+        User.Identity != null &&
+        User.Identity.IsAuthenticated &&
+        User.IsInRole("Admin");
+
+    var isDescending =
+        string.Equals(
+            sortOrder,
+            "title_desc",
+            StringComparison.OrdinalIgnoreCase);
+
+    var today =
+        DateTime.Today;
 }
 
-<h2>Наскоро</h2>
+<main class="premieres-page"
+      aria-labelledby="premieres-title">
 
-<form method="get" action="@Url.Action("ComingSoon", "Movies")" style="display:flex; align-items:center;">
-    <p>
-        Пребарај филм: <input type="text" name="searchString" value="@Request["searchString"]" />
-        <input type="submit" value="Пребарај" />
-    </p>
+    <section class="premieres-hero">
 
-    <select name="ageFilter" onchange="this.form.submit()" class="form-control" style="margin-left:10px; width:120px; height:30px; margin-bottom:15px; padding:3px;">
-        <option value="">Рестрикција: ▼</option>
-        <option value="Over18" @(Request["ageFilter"] == "Over18" ? "selected" : "")>18+</option>
-    </select>
-</form>
+        <div class="premieres-hero-content">
 
-@if (User.IsInRole("Admin"))
-{
-    <p>
-        <a href="@Url.Action("Create", "Movies")" class="btn btn-primary">Додади нов филм</a>
-    </p>
-}
+            <div class="cinema-eyebrow">
+                COMING SOON
+            </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.ActionLink("Наслов", "ComingSoon", new
-                {
-                    sortOrder = ViewBag.TitleSortParam,
-                    ageFilter = Request["ageFilter"]
-                })
-            </th>
-            <th>Должина (мин)</th>
-            <th>Почеток на проекција</th>
-            <th>Жанр</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+            <h1 id="premieres-title">
+                Следните
+                <span class="cinema-text-gradient">
+                    премиери
+                </span>
+            </h1>
+
+            <p>
+                Погледни кои филмови пристигнуваат наскоро,
+                провери го датумот на премиера и испланирај
+                ја следната кино вечер однапред.
+            </p>
+
+        </div>
+
+        <div class="premieres-hero-side">
+
+            <div class="premieres-calendar"
+                 aria-hidden="true">
+
+                <div class="premieres-calendar-top">
+                    PREMIERES
+                </div>
+
+                <div class="premieres-calendar-value">
+                    @movies.Count
+                </div>
+
+                <div class="premieres-calendar-label">
+                    @(movies.Count == 1
+                        ? "најава"
+                        : "најави")
+                </div>
+
+            </div>
+
+            @if (isAdmin)
+            {
+                <a class="btn btn-primary"
+                   href="@Url.Action("Create", "Movies")">
+
+                    <span class="premieres-add-icon"
+                          aria-hidden="true">
+                        +
+                    </span>
+
+                    Додади филм
+                </a>
+            }
+
+        </div>
+
+        <div class="premieres-hero-orbit"
+             aria-hidden="true">
+        </div>
+
+    </section>
+
+
+    <section class="cinema-filter-bar premieres-filter"
+             aria-label="Филтрирање на најавени филмови">
+
+        @using (Html.BeginForm(
+            "ComingSoon",
+            "Movies",
+            FormMethod.Get,
+            new
+            {
+                @class = "premieres-filter-form"
+            }))
         {
-            <tr>
-                <td>@item.Title</td>
-                <td>@item.LengthInMinutes</td>
-                <td>@item.ReleaseDate.ToString("dd.MM.yyyy")</td>
-                <td>@item.Genre</td>
-                <td>
-                    @Html.ActionLink("Детали", "Details", new { id = item.Id })
-                    @if (User.IsInRole("Admin"))
+            @Html.Hidden(
+                "sortOrder",
+                sortOrder)
+
+            <div class="premieres-filter-field premieres-search-field">
+
+                <label for="searchString"
+                       class="form-label">
+                    Пребарај филм
+                </label>
+
+                <div class="premieres-search-input">
+
+                    <span class="premieres-search-icon"
+                          aria-hidden="true">
+                        ⌕
+                    </span>
+
+                    <input type="text"
+                           id="searchString"
+                           name="searchString"
+                           value="@searchString"
+                           class="form-control"
+                           placeholder="Наслов на филм..."
+                           autocomplete="off" />
+
+                </div>
+
+            </div>
+
+            <div class="premieres-filter-field">
+
+                <label for="ageFilter"
+                       class="form-label">
+                    Возрасна категорија
+                </label>
+
+                <select id="ageFilter"
+                        name="ageFilter"
+                        class="form-select">
+
+                    <option value=""
+                            @(string.IsNullOrWhiteSpace(ageFilter) ? "selected" : "")>
+                        Сите филмови
+                    </option>
+
+                    <option value="Over18"
+                            @(string.Equals( ageFilter, "Over18", StringComparison.OrdinalIgnoreCase) ? "selected" : "")>
+                        Само 18+
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="premieres-filter-actions">
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Пребарај
+                </button>
+
+                @Html.ActionLink(
+                    "Исчисти",
+                    "ComingSoon",
+                    "Movies",
+                    routeValues: null,
+                    htmlAttributes: new
                     {
-                        @: |
-                        @Html.ActionLink("Уреди", "Edit", new { id = item.Id })
-                        @: |
-                        @Html.ActionLink("Избриши", "Delete", new { id = item.Id })
-                    }
-                </td>
-            </tr>
+                        @class =
+                            "btn btn-outline-secondary"
+                    })
+
+            </div>
         }
-    </tbody>
-</table>
+
+        <div class="premieres-sort">
+
+            @Html.ActionLink(
+                isDescending
+                    ? "Наслов: Z → A"
+                    : "Наслов: A → Z",
+                "ComingSoon",
+                "Movies",
+                new
+                {
+                    sortOrder =
+                        ViewBag.TitleSortParam,
+
+                    searchString =
+                        searchString,
+
+                    ageFilter =
+                        ageFilter
+                },
+                new
+                {
+                    @class =
+                        "btn btn-outline-secondary premieres-sort-button"
+                })
+
+        </div>
+
+    </section>
+
+
+    @if (movies.Any())
+    {
+        <section class="premieres-grid"
+                 aria-label="Филмови што доаѓаат наскоро">
+
+            @for (var index = 0;
+                  index < movies.Count;
+                  index++)
+            {
+                var movie =
+                    movies[index];
+
+                var daysUntilRelease =
+                    (movie.ReleaseDate.Date - today)
+                        .Days;
+
+                if (daysUntilRelease < 0)
+                {
+                    daysUntilRelease = 0;
+                }
+
+                var countdownText =
+                    daysUntilRelease == 0
+                        ? "Денес"
+                        : daysUntilRelease == 1
+                            ? "За 1 ден"
+                            : "За " + daysUntilRelease + " дена";
+
+                var description =
+                    string.IsNullOrWhiteSpace(
+                        movie.Description)
+                        ? "Нема достапен опис за овој филм."
+                        : movie.Description.Trim();
+
+                if (description.Length > 180)
+                {
+                    description =
+                        description.Substring(
+                            0,
+                            177)
+                        + "...";
+                }
+
+                var genre =
+                    string.IsNullOrWhiteSpace(
+                        movie.Genre)
+                        ? "Филм"
+                        : movie.Genre;
+
+                var language =
+                    string.IsNullOrWhiteSpace(
+                        movie.Language)
+                        ? "Непознат"
+                        : movie.Language;
+
+                var cardNumber =
+                    (index + 1)
+                        .ToString("00");
+
+                <article class="premiere-card">
+
+                    <div class="premiere-date-panel">
+
+                        <div class="premiere-date-top">
+
+                            <span class="premiere-index">
+                                @cardNumber
+                            </span>
+
+                            @if (movie.IsForAdults == true)
+                            {
+                                <span class="premiere-age-badge adult">
+                                    18+
+                                </span>
+                            }
+                            else if (movie.IsForAdults == false)
+                            {
+                                <span class="premiere-age-badge">
+                                    ALL
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="premiere-age-badge unknown">
+                                    N/A
+                                </span>
+                            }
+
+                        </div>
+
+                        <div class="premiere-date-main">
+
+                            <span class="premiere-month">
+                                @(movie.ReleaseDate
+                                    .ToString("MMM")
+                                    .ToUpperInvariant())
+                            </span>
+
+                            <strong class="premiere-day">
+                                @(movie.ReleaseDate.ToString("dd"))
+                            </strong>
+
+                            <span class="premiere-year">
+                                @(movie.ReleaseDate.ToString("yyyy"))
+                            </span>
+
+                        </div>
+
+                        <div class="premiere-countdown">
+
+                            <span class="premiere-countdown-dot">
+                            </span>
+
+                            @countdownText
+
+                        </div>
+
+                        <div class="premiere-date-glow"
+                             aria-hidden="true">
+                        </div>
+
+                    </div>
+
+
+                    <div class="premiere-content">
+
+                        <div class="premiere-heading">
+
+                            <div>
+
+                                <span class="premiere-genre">
+                                    @genre
+                                </span>
+
+                                <h2>
+                                    @movie.Title
+                                </h2>
+
+                            </div>
+
+                            <div class="premiere-rating">
+
+                                <span aria-hidden="true">
+                                    ★
+                                </span>
+
+                                <strong>
+                                    @(movie.Rating.HasValue
+                                        ? movie.Rating.Value.ToString("0.0")
+                                        : "N/A")
+                                </strong>
+
+                                <small>
+                                    / 10
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="premiere-meta">
+
+                            <div class="premiere-meta-item">
+
+                                <span>
+                                    ВРЕМЕТРАЕЊЕ
+                                </span>
+
+                                <strong>
+                                    @movie.LengthInMinutes мин.
+                                </strong>
+
+                            </div>
+
+                            <div class="premiere-meta-item">
+
+                                <span>
+                                    ЈАЗИК
+                                </span>
+
+                                <strong>
+                                    @language
+                                </strong>
+
+                            </div>
+
+                            <div class="premiere-meta-item">
+
+                                <span>
+                                    ПРЕМИЕРА
+                                </span>
+
+                                <strong>
+                                    @(movie.ReleaseDate.ToString("dd.MM.yyyy"))
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <p class="premiere-description">
+                            @description
+                        </p>
+
+
+                        <div class="premiere-actions">
+
+                            <a class="btn btn-primary"
+                               href="@Url.Action(
+                                   "Details",
+                                   "Movies",
+                                   new
+                                   {
+                                       id = movie.Id
+                                   })">
+
+                                Детали за филмот
+
+                                <span aria-hidden="true">
+                                    →
+                                </span>
+
+                            </a>
+
+                            @if (isAdmin)
+                            {
+                                <div class="premiere-admin-actions">
+
+                                    <a class="btn btn-outline-secondary btn-sm"
+                                       href="@Url.Action(
+                                           "Edit",
+                                           "Movies",
+                                           new
+                                           {
+                                               id = movie.Id
+                                           })">
+                                        Уреди
+                                    </a>
+
+                                    <a class="btn btn-outline-danger btn-sm"
+                                       href="@Url.Action(
+                                           "Delete",
+                                           "Movies",
+                                           new
+                                           {
+                                               id = movie.Id
+                                           })">
+                                        Избриши
+                                    </a>
+
+                                </div>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </article>
+            }
+
+        </section>
+    }
+    else
+    {
+        <section class="cinema-empty-state">
+
+            <div class="premieres-empty-icon"
+                 aria-hidden="true">
+                ◷
+            </div>
+
+            <h3>
+                Нема пронајдени премиери
+            </h3>
+
+            <p>
+                Во моментов нема најавени филмови што
+                одговараат на избраните критериуми.
+                Промени го пребарувањето или исчисти ги филтрите.
+            </p>
+
+            @Html.ActionLink(
+                "Исчисти филтри",
+                "ComingSoon",
+                "Movies",
+                routeValues: null,
+                htmlAttributes: new
+                {
+                    @class = "btn btn-primary"
+                })
+
+        </section>
+    }
+
+</main>
+
+<style>
+    .premieres-page {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+
+    /* HERO */
+
+    .premieres-hero {
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 3rem;
+        min-height: 310px;
+        padding: clamp(2rem, 5vw, 3.75rem);
+        overflow: hidden;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-xl);
+        background: radial-gradient( circle at 78% 16%, rgba(90, 169, 255, 0.13), transparent 30% ), radial-gradient( circle at 92% 90%, rgba(214, 168, 75, 0.10), transparent 26% ), linear-gradient( 135deg, rgba(18, 25, 37, 0.98), rgba(7, 10, 16, 0.99) );
+        box-shadow: var(--cinema-shadow);
+        isolation: isolate;
+    }
+
+    .premieres-hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 760px;
+    }
+
+    .premieres-hero h1 {
+        margin-bottom: 1rem;
+    }
+
+    .premieres-hero p {
+        max-width: 690px;
+        margin: 0;
+        color: var(--cinema-text-muted);
+        font-size: 1.04rem;
+    }
+
+    .premieres-hero-side {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .premieres-calendar {
+        min-width: 125px;
+        overflow: hidden;
+        text-align: center;
+        border: 1px solid rgba(214, 168, 75, 0.22);
+        border-radius: 18px;
+        background: rgba(10, 14, 21, 0.75);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+
+    .premieres-calendar-top {
+        padding: 0.55rem 0.7rem;
+        color: #15100a;
+        background: linear-gradient( 135deg, var(--cinema-gold-light), var(--cinema-gold) );
+        font-size: 0.62rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+    }
+
+    .premieres-calendar-value {
+        padding-top: 0.8rem;
+        color: var(--cinema-text);
+        font-size: 2.4rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .premieres-calendar-label {
+        padding: 0.3rem 0.8rem 0.85rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.72rem;
+    }
+
+    .premieres-add-icon {
+        margin-right: 0.35rem;
+        font-size: 1.15rem;
+    }
+
+    .premieres-hero-orbit {
+        position: absolute;
+        z-index: 0;
+        top: -185px;
+        right: -130px;
+        width: 440px;
+        height: 440px;
+        border: 1px solid rgba(255, 255, 255, 0.045);
+        border-radius: 50%;
+    }
+
+        .premieres-hero-orbit::before,
+        .premieres-hero-orbit::after {
+            position: absolute;
+            content: "";
+            border-radius: 50%;
+        }
+
+        .premieres-hero-orbit::before {
+            inset: 65px;
+            border: 1px solid rgba(214, 168, 75, 0.07);
+        }
+
+        .premieres-hero-orbit::after {
+            bottom: 66px;
+            left: 25px;
+            width: 9px;
+            height: 9px;
+            background: var(--cinema-gold);
+            box-shadow: 0 0 24px rgba(214, 168, 75, 0.75);
+        }
+
+
+    /* FILTERS */
+
+    .premieres-filter {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin: 0;
+    }
+
+    .premieres-filter-form {
+        display: flex;
+        flex: 1;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 0.9rem;
+    }
+
+    .premieres-filter-field {
+        min-width: 200px;
+    }
+
+    .premieres-search-field {
+        flex: 1;
+        min-width: 260px;
+    }
+
+    .premieres-search-input {
+        position: relative;
+    }
+
+    .premieres-search-icon {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        left: 1rem;
+        color: var(--cinema-text-muted);
+        font-size: 1.15rem;
+        pointer-events: none;
+        transform: translateY(-50%);
+    }
+
+    .premieres-search-input .form-control {
+        padding-left: 2.8rem;
+    }
+
+    .premieres-filter-actions {
+        display: flex;
+        gap: 0.55rem;
+    }
+
+    .premieres-sort {
+        flex: 0 0 auto;
+    }
+
+    .premieres-sort-button {
+        white-space: nowrap;
+    }
+
+
+    /* PREMIERE CARDS */
+
+    .premieres-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+
+    .premiere-card {
+        position: relative;
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        overflow: hidden;
+        min-height: 350px;
+        border: 1px solid var(--cinema-border);
+        border-radius: var(--cinema-radius-lg);
+        background: linear-gradient( 150deg, rgba(20, 27, 39, 0.98), rgba(9, 13, 20, 0.99) );
+        box-shadow: var(--cinema-shadow-sm);
+        transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), border-color 320ms ease, box-shadow 320ms ease;
+    }
+
+        .premiere-card:hover {
+            border-color: rgba(214, 168, 75, 0.28);
+            transform: translateY(-7px);
+            box-shadow: var(--cinema-shadow-lg);
+        }
+
+
+    /* DATE STRIP */
+
+    .premiere-date-panel {
+        position: relative;
+        display: flex;
+        overflow: hidden;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1.25rem;
+        border-right: 1px solid var(--cinema-border);
+        background: radial-gradient( circle at 50% 50%, rgba(214, 168, 75, 0.09), transparent 65% ), rgba(7, 10, 15, 0.8);
+        isolation: isolate;
+    }
+
+    .premiere-date-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    .premiere-index {
+        color: rgba(255, 255, 255, 0.25);
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+    }
+
+    .premiere-age-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 39px;
+        min-height: 25px;
+        padding: 0.15rem 0.45rem;
+        color: #9ae8bd;
+        border: 1px solid rgba(66, 199, 131, 0.2);
+        border-radius: 999px;
+        background: rgba(66, 199, 131, 0.08);
+        font-size: 0.58rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+    }
+
+        .premiere-age-badge.adult {
+            color: #ff9ba4;
+            border-color: rgba(239, 102, 115, 0.24);
+            background: rgba(239, 102, 115, 0.09);
+        }
+
+        .premiere-age-badge.unknown {
+            color: var(--cinema-text-muted);
+            border-color: var(--cinema-border-strong);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+    .premiere-date-main {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        margin: auto 0;
+    }
+
+    .premiere-month {
+        margin-bottom: 0.15rem;
+        color: var(--cinema-gold-light);
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.18em;
+    }
+
+    .premiere-day {
+        color: var(--cinema-text);
+        font-size: 4.3rem;
+        font-weight: 800;
+        line-height: 0.95;
+        letter-spacing: -0.06em;
+    }
+
+    .premiere-year {
+        margin-top: 0.45rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+    }
+
+    .premiere-countdown {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        color: var(--cinema-text-soft);
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .premiere-countdown-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--cinema-gold);
+        box-shadow: 0 0 12px rgba(214, 168, 75, 0.65);
+    }
+
+    .premiere-date-glow {
+        position: absolute;
+        z-index: -1;
+        bottom: -70px;
+        left: 50%;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: rgba(214, 168, 75, 0.09);
+        filter: blur(18px);
+        transform: translateX(-50%);
+    }
+
+
+    /* CARD CONTENT */
+
+    .premiere-content {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        padding: 1.5rem;
+    }
+
+    .premiere-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+        .premiere-heading > div:first-child {
+            min-width: 0;
+        }
+
+    .premiere-genre {
+        display: inline-block;
+        margin-bottom: 0.55rem;
+        color: var(--cinema-gold-light);
+        font-size: 0.67rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+    }
+
+    .premiere-heading h2 {
+        margin: 0;
+        font-size: clamp(1.45rem, 2.1vw, 1.95rem);
+        line-height: 1.12;
+    }
+
+    .premiere-rating {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: baseline;
+        gap: 0.22rem;
+        padding: 0.45rem 0.6rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.025);
+    }
+
+        .premiere-rating > span {
+            color: var(--cinema-gold-light);
+        }
+
+        .premiere-rating strong {
+            color: var(--cinema-text);
+            font-size: 0.9rem;
+        }
+
+        .premiere-rating small {
+            color: var(--cinema-text-muted);
+            font-size: 0.61rem;
+        }
+
+    .premiere-meta {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .premiere-meta-item {
+        min-width: 0;
+        padding: 0.7rem;
+        border: 1px solid var(--cinema-border);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.022);
+    }
+
+        .premiere-meta-item span {
+            display: block;
+            margin-bottom: 0.25rem;
+            overflow: hidden;
+            color: var(--cinema-text-muted);
+            font-size: 0.55rem;
+            font-weight: 800;
+            letter-spacing: 0.07em;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .premiere-meta-item strong {
+            display: block;
+            overflow: hidden;
+            color: var(--cinema-text-soft);
+            font-size: 0.75rem;
+            font-weight: 650;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+    .premiere-description {
+        flex: 1;
+        margin-bottom: 1.3rem;
+        color: var(--cinema-text-muted);
+        font-size: 0.88rem;
+        line-height: 1.7;
+    }
+
+    .premiere-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.7rem;
+        margin-top: auto;
+    }
+
+        .premiere-actions > .btn-primary {
+            display: inline-flex;
+            flex: 1;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.7rem;
+        }
+
+            .premiere-actions > .btn-primary span {
+                transition: transform var(--cinema-transition);
+            }
+
+            .premiere-actions > .btn-primary:hover span {
+                transform: translateX(4px);
+            }
+
+    .premiere-admin-actions {
+        display: flex;
+        gap: 0.4rem;
+    }
+
+    .btn-outline-danger {
+        color: #ff8d97;
+        border-color: rgba(239, 102, 115, 0.35);
+        background: transparent;
+    }
+
+        .btn-outline-danger:hover {
+            color: #fff;
+            border-color: #d94c5b;
+            background: #b83c49;
+        }
+
+    .premieres-empty-icon {
+        margin-bottom: 1rem;
+        color: var(--cinema-gold);
+        font-size: 2.4rem;
+    }
+
+
+    /* RESPONSIVE */
+
+    @@media (max-width: 1199.98px) {
+        .premieres-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .premiere-card {
+            grid-template-columns: 170px minmax(0, 1fr);
+        }
+
+        .premieres-filter {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .premieres-sort {
+            align-self: flex-end;
+        }
+    }
+
+
+    @@media (max-width: 767.98px) {
+        .premieres-hero {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .premieres-hero-side {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .premieres-filter-form {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .premieres-filter-field,
+        .premieres-search-field {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .premieres-filter-actions {
+            width: 100%;
+        }
+
+            .premieres-filter-actions .btn {
+                flex: 1;
+            }
+
+        .premieres-sort {
+            width: 100%;
+        }
+
+        .premieres-sort-button {
+            width: 100%;
+        }
+
+        .premiere-card {
+            grid-template-columns: 1fr;
+        }
+
+        .premiere-date-panel {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 1rem;
+            min-height: 130px;
+            border-right: 0;
+            border-bottom: 1px solid var(--cinema-border);
+        }
+
+        .premiere-date-top {
+            flex-direction: column;
+        }
+
+        .premiere-date-main {
+            flex-direction: row;
+            gap: 0.6rem;
+            margin: 0;
+        }
+
+        .premiere-month,
+        .premiere-year {
+            margin: 0;
+        }
+
+        .premiere-day {
+            font-size: 3.2rem;
+        }
+
+        .premiere-countdown {
+            justify-content: flex-end;
+        }
+    }
+
+
+    @@media (max-width: 575.98px) {
+        .premieres-hero {
+            padding: 1.6rem 1.2rem;
+        }
+
+        .premieres-hero-side {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .premieres-calendar {
+            width: 100%;
+        }
+
+        .premiere-date-panel {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .premiere-date-top {
+            flex-direction: row;
+        }
+
+        .premiere-date-main {
+            justify-content: center;
+        }
+
+        .premiere-countdown {
+            justify-content: center;
+        }
+
+        .premiere-heading {
+            flex-direction: column;
+        }
+
+        .premiere-rating {
+            align-self: flex-start;
+        }
+
+        .premiere-meta {
+            grid-template-columns: 1fr;
+        }
+
+        .premiere-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+            .premiere-actions > .btn-primary {
+                width: 100%;
+            }
+
+        .premiere-admin-actions {
+            width: 100%;
+        }
+
+            .premiere-admin-actions .btn {
+                flex: 1;
+            }
+    }
+</style>

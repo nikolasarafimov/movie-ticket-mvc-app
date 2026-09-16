@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace MovieTicketMVC.Models
@@ -8,17 +7,16 @@ namespace MovieTicketMVC.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Мора да одберете филм.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Мора да одберете филм.")]
         public int MovieId { get; set; }
 
-        [Required(ErrorMessage = "Мора да одберете датум.")]
         [DataType(DataType.Date)]
         public DateTime SelectedDay { get; set; }
 
         [Required(ErrorMessage = "Мора да одберете време.")]
         public string SelectedTime { get; set; }
 
-        [Required]
+        [Range(1, 100, ErrorMessage = "Мора да одберете барем едно седиште.")]
         public int NumberOfSeats { get; set; }
 
         [Required(ErrorMessage = "Мора да одберете барем едно седиште.")]
