@@ -7,19 +7,14 @@
         User.Identity.IsAuthenticated;
 }
 
-<main class="home-page"
-      aria-labelledby="home-title">
+<div class="home-page"
+     aria-labelledby="home-title">
 
     <section class="cinema-panel home-hero">
-        <div class="home-hero-glow home-hero-glow-left"></div>
-        <div class="home-hero-glow home-hero-glow-right"></div>
+        <div class="home-hero-glow home-hero-glow-left" aria-hidden="true"></div>
+        <div class="home-hero-glow home-hero-glow-right" aria-hidden="true"></div>
 
         <div class="home-hero-content">
-
-            <div class="cinema-eyebrow">
-                CINEMA EXPERIENCE
-            </div>
-
             <h1 id="home-title"
                 class="home-hero-title">
                 Твојот следен
@@ -46,62 +41,7 @@
                    href="@Url.Action("Buy", "Tickets")">
                     Купи билет
                 </a>
-            </div>
-
-            <div class="home-hero-meta">
-                <div class="home-meta-item">
-                    <span class="home-meta-number">
-                        01
-                    </span>
-
-                    <div>
-                        <strong>
-                            Избери филм
-                        </strong>
-
-                        <span>
-                            Актуелен или најава
-                        </span>
-                    </div>
-                </div>
-
-                <div class="home-meta-divider"></div>
-
-                <div class="home-meta-item">
-                    <span class="home-meta-number">
-                        02
-                    </span>
-
-                    <div>
-                        <strong>
-                            Одбери седиште
-                        </strong>
-
-                        <span>
-                            Достапност во реално време
-                        </span>
-                    </div>
-                </div>
-
-                <div class="home-meta-divider"></div>
-
-                <div class="home-meta-item">
-                    <span class="home-meta-number">
-                        03
-                    </span>
-
-                    <div>
-                        <strong>
-                            Добиј билет
-                        </strong>
-
-                        <span>
-                            Потврда преку e-mail
-                        </span>
-                    </div>
-                </div>
-            </div>
-
+            </div>       
         </div>
 
         <div class="home-hero-visual"
@@ -113,24 +53,28 @@
             <div class="home-ticket-preview">
 
                 <div class="home-ticket-top">
-                    <span class="home-ticket-brand">
-                        MOVIETICKET
-                    </span>
+                    <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
+                         alt=""
+                         class="home-ticket-brand-logo"
+                         width="120"
+                         height="40"
+                         decoding="async" />
+
 
                     <span class="movie-badge">
-                        LIVE SEATS
+                        ИЗБОР НА СЕДИШТА
                     </span>
                 </div>
 
                 <div class="home-ticket-feature">
                     <span class="home-ticket-label">
-                        CINEMA
+                        КИНО
                     </span>
 
                     <strong>
-                        Premium
+                        Твојата
                         <br />
-                        Movie Night
+                        кино вечер
                     </strong>
                 </div>
 
@@ -140,7 +84,7 @@
 
                     <div>
                         <span>
-                            TIME
+                            ТЕРМИН
                         </span>
 
                         <strong>
@@ -150,7 +94,7 @@
 
                     <div>
                         <span>
-                            ROW
+                            РЕД
                         </span>
 
                         <strong>
@@ -160,7 +104,7 @@
 
                     <div>
                         <span>
-                            SEAT
+                            СЕДИШТЕ
                         </span>
 
                         <strong>
@@ -199,7 +143,7 @@
         <div class="cinema-page-header">
             <div>
                 <div class="cinema-eyebrow">
-                    THE EXPERIENCE
+                    ИСКУСТВОТО
                 </div>
 
                 <h2 id="experience-title">
@@ -264,8 +208,8 @@
 
                     <p class="movie-card-description">
                         Избери датум, термин и седишта преку
-                        интерактивна кино сала со real-time
-                        SignalR синхронизација.
+                        интерактивен распоред на кино салата,
+                        со ажурирана достапност во реално време.
                     </p>
 
                     <div class="movie-card-actions">
@@ -293,9 +237,9 @@
                     </h3>
 
                     <p class="movie-card-description">
-                        По успешната резервација билетот се зачувува
-                        на твојот профил, а потврдата може да биде
-                        испратена и преку e-mail.
+                        По успешната резервација билетот е достапен
+                        во твојот профил, а потврдата со PDF билет
+                        може да пристигне и преку e-mail.
                     </p>
 
                     <div class="movie-card-actions">
@@ -324,16 +268,17 @@
     </section>
 
 
-    <section class="home-section">
+    <section class="home-section"
+             aria-labelledby="home-coming-soon-title">
 
         <div class="cinema-panel home-coming-soon">
 
             <div>
                 <div class="cinema-eyebrow">
-                    COMING SOON
+                    НАСКОРО
                 </div>
 
-                <h2>
+                <h2 id="home-coming-soon-title">
                     Следната премиера
                     можеби е твојот
                     <span class="cinema-text-gradient">
@@ -360,17 +305,18 @@
     </section>
 
 
-    <section class="home-section">
+    <section class="home-section"
+             aria-labelledby="home-final-title">
 
         <div class="home-final-cta">
 
             <div class="home-final-cta-content">
 
                 <span class="cinema-eyebrow">
-                    READY WHEN YOU ARE
+                    ПОДГОТВЕН ЗА ФИЛМ
                 </span>
 
-                <h2>
+                <h2 id="home-final-title">
                     Светлата се гасат.
                     <br />
                     Филмот започнува.
@@ -404,7 +350,7 @@
 
     </section>
 
-</main>
+</div>
 
 <style>
     .home-page {
@@ -429,7 +375,7 @@
             inset: 0;
             z-index: -3;
             content: "";
-            background: linear-gradient( 90deg, rgba(8, 11, 16, 0.98) 0%, rgba(8, 11, 16, 0.88) 45%, rgba(8, 11, 16, 0.42) 100% );
+            background: linear-gradient(90deg, rgba(8, 11, 16, 0.98) 0%, rgba(8, 11, 16, 0.88) 45%, rgba(8, 11, 16, 0.42) 100%);
         }
 
         .home-hero::after {
@@ -442,7 +388,7 @@
             content: "";
             border-radius: 50%;
             border: 1px solid rgba(214, 168, 75, 0.08);
-            background: radial-gradient( circle, rgba(214, 168, 75, 0.08), transparent 64% );
+            background: radial-gradient(circle, rgba(214, 168, 75, 0.08), transparent 64%);
         }
 
     .home-hero-content {
@@ -459,7 +405,7 @@
     .home-hero-description {
         max-width: 650px;
         margin-bottom: 2rem;
-        color: var(--cinema-text-soft);
+        color: #cbd1dc;
         font-size: 1.12rem;
         line-height: 1.8;
     }
@@ -486,8 +432,9 @@
 
     .home-hero-meta {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 1.4rem;
+        gap: 1rem 1.2rem;
         margin-top: 3.5rem;
     }
 
@@ -498,8 +445,8 @@
     }
 
     .home-meta-number {
-        color: var(--cinema-gold);
-        font-size: 0.72rem;
+        color: var(--cinema-gold-light);
+        font-size: 0.78rem;
         font-weight: 800;
         letter-spacing: 0.1em;
     }
@@ -507,14 +454,16 @@
     .home-meta-item strong {
         display: block;
         color: var(--cinema-text);
-        font-size: 0.86rem;
+        font-size: 0.88rem;
+        font-weight: 700;
     }
 
     .home-meta-item div > span {
         display: block;
         margin-top: 0.1rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.73rem;
+        color: #b0bac8;
+        font-size: 0.8rem;
+        line-height: 1.5;
     }
 
     .home-meta-divider {
@@ -561,7 +510,7 @@
         padding: 1.5rem;
         border: 1px solid rgba(255, 255, 255, 0.13);
         border-radius: 26px;
-        background: linear-gradient( 145deg, rgba(28, 36, 50, 0.96), rgba(11, 15, 23, 0.96) );
+        background: linear-gradient(145deg, rgba(28, 36, 50, 0.96), rgba(11, 15, 23, 0.96));
         box-shadow: 0 40px 100px rgba(0, 0, 0, 0.48), 0 0 80px rgba(214, 168, 75, 0.06);
         transform: perspective(1000px) rotateY(-8deg) rotateX(3deg);
         animation: home-ticket-float 6s ease-in-out infinite;
@@ -596,10 +545,18 @@
     }
 
     .home-ticket-brand {
-        color: var(--cinema-text-muted);
-        font-size: 0.7rem;
+        color: #b7c0cd;
+        font-size: 0.68rem;
         font-weight: 800;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.12em;
+    }
+
+    .home-ticket-top .movie-badge {
+        padding: 0.32rem 0.58rem;
+        font-size: 0.61rem;
+        line-height: 1.3;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
     }
 
     .home-ticket-feature {
@@ -624,7 +581,7 @@
 
     .home-ticket-line {
         height: 1px;
-        background: repeating-linear-gradient( 90deg, rgba(255, 255, 255, 0.18) 0, rgba(255, 255, 255, 0.18) 8px, transparent 8px, transparent 16px );
+        background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0, rgba(255, 255, 255, 0.18) 8px, transparent 8px, transparent 16px);
     }
 
     .home-ticket-details {
@@ -637,15 +594,15 @@
         .home-ticket-details span {
             display: block;
             margin-bottom: 0.25rem;
-            color: var(--cinema-text-muted);
-            font-size: 0.62rem;
+            color: #b7c0cd;
+            font-size: 0.69rem;
             font-weight: 800;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.035em;
         }
 
         .home-ticket-details strong {
             color: var(--cinema-text);
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
 
     .home-ticket-code {
@@ -733,7 +690,7 @@
         justify-content: space-between;
         gap: 3rem;
         padding: clamp(2rem, 5vw, 4rem);
-        background: radial-gradient( circle at 85% 50%, rgba(214, 168, 75, 0.08), transparent 30% ), linear-gradient( 145deg, rgba(20, 27, 39, 0.96), rgba(10, 14, 21, 0.96) );
+        background: radial-gradient(circle at 85% 50%, rgba(214, 168, 75, 0.08), transparent 30%), linear-gradient(145deg, rgba(20, 27, 39, 0.96), rgba(10, 14, 21, 0.96));
     }
 
         .home-coming-soon > div:first-child {
@@ -755,7 +712,7 @@
         padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 5vw, 4rem);
         border: 1px solid rgba(214, 168, 75, 0.14);
         border-radius: var(--cinema-radius-xl);
-        background: radial-gradient( circle at 50% 120%, rgba(214, 168, 75, 0.17), transparent 42% ), linear-gradient( 180deg, rgba(17, 23, 34, 0.95), rgba(7, 9, 13, 0.98) );
+        background: radial-gradient(circle at 50% 120%, rgba(214, 168, 75, 0.17), transparent 42%), linear-gradient(180deg, rgba(17, 23, 34, 0.95), rgba(7, 9, 13, 0.98));
         box-shadow: var(--cinema-shadow-lg);
         text-align: center;
     }
@@ -785,7 +742,7 @@
 
     .home-final-cta h2 {
         margin-bottom: 1rem;
-        font-size: clamp( 2rem, 5vw, 3.5rem );
+        font-size: clamp(2rem, 5vw, 3.5rem);
     }
 
     .home-final-cta p {
@@ -798,14 +755,28 @@
         justify-content: center;
     }
 
+    .home-page a:focus-visible {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 4px;
+    }
+
     @@keyframes home-ticket-float {
-        0%,
-        100% {
+        0%, 100% {
             transform: perspective(1000px) rotateY(-8deg) rotateX(3deg) translateY(0);
         }
 
         50% {
             transform: perspective(1000px) rotateY(-5deg) rotateX(1deg) translateY(-12px);
+        }
+    }
+
+    @@keyframes home-ticket-float-mobile {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
         }
     }
 
@@ -825,7 +796,7 @@
         }
 
         .home-hero {
-            grid-template-columns: 1fr;
+            grid-template-columns: minmax(0, 1fr);
             min-height: auto;
         }
 
@@ -834,12 +805,14 @@
         }
 
         .home-hero-visual {
+            min-width: 0;
             min-height: 430px;
             margin-top: 2rem;
         }
 
         .home-ticket-preview {
             transform: none;
+            animation-name: home-ticket-float-mobile;
         }
 
         .home-hero-meta {
@@ -858,7 +831,7 @@
         }
 
         .home-hero-title {
-            font-size: 2.65rem;
+            font-size: clamp(2rem, 7.5vw, 2.65rem);
         }
 
         .home-hero-description {
@@ -893,6 +866,10 @@
         .home-ticket-preview {
             width: min(90%, 330px);
         }
+
+        .home-ticket-top {
+            gap: 0.5rem;
+        }
     }
 
     @@media (max-width: 575.98px) {
@@ -905,7 +882,14 @@
         }
 
         .home-hero-title {
-            font-size: 2.2rem;
+            font-size: clamp(1.95rem, 8vw, 2.2rem);
+            line-height: 1.13;
+            overflow-wrap: break-word;
+        }
+
+        .home-hero-description {
+            font-size: 0.96rem;
+            line-height: 1.7;
         }
 
         .home-hero-actions {
@@ -921,6 +905,20 @@
             min-height: 340px;
         }
 
+        .home-ticket-preview {
+            width: min(100%, 310px);
+            padding: 1.15rem;
+        }
+
+        .home-ticket-top .movie-badge {
+            font-size: 0.57rem;
+            padding: 0.3rem 0.45rem;
+        }
+
+        .home-ticket-details {
+            gap: 0.4rem;
+        }
+
         .home-orbit-large {
             width: 300px;
             height: 300px;
@@ -932,7 +930,7 @@
         }
 
         .home-ticket-feature {
-            padding: 3rem 0 2.3rem;
+            padding: 2.6rem 0 2rem;
         }
 
             .home-ticket-feature strong {

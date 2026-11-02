@@ -6,8 +6,9 @@ namespace MovieTicketMVC.Models
 {
     public class ExternalLoginConfirmationViewModel
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Мора да внесете e-mail адреса.")]
+        [EmailAddress(ErrorMessage = "Внесете валидна e-mail адреса.")]
+        [StringLength(256, ErrorMessage = "E-mail адресата е предолга.")]
         [Display(Name = "Email")]
         public string Email { get; set; }
     }
@@ -19,7 +20,12 @@ namespace MovieTicketMVC.Models
 
     public class SendCodeViewModel
     {
-        [Required]
+        public SendCodeViewModel()
+        {
+            Providers = new List<SelectListItem>();
+        }
+
+        [Required(ErrorMessage = "Изберете метод за верификација.")]
         public string SelectedProvider { get; set; }
 
         public ICollection<SelectListItem> Providers { get; set; }
@@ -31,10 +37,10 @@ namespace MovieTicketMVC.Models
 
     public class VerifyCodeViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Недостасува методот за верификација.")]
         public string Provider { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Мора да внесете безбедносен код.")]
         [Display(Name = "Code")]
         public string Code { get; set; }
 
@@ -48,20 +54,22 @@ namespace MovieTicketMVC.Models
 
     public class ForgotViewModel
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Мора да внесете e-mail адреса.")]
+        [EmailAddress(ErrorMessage = "Внесете валидна e-mail адреса.")]
+        [StringLength(256, ErrorMessage = "E-mail адресата е предолга.")]
         [Display(Name = "Email")]
         public string Email { get; set; }
     }
 
     public class LoginViewModel
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Мора да внесете e-mail адреса.")]
+        [EmailAddress(ErrorMessage = "Внесете валидна e-mail адреса.")]
+        [StringLength(256, ErrorMessage = "E-mail адресата е предолга.")]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Мора да внесете лозинка.")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
@@ -72,63 +80,70 @@ namespace MovieTicketMVC.Models
 
     public class RegisterViewModel
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Мора да внесете e-mail адреса.")]
+        [EmailAddress(ErrorMessage = "Внесете валидна e-mail адреса.")]
+        [StringLength(256, ErrorMessage = "E-mail адресата е предолга.")]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Мора да внесете лозинка.")]
         [StringLength(
             100,
-            ErrorMessage = "The {0} must be at least {2} characters long.",
-            MinimumLength = 8)]
+            MinimumLength = 8,
+            ErrorMessage = "Лозинката мора да содржи помеѓу 8 и 100 знаци.")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Мора да ја потврдите лозинката.")]
+        [StringLength(
+            100,
+            ErrorMessage = "Потврдата на лозинката не смее да надминува 100 знаци.")]
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         [System.ComponentModel.DataAnnotations.Compare(
             "Password",
-            ErrorMessage =
-                "The password and confirmation password do not match.")]
+            ErrorMessage = "Лозинките не се совпаѓаат.")]
         public string ConfirmPassword { get; set; }
     }
 
     public class ResetPasswordViewModel
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Мора да внесете e-mail адреса.")]
+        [EmailAddress(ErrorMessage = "Внесете валидна e-mail адреса.")]
+        [StringLength(256, ErrorMessage = "E-mail адресата е предолга.")]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Мора да внесете нова лозинка.")]
         [StringLength(
             100,
-            ErrorMessage = "The {0} must be at least {2} characters long.",
-            MinimumLength = 8)]
+            MinimumLength = 8,
+            ErrorMessage = "Лозинката мора да содржи помеѓу 8 и 100 знаци.")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Мора да ја потврдите новата лозинка.")]
+        [StringLength(
+            100,
+            ErrorMessage = "Потврдата на лозинката не смее да надминува 100 знаци.")]
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         [System.ComponentModel.DataAnnotations.Compare(
             "Password",
-            ErrorMessage =
-                "The password and confirmation password do not match.")]
+            ErrorMessage = "Лозинките не се совпаѓаат.")]
         public string ConfirmPassword { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Недостасува кодот за ресетирање на лозинката.")]
         public string Code { get; set; }
     }
 
     public class ForgotPasswordViewModel
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Мора да внесете e-mail адреса.")]
+        [EmailAddress(ErrorMessage = "Внесете валидна e-mail адреса.")]
+        [StringLength(256, ErrorMessage = "E-mail адресата е предолга.")]
         [Display(Name = "Email")]
         public string Email { get; set; }
     }

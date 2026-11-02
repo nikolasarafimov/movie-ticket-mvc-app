@@ -39,11 +39,11 @@
         <div class="booking-hero-content">
 
             <div class="cinema-eyebrow">
-                BOOK YOUR EXPERIENCE
+                РЕЗЕРВИРАЈ БИЛЕТ
             </div>
 
             <h1 id="booking-title">
-                Резервирај го твоето
+                Резервирај го своето
                 <span class="cinema-text-gradient">
                     место
                 </span>
@@ -51,31 +51,10 @@
 
             <p>
                 Избери филм, термин и седиште.
-                Достапноста се синхронизира во реално време
-                за сите корисници.
+                Провери кои седишта се слободни и потврди ја резервацијата.
+                Достапноста се ажурира во реално време.
             </p>
 
-        </div>
-
-        <div class="booking-live-status"
-             id="connectionStatus">
-
-            <span class="booking-live-dot"></span>
-
-            <div>
-                <span>
-                    REAL-TIME SEATS
-                </span>
-
-                <strong id="connectionStatusText">
-                    Се поврзува...
-                </strong>
-            </div>
-
-        </div>
-
-        <div class="booking-hero-orbit"
-             aria-hidden="true">
         </div>
 
     </section>
@@ -162,13 +141,13 @@
         @Html.AntiForgeryToken()
 
         @Html.ValidationSummary(
-            true,
-            "",
-            new
-            {
-                @class =
-                    "validation-summary-errors booking-validation"
-            })
+                      true,
+                      "",
+                      new
+                      {
+                          @class =
+                              "validation-summary-errors booking-validation"
+                      })
 
 
         <div class="booking-layout">
@@ -257,13 +236,13 @@
                             </select>
 
                             @Html.ValidationMessageFor(
-                                m => m.MovieId,
-                                "",
-                                new
-                                {
-                                    @class =
-                                        "text-danger"
-                                })
+                                          m => m.MovieId,
+                                          "",
+                                          new
+                                          {
+                                              @class =
+                                                  "text-danger"
+                                          })
 
                         </div>
 
@@ -276,30 +255,32 @@
                             </label>
 
                             @Html.TextBox(
-                                "SelectedDay",
-                                selectedDayValue,
-                                new
-                                {
-                                    @class =
-                                        "form-control",
-                                    type =
-                                        "date",
-                                    id =
-                                        "SelectedDay",
-                                    required =
-                                        "required",
-                                    disabled =
-                                        "disabled"
-                                })
+                                          "SelectedDay",
+                                          selectedDayValue,
+                                          new
+                                          {
+                                              @class =
+                                                  "form-control",
+                                              type =
+                                                  "date",
+                                              id =
+                                                  "SelectedDay",
+                                              required =
+                                                  "required",
+                                              disabled =
+                                                  "disabled"
+                                          })
 
                             @Html.ValidationMessageFor(
-                                m => m.SelectedDay,
-                                "",
-                                new
-                                {
-                                    @class =
-                                        "text-danger"
-                                })
+                                          m => m.SelectedDay,
+                                          "",
+                                          new
+                                          {
+                                              @class =
+                                                  "text-danger"
+                                          })
+
+                            <small class="booking-date-hint">Прво избери филм, потоа датум на проекцијата.</small>
 
                         </div>
 
@@ -344,13 +325,13 @@
                             </select>
 
                             @Html.ValidationMessageFor(
-                                m => m.SelectedTime,
-                                "",
-                                new
-                                {
-                                    @class =
-                                        "text-danger"
-                                })
+                                          m => m.SelectedTime,
+                                          "",
+                                          new
+                                          {
+                                              @class =
+                                                  "text-danger"
+                                          })
 
                             <div id="timeErrorMessage"
                                  class="booking-inline-error"
@@ -408,7 +389,7 @@
                             </span>
 
                             <span>
-                                Premium · 500 ден.
+                                Премиум · 500 ден.
                             </span>
 
                         </div>
@@ -443,7 +424,7 @@
                         <div class="cinema-screen-wrapper">
 
                             <span>
-                                SCREEN
+                                КИНО ПЛАТНО
                             </span>
 
                             <div class="cinema-screen"></div>
@@ -468,7 +449,7 @@
                                         <div class="seat-row">
 
                                             <div class="row-label">
-                                                R@row
+                                                @("Р" + row)
                                             </div>
 
                                             @for (var col = 1;
@@ -506,7 +487,7 @@
 
                                             <div class="aisle-spacer">
                                                 <span>
-                                                    AISLE
+                                                    ПАТЕКА
                                                 </span>
                                             </div>
 
@@ -602,17 +583,17 @@
                                for="AgeCategoryAdult">
 
                             @Html.RadioButtonFor(
-                                m => m.AgeCategory,
-                                "18+",
-                                new
-                                {
-                                    @class =
-                                        "booking-age-radio",
-                                    id =
-                                        "AgeCategoryAdult",
-                                    required =
-                                        "required"
-                                })
+                                          m => m.AgeCategory,
+                                          "18+",
+                                          new
+                                          {
+                                              @class =
+                                                  "booking-age-radio",
+                                              id =
+                                                  "AgeCategoryAdult",
+                                              required =
+                                                  "required"
+                                          })
 
                             <span class="booking-age-card">
 
@@ -642,17 +623,17 @@
                                for="AgeCategoryUnder18">
 
                             @Html.RadioButtonFor(
-                                m => m.AgeCategory,
-                                "Under18",
-                                new
-                                {
-                                    @class =
-                                        "booking-age-radio",
-                                    id =
-                                        "AgeCategoryUnder18",
-                                    required =
-                                        "required"
-                                })
+                                          m => m.AgeCategory,
+                                          "Under18",
+                                          new
+                                          {
+                                              @class =
+                                                  "booking-age-radio",
+                                              id =
+                                                  "AgeCategoryUnder18",
+                                              required =
+                                                  "required"
+                                          })
 
                             <span class="booking-age-card">
 
@@ -680,13 +661,13 @@
 
                         <div>
                             @Html.ValidationMessageFor(
-                                m => m.AgeCategory,
-                                "",
-                                new
-                                {
-                                    @class =
-                                        "text-danger"
-                                })
+                                          m => m.AgeCategory,
+                                          "",
+                                          new
+                                          {
+                                              @class =
+                                                  "text-danger"
+                                          })
                         </div>
 
                     </fieldset>
@@ -696,22 +677,22 @@
 
                         <label for="Email"
                                class="form-label">
-                            E-mail за билетот
+                            Е-пошта за билетот
                         </label>
 
                         @Html.TextBoxFor(
-                            m => m.Email,
-                            new
-                            {
-                                @class =
-                                    "form-control",
-                                id =
-                                    "Email",
-                                type =
-                                    "email",
-                                @readonly =
-                                    "readonly"
-                            })
+                                      m => m.Email,
+                                      new
+                                      {
+                                          @class =
+                                              "form-control",
+                                          id =
+                                              "Email",
+                                          type =
+                                              "email",
+                                          @readonly =
+                                              "readonly"
+                                      })
 
                         <small>
                             Потврдата и PDF билетот ќе бидат
@@ -734,7 +715,7 @@
                         <div>
 
                             <span>
-                                YOUR BOOKING
+                                ТВОЈАТА РЕЗЕРВАЦИЈА
                             </span>
 
                             <h2>
@@ -743,9 +724,12 @@
 
                         </div>
 
-                        <span class="booking-summary-ticket-icon"
-                              aria-hidden="true">
-                            ◇
+                        <span class="booking-summary-ticket-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 9a3 3 0 0 0 0 6v3a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3a3 3 0 0 1 0-6V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v3Z"></path>
+                                <path d="M13 5v2m0 3v2m0 3v2m0 3v1"></path>
+                            </svg>
                         </span>
 
                     </div>
@@ -838,7 +822,7 @@
                         <div>
 
                             <span>
-                                Premium
+                                Премиум
                             </span>
 
                             <span>
@@ -850,7 +834,7 @@
                         <div>
 
                             <span>
-                                Standard
+                                Стандард
                             </span>
 
                             <span>
@@ -888,7 +872,7 @@
                             class="btn btn-primary booking-buy-button">
 
                         <span id="buyButtonText">
-                            Купи билет
+                            Потврди резервација
                         </span>
 
                         <span aria-hidden="true">
@@ -915,51 +899,7 @@
                 </section>
 
 
-                <section class="cinema-panel booking-help-card">
 
-                    <span class="booking-help-label">
-                        HOW IT WORKS
-                    </span>
-
-                    <div class="booking-help-item">
-
-                        <span>
-                            01
-                        </span>
-
-                        <p>
-                            Одбери филм, датум и термин.
-                        </p>
-
-                    </div>
-
-                    <div class="booking-help-item">
-
-                        <span>
-                            02
-                        </span>
-
-                        <p>
-                            Кликни на слободните седишта
-                            за да ги резервираш.
-                        </p>
-
-                    </div>
-
-                    <div class="booking-help-item">
-
-                        <span>
-                            03
-                        </span>
-
-                        <p>
-                            Потврди ја резервацијата и
-                            добиј го билетот преку e-mail.
-                        </p>
-
-                    </div>
-
-                </section>
 
             </aside>
 
@@ -1005,12 +945,6 @@
 
             var seatErrorMessage =
                 document.getElementById("seatErrorMessage");
-
-            var connectionStatus =
-                document.getElementById("connectionStatus");
-
-            var connectionStatusText =
-                document.getElementById("connectionStatusText");
 
             var selectedMovieSummary =
                 document.getElementById("selectedMovieSummary");
@@ -1277,22 +1211,6 @@
                 );
             }
 
-
-            function setConnectionState(
-                state,
-                text) {
-
-                connectionStatus.classList.remove(
-                    "connected",
-                    "disconnected",
-                    "connecting");
-
-                connectionStatus.classList.add(
-                    state);
-
-                connectionStatusText.textContent =
-                    text;
-            }
 
 
             function updateBookingSteps() {
@@ -2497,10 +2415,6 @@
             calculateTotalAndSyncInputs();
             disableAllSeats();
 
-            setConnectionState(
-                "connecting",
-                "Се поврзува...");
-
 
             $.connection.hub
                 .start()
@@ -2509,10 +2423,6 @@
 
                         hubReady =
                             true;
-
-                        setConnectionState(
-                            "connected",
-                            "Поврзано");
 
                         var context =
                             getCurrentContext();
@@ -2545,10 +2455,6 @@
                         hubReady =
                             false;
 
-                        setConnectionState(
-                            "disconnected",
-                            "Недостапно");
-
                         showSeatError(
                             "Real-time изборот на седишта моментално "
                             + "не е достапен. Освежете ја страницата.");
@@ -2567,10 +2473,6 @@
                     hubReady =
                         false;
 
-                    setConnectionState(
-                        "disconnected",
-                        "Прекината врска");
-
                     clearLocalSelections();
 
                     showSeatError(
@@ -2587,10 +2489,6 @@
 
                     hubReady =
                         true;
-
-                    setConnectionState(
-                        "connected",
-                        "Повторно поврзано");
 
                     clearLocalSelections();
                     clearAvailabilityState();
@@ -2618,9 +2516,7 @@
     }
 
 
-    /* =====================================================
-       HERO
-       ===================================================== */
+
 
     .booking-hero {
         position: relative;
@@ -2628,7 +2524,7 @@
         align-items: flex-end;
         justify-content: space-between;
         gap: 2rem;
-        padding: clamp(2rem, 5vw, 3.5rem);
+        padding: clamp(2rem, 4vw, 3.1rem);
         overflow: hidden;
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-xl);
@@ -2674,66 +2570,7 @@
         }
 
 
-    /* =====================================================
-       CONNECTION
-       ===================================================== */
 
-    .booking-live-status {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        flex: 0 0 auto;
-        align-items: center;
-        gap: 0.8rem;
-        min-width: 180px;
-        padding: 0.8rem 1rem;
-        border: 1px solid var(--cinema-border);
-        border-radius: 15px;
-        background: rgba(9, 13, 20, 0.72);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-    }
-
-    .booking-live-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--cinema-warning);
-        box-shadow: 0 0 15px rgba(246, 200, 95, 0.55);
-        transition: background-color var(--cinema-transition), box-shadow var(--cinema-transition);
-    }
-
-    .booking-live-status.connected
-    .booking-live-dot {
-        background: var(--cinema-success);
-        box-shadow: 0 0 17px rgba(66, 199, 131, 0.7);
-    }
-
-    .booking-live-status.disconnected
-    .booking-live-dot {
-        background: var(--cinema-danger);
-        box-shadow: 0 0 17px rgba(239, 102, 115, 0.65);
-    }
-
-    .booking-live-status div > span {
-        display: block;
-        margin-bottom: 0.12rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.54rem;
-        font-weight: 900;
-        letter-spacing: 0.11em;
-    }
-
-    .booking-live-status strong {
-        display: block;
-        color: var(--cinema-text);
-        font-size: 0.8rem;
-    }
-
-
-    /* =====================================================
-       PROGRESS
-       ===================================================== */
 
     .booking-progress {
         display: flex;
@@ -2800,9 +2637,7 @@
     }
 
 
-    /* =====================================================
-       FORM / LAYOUT
-       ===================================================== */
+
 
     .booking-form {
         display: flex;
@@ -2820,7 +2655,7 @@
 
     .booking-layout {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 330px;
+        grid-template-columns: minmax(0, 1fr) minmax(310px, 345px);
         align-items: start;
         gap: 1.5rem;
     }
@@ -2834,7 +2669,7 @@
 
     .booking-sidebar {
         position: sticky;
-        top: 100px;
+        top: 108px;
         display: flex;
         min-width: 0;
         flex-direction: column;
@@ -2911,9 +2746,7 @@
         }
 
 
-    /* =====================================================
-       SEAT LEGEND
-       ===================================================== */
+
 
     .booking-seat-legend {
         display: flex;
@@ -2959,9 +2792,7 @@
         }
 
 
-    /* =====================================================
-       AUDITORIUM
-       ===================================================== */
+
 
     .cinema-auditorium {
         position: relative;
@@ -3004,9 +2835,7 @@
     }
 
 
-    /* =====================================================
-       SEATS
-       ===================================================== */
+
 
     .seat-area {
         max-width: 100%;
@@ -3160,9 +2989,7 @@
     }
 
 
-    /* =====================================================
-       AGE / CUSTOMER
-       ===================================================== */
+
 
     .booking-age-selector {
         display: grid;
@@ -3265,9 +3092,7 @@
         }
 
 
-    /* =====================================================
-       SUMMARY
-       ===================================================== */
+
 
     .booking-summary-card {
         position: relative;
@@ -3512,60 +3337,206 @@
         }
 
 
-    /* =====================================================
-       HELP
-       ===================================================== */
 
-    .booking-help-card {
-        padding: 1.25rem;
+
+
+    .booking-page .booking-hero h1 {
+        max-width: 780px;
+        margin-bottom: 1.1rem;
+        font-size: clamp(2.45rem, 4.6vw, 4rem);
+        line-height: 1.1;
+        letter-spacing: -0.045em;
     }
 
-    .booking-help-label {
+    .booking-page .booking-hero p {
+        max-width: 610px;
+        color: #c0c9d6;
+        font-size: 0.96rem;
+        line-height: 1.75;
+    }
+
+    .booking-page .cinema-eyebrow {
+        font-size: 0.7rem;
+        letter-spacing: 0.11em;
+    }
+
+    .booking-page .booking-selection-panel,
+    .booking-page .booking-seats-panel,
+    .booking-page .booking-customer-panel {
+        border-radius: 23px;
+    }
+
+    .booking-page .booking-section-heading h2 {
+        color: var(--cinema-text);
+        font-size: 1.23rem;
+    }
+
+    .booking-page .booking-section-heading p,
+    .booking-page .booking-age-card small,
+    .booking-page .booking-email-field small {
+        color: #acb6c5;
+        font-size: 0.81rem;
+        line-height: 1.6;
+    }
+
+    .booking-page .booking-form .form-label,
+    .booking-page .booking-age-selector legend {
+        color: #dce3ec;
+        font-size: 0.87rem;
+        font-weight: 700;
+    }
+
+    .booking-page .booking-form .form-control,
+    .booking-page .booking-form .form-select {
+        min-height: 49px;
+        border: 1px solid rgba(255, 255, 255, 0.17);
+        border-radius: 11px;
+        background-color: #131b28;
+        color: #eef2f7;
+        font-size: 0.9rem;
+        color-scheme: dark;
+    }
+
+        .booking-page .booking-form .form-control:focus,
+        .booking-page .booking-form .form-select:focus {
+            border-color: var(--cinema-gold);
+            background-color: #162031;
+            box-shadow: 0 0 0 3px rgba(214, 168, 75, 0.13);
+        }
+
+        .booking-page .booking-form .form-control:disabled,
+        .booking-page .booking-form .form-select:disabled {
+            color: #909cae;
+            background-color: #111722;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .booking-page .booking-form .form-control::placeholder {
+            color: #a0adbf;
+            opacity: 1;
+        }
+
+    .booking-date-hint {
         display: block;
-        margin-bottom: 0.8rem;
-        color: var(--cinema-gold-light);
+        margin-top: 0.4rem;
+        color: #a6b3c3;
+        font-size: 0.76rem;
+    }
+
+    .booking-page .booking-step strong {
+        font-size: 0.86rem;
+    }
+
+    .booking-page .booking-step small {
+        color: #a8b5c5;
+        font-size: 0.72rem;
+    }
+
+    .booking-page .booking-legend-item {
+        color: #c1cad6;
+        font-size: 0.78rem;
+    }
+
+    .booking-page .cinema-screen-wrapper > span {
+        color: #c0ad82;
+        font-size: 0.72rem;
+        letter-spacing: 0.16em;
+    }
+
+    .booking-page .cinema-screen-wrapper small {
+        color: #a8b5c5;
+        font-size: 0.67rem;
+    }
+
+    .booking-page .row-label {
+        flex: 0 0 35px;
+        width: 35px;
+        margin-right: 8px;
+        color: #b9c5d4;
+        font-size: 0.74rem;
+        font-weight: 850;
+    }
+
+    .booking-page .aisle-spacer span {
+        color: #8995a6;
         font-size: 0.55rem;
-        font-weight: 900;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.06em;
     }
 
-    .booking-help-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.7rem;
-        padding: 0.65rem 0;
-        border-bottom: 1px solid var(--cinema-border);
+    .booking-page .booking-summary-card {
+        padding: 1.55rem;
     }
 
-        .booking-help-item:last-child {
-            border-bottom: 0;
+    .booking-page .booking-summary-header > div > span {
+        font-size: 0.66rem;
+        letter-spacing: 0.09em;
+    }
+
+    .booking-page .booking-summary-movie span,
+    .booking-page .booking-summary-item span,
+    .booking-page .booking-summary-seats > span {
+        color: #a3afbe;
+        font-size: 0.66rem;
+        letter-spacing: 0.06em;
+    }
+
+    .booking-page .booking-summary-movie strong,
+    .booking-page .booking-summary-item strong {
+        font-size: 0.87rem;
+    }
+
+    .booking-page .booking-summary-security p {
+        color: #aab6c5;
+        font-size: 0.75rem;
+        line-height: 1.65;
+    }
+
+    .booking-page .booking-age-card strong {
+        font-size: 0.88rem;
+    }
+
+    .booking-page .booking-age-card {
+        min-height: 100px;
+    }
+
+    .booking-page .booking-buy-button {
+        min-height: 52px;
+        font-size: 0.91rem;
+        font-weight: 800;
+    }
+
+    .booking-page a:focus-visible,
+    .booking-page button:focus-visible,
+    .booking-page input:focus-visible,
+    .booking-page select:focus-visible {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 3px;
+    }
+
+    @@media (max-width: 1050px) {
+        .booking-page .booking-sidebar {
+            grid-template-columns: 1fr;
         }
 
-        .booking-help-item > span {
-            display: grid;
-            flex: 0 0 30px;
-            place-items: center;
-            width: 30px;
-            height: 30px;
-            color: var(--cinema-gold-light);
-            border: 1px solid rgba(214, 168, 75, 0.16);
-            border-radius: 9px;
-            background: rgba(214, 168, 75, 0.05);
-            font-size: 0.55rem;
-            font-weight: 900;
+        .booking-page .booking-summary-card {
+            max-width: 100%;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .booking-page .booking-hero h1 {
+            font-size: clamp(2rem, 8vw, 2.65rem);
         }
 
-        .booking-help-item p {
-            margin: 0;
-            color: var(--cinema-text-muted);
-            font-size: 0.72rem;
-            line-height: 1.55;
+        .booking-page .booking-summary-card {
+            padding: 1.2rem;
         }
 
-
-    /* =====================================================
-       RESPONSIVE
-       ===================================================== */
+        .booking-page .booking-age-card {
+            min-height: 0;
+        }
+    }
 
     @@media (max-width: 1050px) {
         .booking-layout {
@@ -3583,10 +3554,6 @@
         .booking-hero {
             align-items: flex-start;
             flex-direction: column;
-        }
-
-        .booking-live-status {
-            width: 100%;
         }
 
         .booking-progress {

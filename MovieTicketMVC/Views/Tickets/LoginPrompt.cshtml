@@ -1,845 +1,725 @@
 ﻿@{
     ViewBag.Title = "Потребна е најава";
 
-    var returnUrl =
-        ViewBag.ReturnUrl as string
-        ?? Url.Action("Buy", "Tickets");
+    var returnUrl = ViewBag.ReturnUrl as string;
+
+    if (string.IsNullOrWhiteSpace(returnUrl) ||
+        !Url.IsLocalUrl(returnUrl))
+    {
+        returnUrl = Url.Action("Buy", "Tickets");
+    }
+
+    var loginUrl = Url.Action("Login", "Account", new { returnUrl = returnUrl });
+    var registerUrl = Url.Action("Register", "Account");
+    var moviesUrl = Url.Action("Current", "Movies");
 }
 
-<main class="login-prompt-page"
-      aria-labelledby="login-prompt-title">
+<main class="booking-gate-page" aria-labelledby="booking-gate-title">
+    <section class="booking-gate-shell">
+        <div class="booking-gate-showcase">
+            <div class="booking-gate-orbit booking-gate-orbit-outer" aria-hidden="true"></div>
+            <div class="booking-gate-orbit booking-gate-orbit-inner" aria-hidden="true"></div>
 
-    <section class="login-prompt-shell">
+            <div class="booking-gate-showcase-copy">
+                <div class="booking-gate-brand">
+                    <a href="@Url.Action("Index", "Home")"
+                       class="booking-gate-brand-link"
+                       aria-label="MovieTicket - Почетна">
+                        <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
+                             alt="MovieTicket"
+                             width="170"
+                             height="48"
+                             decoding="async" />
+                    </a>
 
-        <div class="login-prompt-grid"
-             aria-hidden="true">
-        </div>
-
-        <div class="login-prompt-glow login-prompt-glow-one"
-             aria-hidden="true">
-        </div>
-
-        <div class="login-prompt-glow login-prompt-glow-two"
-             aria-hidden="true">
-        </div>
-
-
-        <a class="login-prompt-brand"
-           href="@Url.Action("Index", "Home")">
-
-            <span></span>
-
-            MOVIETICKET
-        </a>
-
-
-        <div class="login-prompt-visual"
-             aria-hidden="true">
-
-            <div class="login-prompt-orbit
-                        login-prompt-orbit-large">
-            </div>
-
-            <div class="login-prompt-orbit
-                        login-prompt-orbit-small">
-            </div>
-
-
-            <div class="login-prompt-ticket">
-
-                <div class="login-prompt-ticket-top">
-
-                    <span>
-                        MOVIETICKET
+                    <span class="booking-gate-brand-label">
+                        РЕЗЕРВАЦИИ
                     </span>
-
-                    <strong>
-                        ACCESS
-                    </strong>
-
                 </div>
 
-
-                <div class="login-prompt-ticket-body">
-
-                    <div class="login-prompt-ticket-lock">
-
-                        <div class="login-prompt-lock-shackle">
-                        </div>
-
-                        <div class="login-prompt-lock-body">
-
-                            <span></span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="login-prompt-ticket-divider">
-                </div>
-
-
-                <div class="login-prompt-ticket-status">
-
-                    <span></span>
-
-                    SIGN IN REQUIRED
-
-                </div>
-
-            </div>
-
-
-            <div class="login-prompt-spark
-                        login-prompt-spark-one">
-            </div>
-
-            <div class="login-prompt-spark
-                        login-prompt-spark-two">
-            </div>
-
-        </div>
-
-
-        <div class="login-prompt-content">
-
-            <div class="cinema-eyebrow">
-                CONTINUE TO CHECKOUT
-            </div>
-
-            <h1 id="login-prompt-title">
-                Најави се за да го
-                <span class="cinema-text-gradient">
-                    резервираш местото
-                </span>
-            </h1>
-
-            <p class="login-prompt-description">
-                За купување билет потребен е MovieTicket
-                профил. По успешното најавување ќе можеш
-                да продолжиш кон процесот за избор на
-                проекција и седишта.
-            </p>
-
-
-            <div class="login-prompt-info">
-
-                <div class="login-prompt-info-icon"
-                     aria-hidden="true">
-                    ✓
-                </div>
-
-                <div>
-
-                    <span>
-                        YOUR BOOKING
-                    </span>
-
-                    <strong>
-                        Продолжи без да го изгубиш flow-от
-                    </strong>
-
-                    <p>
-                        По најавувањето MovieTicket ќе те
-                        врати кон страницата од која
-                        започна купувањето.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="login-prompt-actions">
-
-                <a class="btn btn-primary
-                          login-prompt-primary"
-                   href="@Url.Action(
-                       "Login",
-                       "Account",
-                       new
-                       {
-                           returnUrl = returnUrl
-                       })">
-
-                    <span>
-                        Најави се
-                    </span>
-
-                    <span aria-hidden="true">
-                        →
-                    </span>
-
-                </a>
-
-
-                <a class="btn btn-outline-secondary
-                          login-prompt-register"
-                   href="@Url.Action(
-                       "Register",
-                       "Account")">
-
-                    Креирај профил
-
-                </a>
-
-            </div>
-
-
-            <div class="login-prompt-divider">
-
-                <span>
-                    OR
-                </span>
-
-            </div>
-
-
-            <a class="login-prompt-browse"
-               href="@Url.Action("Current", "Movies")">
-
-                <span aria-hidden="true">
-                    ←
-                </span>
-
-                Продолжи со разгледување филмови
-
-            </a>
-
-
-            <div class="login-prompt-security">
-
-                <span aria-hidden="true">
-                    ✓
-                </span>
+                <h2>
+                    Твојот филм.<br />
+                    <span class="cinema-text-gradient">Твоето место.</span>
+                </h2>
 
                 <p>
-                    Најавувањето е потребно за билетите да
-                    бидат поврзани со твојот MovieTicket
-                    профил и достапни во „Мои билети“.
+                    Избери ја проекцијата што ти одговара и резервирај ги
+                    твоите седишта на едно место.
                 </p>
-
             </div>
 
+            <div class="booking-gate-art" aria-hidden="true">
+                <div class="booking-gate-ticket">
+                    <div class="booking-gate-ticket-heading">
+                        <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
+                             alt="" width="135" height="36" decoding="async" />
+                        <span>КИНО БИЛЕТ</span>
+                    </div>
+
+                    <div class="booking-gate-ticket-center">
+                        <span class="booking-gate-ticket-label">ТВОЈАТА СЛЕДНА ПРОЕКЦИЈА</span>
+                        <strong>Филмска<br />вечер</strong>
+                    </div>
+
+                    <div class="booking-gate-ticket-divider"></div>
+
+                    <div class="booking-gate-ticket-details">
+                        <span>ФИЛМ</span>
+                        <span>ТЕРМИН</span>
+                        <span>СЕДИШТЕ</span>
+                    </div>
+
+                    <div class="booking-gate-ticket-bars">
+                        @for (var i = 0; i < 24; i++)
+                        {
+                            <span></span>
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
 
-    </section>
+        <div class="booking-gate-content">
+            <div class="booking-gate-content-inner">
+                <div class="booking-gate-lock" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="25" height="25" fill="none"
+                         stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4.5" y="10.5" width="15" height="10.5" rx="2.2"></rect>
+                        <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
+                        <path d="M12 14.5v2.5"></path>
+                    </svg>
+                </div>
 
+                <div class="cinema-eyebrow booking-gate-eyebrow">УШТЕ ЕДЕН ЧЕКОР</div>
+
+                <h1 id="booking-gate-title">
+                    Најави се за да
+                    <span class="cinema-text-gradient">резервираш билет.</span>
+                </h1>
+
+                <p class="booking-gate-description">
+                    За резервација ти е потребен MovieTicket профил.
+                    Најави се или креирај нов профил за да продолжиш.
+                </p>
+
+                <div class="booking-gate-actions">
+                    <a href="@loginUrl" class="btn btn-primary booking-gate-primary">
+                        <span>Најави се</span>
+                        <span aria-hidden="true">→</span>
+                    </a>
+
+                    <a href="@registerUrl" class="btn btn-outline-secondary booking-gate-secondary">
+                        Креирај профил
+                    </a>
+                </div>
+
+                <div class="booking-gate-return-note">
+                    <div class="booking-gate-note-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="19" height="19" fill="none"
+                             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 11a8 8 0 1 1-3.1-6.3"></path>
+                            <path d="m9 11 3 3 8-8"></path>
+                        </svg>
+                    </div>
+                    <p>
+                        <strong>Продолжи таму каде што застана.</strong>
+                        По успешна најава автоматски ќе се вратиш на страницата
+                        за избор на филм и седишта.
+                    </p>
+                </div>
+
+                <a href="@moviesUrl" class="booking-gate-back">
+                    <span aria-hidden="true">←</span>
+                    Продолжи со разгледување филмови
+                </a>
+
+                <p class="booking-gate-footnote">
+                    По резервацијата твоите билети ќе бидат достапни во „Мои билети“.
+                    По нова регистрација, избери „Купи билет“ за да продолжиш.
+                </p>
+            </div>
+        </div>
+    </section>
 </main>
 
-
 <style>
-    .login-prompt-page {
-        display: flex;
-        justify-content: center;
+    .booking-gate-page {
         width: 100%;
+        min-width: 0;
     }
 
-    .login-prompt-shell {
-        position: relative;
-        width: min(100%, 860px);
-        min-height: 690px;
-        padding: clamp(2rem, 6vw, 4.5rem);
+    .booking-gate-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1.04fr) minmax(0, .96fr);
+        width: min(100%, 1120px);
+        min-height: 585px;
+        margin: 0 auto;
         overflow: hidden;
-        text-align: center;
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-xl);
-        background: radial-gradient( circle at 50% 19%, rgba(214, 168, 75, 0.11), transparent 30% ), radial-gradient( circle at 0% 100%, rgba(58, 100, 168, 0.12), transparent 32% ), linear-gradient( 145deg, #151e2b, #090e16 58%, #06090e );
+        background: #0b1018;
         box-shadow: var(--cinema-shadow-lg);
+    }
+
+    .booking-gate-showcase {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 2.1rem;
+        min-width: 0;
+        padding: clamp(2.25rem, 4vw, 3.75rem);
+        overflow: hidden;
         isolation: isolate;
+        background: radial-gradient(circle at 5% 5%, rgba(214,168,75,.13), transparent 40%),
+                    radial-gradient(circle at 100% 100%, rgba(60,102,169,.18), transparent 47%),
+                    linear-gradient(145deg, #19212d 0%, #0d1420 54%, #090d15 100%);
     }
 
-
-    /* =====================================================
-       BACKGROUND
-       ===================================================== */
-
-    .login-prompt-grid {
-        position: absolute;
-        z-index: -3;
-        inset: 0;
-        opacity: 0.24;
-        background-image: linear-gradient( rgba(255, 255, 255, 0.021) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.021) 1px, transparent 1px );
-        background-size: 48px 48px;
-        mask-image: linear-gradient( 180deg, #000, transparent 82% );
-    }
-
-    .login-prompt-glow {
+    .booking-gate-showcase::before {
         position: absolute;
         z-index: -2;
-        border-radius: 50%;
-        filter: blur(28px);
+        inset: 0;
+        content: "";
+        opacity: .36;
+        background-image: linear-gradient(rgba(255,255,255,.023) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(255,255,255,.023) 1px, transparent 1px);
+        background-size: 45px 45px;
+        -webkit-mask-image: linear-gradient(135deg, #000, transparent 82%);
+        mask-image: linear-gradient(135deg, #000, transparent 82%);
         pointer-events: none;
     }
 
-    .login-prompt-glow-one {
-        top: -180px;
-        right: -120px;
-        width: 450px;
-        height: 450px;
-        background: rgba(214, 168, 75, 0.065);
+    .booking-gate-showcase::after {
+        position: absolute;
+        z-index: -1;
+        right: -150px;
+        bottom: -220px;
+        width: 590px;
+        height: 590px;
+        border: 1px solid rgba(214,168,75,.08);
+        border-radius: 50%;
+        content: "";
+        pointer-events: none;
     }
 
-    .login-prompt-glow-two {
-        bottom: -200px;
-        left: -130px;
-        width: 460px;
-        height: 460px;
-        background: rgba(58, 100, 168, 0.07);
-    }
-
-
-    /* =====================================================
-       BRAND
-       ===================================================== */
-
-    .login-prompt-brand {
+    .booking-gate-showcase-copy {
         position: relative;
-        z-index: 5;
+        z-index: 2;
+        max-width: 480px;
+    }
+
+    .booking-gate-kicker {
         display: inline-flex;
         align-items: center;
-        gap: 0.65rem;
-        margin-bottom: 2.1rem;
+        gap: .65rem;
+        color: #f0d28b;
+        font-size: .73rem;
+        font-weight: 800;
+        letter-spacing: .1em;
+    }
+
+    .booking-gate-kicker-dot {
+        width: 8px;
+        height: 8px;
+        flex: 0 0 8px;
+        border-radius: 50%;
+        background: var(--cinema-gold);
+        box-shadow: 0 0 0 5px rgba(214,168,75,.1);
+    }
+
+    .booking-gate-showcase-copy h2 {
+        margin: 1.8rem 0 1.2rem;
         color: var(--cinema-text);
-        font-size: 0.68rem;
-        font-weight: 900;
-        letter-spacing: 0.17em;
+        font-size: clamp(2.6rem, 4.5vw, 4.15rem);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -.057em;
     }
 
-        .login-prompt-brand:hover {
-            color: var(--cinema-gold-light);
-        }
+    .booking-gate-showcase-copy p {
+        max-width: 430px;
+        margin: 0;
+        color: #c1cad7;
+        font-size: .99rem;
+        line-height: 1.8;
+    }
 
-        .login-prompt-brand > span {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--cinema-gold);
-            box-shadow: 0 0 0 5px rgba(214, 168, 75, 0.09), 0 0 18px rgba(214, 168, 75, 0.55);
-        }
+    .booking-gate-orbit {
+        position: absolute;
+        z-index: 0;
+        border: 1px solid rgba(214,168,75,.08);
+        border-radius: 50%;
+        pointer-events: none;
+    }
 
+    .booking-gate-orbit-outer {
+        right: -110px;
+        bottom: -85px;
+        width: 425px;
+        height: 425px;
+    }
 
-    /* =====================================================
-       VISUAL
-       ===================================================== */
+    .booking-gate-orbit-inner {
+        right: -18px;
+        bottom: 4px;
+        width: 255px;
+        height: 255px;
+    }
 
-    .login-prompt-visual {
+    .booking-gate-orbit-outer::after {
+        position: absolute;
+        top: 12%;
+        left: 15%;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--cinema-gold);
+        box-shadow: 0 0 16px rgba(214,168,75,.6);
+        content: "";
+    }
+
+    .booking-gate-art {
         position: relative;
-        display: grid;
-        width: 280px;
-        height: 210px;
-        margin: 0 auto 1.8rem;
-        place-items: center;
+        z-index: 2;
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 1rem 0 0;
+        pointer-events: none;
     }
 
-    .login-prompt-ticket {
+    .booking-gate-ticket {
         position: relative;
-        z-index: 4;
-        width: 185px;
-        padding: 1.15rem;
-        overflow: hidden;
-        text-align: left;
-        border: 1px solid rgba(214, 168, 75, 0.26);
-        border-radius: 18px;
-        background: linear-gradient( 145deg, rgba(31, 40, 55, 0.90), rgba(9, 13, 20, 0.95) );
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.38), 0 0 45px rgba(214, 168, 75, 0.07);
-        transform: rotate(-3deg);
-        animation: login-prompt-ticket-float 6s ease-in-out infinite;
+        width: min(100%, 335px);
+        padding: 1.25rem 1.45rem 1.3rem;
+        border: 1px solid rgba(255,255,255,.16);
+        border-radius: 22px;
+        background: linear-gradient(150deg, #1d2839 0%, #111824 60%, #0c111b 100%);
+        box-shadow: 0 22px 60px rgba(0,0,0,.38), 0 0 45px rgba(214,168,75,.045);
+        transform: rotate(-4deg);
+        animation: booking-gate-ticket-float 7s ease-in-out infinite;
     }
 
-        .login-prompt-ticket::before,
-        .login-prompt-ticket::after {
-            position: absolute;
-            top: 63%;
-            width: 20px;
-            height: 20px;
-            content: "";
-            border-radius: 50%;
-            background: #0a0e15;
-        }
+    .booking-gate-ticket::before,
+    .booking-gate-ticket::after {
+        position: absolute;
+        top: 67%;
+        width: 22px;
+        height: 22px;
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 50%;
+        background: #101826;
+        content: "";
+        transform: translateY(-50%);
+    }
 
-        .login-prompt-ticket::before {
-            left: -11px;
-        }
+    .booking-gate-ticket::before {
+        left: -12px;
+    }
 
-        .login-prompt-ticket::after {
-            right: -11px;
-        }
+    .booking-gate-ticket::after {
+        right: -12px;
+    }
 
-    .login-prompt-ticket-top {
+    .booking-gate-ticket-heading {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
+        gap: .7rem;
     }
 
-        .login-prompt-ticket-top span {
-            color: var(--cinema-text-muted);
-            font-size: 0.43rem;
-            font-weight: 900;
-            letter-spacing: 0.12em;
-        }
-
-        .login-prompt-ticket-top strong {
-            color: var(--cinema-gold-light);
-            font-size: 0.43rem;
-            letter-spacing: 0.1em;
-        }
-
-    .login-prompt-ticket-body {
-        display: grid;
-        height: 92px;
-        place-items: center;
-    }
-
-
-    /* =====================================================
-       LOCK
-       ===================================================== */
-
-    .login-prompt-ticket-lock {
-        position: relative;
-        width: 48px;
-        height: 59px;
-    }
-
-    .login-prompt-lock-shackle {
-        position: absolute;
-        top: 0;
-        left: 11px;
-        width: 27px;
-        height: 31px;
-        border: 3px solid var(--cinema-gold-light);
-        border-bottom: 0;
-        border-radius: 18px 18px 0 0;
-    }
-
-    .login-prompt-lock-body {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
+    .booking-gate-ticket-heading img {
+        display: block;
+        max-width: 55%;
         height: 36px;
-        border: 1px solid rgba(214, 168, 75, 0.28);
-        border-radius: 10px;
-        background: rgba(214, 168, 75, 0.09);
+        object-fit: contain;
+        object-position: left center;
     }
 
-        .login-prompt-lock-body > span {
-            position: absolute;
-            top: 11px;
-            left: 50%;
-            width: 6px;
-            height: 14px;
-            border-radius: 50% 50% 3px 3px;
-            background: var(--cinema-gold-light);
-            transform: translateX(-50%);
-        }
+    .booking-gate-ticket-heading > span {
+        padding: .3rem .55rem;
+        border: 1px solid rgba(214,168,75,.29);
+        border-radius: 999px;
+        color: #f0cb76;
+        font-size: .62rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
 
+    .booking-gate-ticket-center {
+        padding: 2.15rem 0 1.7rem;
+    }
 
-    /* =====================================================
-       TICKET DETAILS
-       ===================================================== */
+    .booking-gate-ticket-label {
+        display: block;
+        margin-bottom: .65rem;
+        color: #e0b454;
+        font-size: .65rem;
+        font-weight: 800;
+        letter-spacing: .13em;
+    }
 
-    .login-prompt-ticket-divider {
+    .booking-gate-ticket-center strong {
+        display: block;
+        color: #f5f7fb;
+        font-size: 1.7rem;
+        line-height: 1.12;
+        letter-spacing: -.04em;
+    }
+
+    .booking-gate-ticket-divider {
         height: 1px;
-        margin-bottom: 0.9rem;
-        background: repeating-linear-gradient( 90deg, rgba(255, 255, 255, 0.15) 0, rgba(255, 255, 255, 0.15) 6px, transparent 6px, transparent 12px );
+        background: repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 7px, transparent 7px 14px);
     }
 
-    .login-prompt-ticket-status {
+    .booking-gate-ticket-details {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: .5rem;
+        padding: 1.1rem 0;
+    }
+
+    .booking-gate-ticket-details span {
+        color: #a6b1c0;
+        font-size: .64rem;
+        font-weight: 800;
+        letter-spacing: .05em;
+    }
+
+    .booking-gate-ticket-bars {
         display: flex;
-        align-items: center;
-        gap: 0.45rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.43rem;
-        font-weight: 900;
-        letter-spacing: 0.08em;
+        justify-content: center;
+        gap: 3px;
+        height: 25px;
+        opacity: .77;
     }
 
-        .login-prompt-ticket-status > span {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--cinema-warning);
-            box-shadow: 0 0 10px rgba(246, 200, 95, 0.60);
-        }
-
-
-    /* =====================================================
-       ORBITS
-       ===================================================== */
-
-    .login-prompt-orbit {
-        position: absolute;
-        border: 1px solid rgba(214, 168, 75, 0.09);
-        border-radius: 50%;
-        animation: login-prompt-orbit-spin 25s linear infinite;
+    .booking-gate-ticket-bars span {
+        display: block;
+        width: 3px;
+        background: #c8d0db;
     }
 
-        .login-prompt-orbit::after {
-            position: absolute;
-            top: -4px;
-            left: 50%;
-            width: 8px;
-            height: 8px;
-            content: "";
-            border-radius: 50%;
-            background: var(--cinema-gold);
-            box-shadow: 0 0 16px rgba(214, 168, 75, 0.65);
-        }
-
-    .login-prompt-orbit-large {
-        width: 210px;
-        height: 210px;
+    .booking-gate-ticket-bars span:nth-child(2n) {
+        width: 1px;
     }
 
-    .login-prompt-orbit-small {
-        width: 155px;
-        height: 155px;
-        animation-direction: reverse;
-        animation-duration: 18s;
-    }
-
-
-    /* =====================================================
-       SPARKS
-       ===================================================== */
-
-    .login-prompt-spark {
-        position: absolute;
+    .booking-gate-ticket-bars span:nth-child(3n) {
         width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: var(--cinema-gold-light);
-        box-shadow: 0 0 12px rgba(214, 168, 75, 0.60);
-        animation: login-prompt-spark-pulse 2.8s ease-in-out infinite;
     }
 
-    .login-prompt-spark-one {
-        top: 26px;
-        left: 30px;
+    .booking-gate-content {
+        display: grid;
+        place-items: center;
+        min-width: 0;
+        padding: clamp(2.2rem, 4.4vw, 4.25rem);
+        background: linear-gradient(180deg, #0c111a, #090d14);
     }
 
-    .login-prompt-spark-two {
-        right: 31px;
-        bottom: 28px;
-        animation-delay: 1s;
+    .booking-gate-content-inner {
+        width: 100%;
+        max-width: 405px;
     }
 
-
-    /* =====================================================
-       CONTENT
-       ===================================================== */
-
-    .login-prompt-content {
-        position: relative;
-        z-index: 5;
+    .booking-gate-lock {
+        display: grid;
+        place-items: center;
+        width: 58px;
+        height: 58px;
+        margin-bottom: 1.65rem;
+        border: 1px solid rgba(214,168,75,.28);
+        border-radius: 17px;
+        background: linear-gradient(145deg, rgba(214,168,75,.11), rgba(214,168,75,.025));
+        color: var(--cinema-gold-light);
     }
 
-        .login-prompt-content h1 {
-            max-width: 720px;
-            margin: 0 auto 1rem;
-            font-size: clamp( 2.6rem, 6vw, 4.2rem );
-            line-height: 0.98;
-            letter-spacing: -0.055em;
-        }
+    .booking-gate-eyebrow {
+        margin-bottom: .75rem;
+    }
 
-    .login-prompt-description {
-        max-width: 610px;
-        margin: 0 auto 1.8rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.88rem;
+    .booking-gate-content h1 {
+        margin: 0 0 1.1rem;
+        color: var(--cinema-text);
+        font-size: clamp(2.25rem, 3.2vw, 3.1rem);
+        font-weight: 800;
+        line-height: 1.12;
+        letter-spacing: -.05em;
+    }
+
+    .booking-gate-content h1 span {
+        display: block;
+    }
+
+    .booking-gate-description {
+        margin: 0 0 1.65rem;
+        color: #bfc8d5;
+        font-size: .96rem;
         line-height: 1.75;
     }
 
-
-    /* =====================================================
-       INFORMATION
-       ===================================================== */
-
-    .login-prompt-info {
-        display: flex;
-        max-width: 580px;
-        align-items: flex-start;
-        gap: 0.9rem;
-        margin: 0 auto 1.7rem;
-        padding: 1rem;
-        text-align: left;
-        border: 1px solid rgba(66, 199, 131, 0.14);
-        border-radius: 14px;
-        background: rgba(66, 199, 131, 0.035);
-    }
-
-    .login-prompt-info-icon {
+    .booking-gate-actions {
         display: grid;
-        flex: 0 0 42px;
-        width: 42px;
-        height: 42px;
-        place-items: center;
-        color: #9ae8bd;
-        border: 1px solid rgba(66, 199, 131, 0.19);
-        border-radius: 12px;
-        background: rgba(66, 199, 131, 0.06);
-        font-size: 0.7rem;
-        font-weight: 900;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .7rem;
     }
 
-    .login-prompt-info
-    div:last-child > span {
-        display: block;
-        margin-bottom: 0.15rem;
-        color: #8fd8ad;
-        font-size: 0.5rem;
-        font-weight: 900;
-        letter-spacing: 0.11em;
-    }
-
-    .login-prompt-info strong {
-        display: block;
-        color: var(--cinema-text);
-        font-size: 0.8rem;
-    }
-
-    .login-prompt-info p {
-        margin: 0.25rem 0 0;
-        color: var(--cinema-text-muted);
-        font-size: 0.67rem;
-        line-height: 1.55;
-    }
-
-
-    /* =====================================================
-       ACTIONS
-       ===================================================== */
-
-    .login-prompt-actions {
-        display: flex;
-        max-width: 580px;
+    .booking-gate-actions .btn {
+        display: inline-flex;
+        align-items: center;
         justify-content: center;
-        gap: 0.7rem;
-        margin: 0 auto;
+        min-height: 49px;
+        padding: .7rem .95rem;
+        font-size: .89rem;
+        font-weight: 750;
+        white-space: nowrap;
     }
 
-        .login-prompt-actions .btn {
-            min-height: 50px;
-        }
-
-    .login-prompt-primary {
-        display: inline-flex;
-        min-width: 210px;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
+    .booking-gate-primary {
+        justify-content: space-between !important;
+        gap: .65rem;
     }
 
-        .login-prompt-primary > span:last-child {
-            transition: transform var(--cinema-transition);
-        }
-
-        .login-prompt-primary:hover > span:last-child {
-            transform: translateX(5px);
-        }
-
-    .login-prompt-register {
-        min-width: 170px;
+    .booking-gate-primary > span:last-child,
+    .booking-gate-back > span {
+        transition: transform var(--cinema-transition);
     }
 
-
-    /* =====================================================
-       DIVIDER
-       ===================================================== */
-
-    .login-prompt-divider {
-        position: relative;
-        max-width: 580px;
-        height: 20px;
-        margin: 1.25rem auto 0.7rem;
-        text-align: center;
+    .booking-gate-primary:hover > span:last-child {
+        transform: translateX(4px);
     }
 
-        .login-prompt-divider::before {
-            position: absolute;
-            top: 50%;
-            right: 0;
-            left: 0;
-            height: 1px;
-            content: "";
-            background: linear-gradient( 90deg, transparent, var(--cinema-border-strong), transparent );
-        }
-
-        .login-prompt-divider > span {
-            position: relative;
-            z-index: 2;
-            display: inline-block;
-            padding: 0 0.7rem;
-            color: var(--cinema-text-muted);
-            background: #090e16;
-            font-size: 0.45rem;
-            font-weight: 900;
-            letter-spacing: 0.12em;
-        }
-
-
-    /* =====================================================
-       BROWSE
-       ===================================================== */
-
-    .login-prompt-browse {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.7rem;
-        font-weight: 600;
-    }
-
-        .login-prompt-browse > span {
-            transition: transform var(--cinema-transition);
-        }
-
-        .login-prompt-browse:hover {
-            color: var(--cinema-gold-light);
-        }
-
-            .login-prompt-browse:hover > span {
-                transform: translateX(-4px);
-            }
-
-
-    /* =====================================================
-       SECURITY
-       ===================================================== */
-
-    .login-prompt-security {
+    .booking-gate-return-note {
         display: flex;
-        max-width: 580px;
         align-items: flex-start;
-        gap: 0.6rem;
-        margin: 1.6rem auto 0;
-        padding-top: 1.2rem;
-        text-align: left;
+        gap: .8rem;
+        margin: 1.75rem 0 1.3rem;
+        padding: 1rem;
+        border: 1px solid rgba(66,199,131,.2);
+        border-radius: 14px;
+        background: rgba(66,199,131,.045);
+    }
+
+    .booking-gate-note-icon {
+        display: grid;
+        flex: 0 0 30px;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        color: #8fe1b3;
+    }
+
+    .booking-gate-return-note p {
+        margin: 0;
+        color: #bac9c5;
+        font-size: .82rem;
+        line-height: 1.65;
+    }
+
+    .booking-gate-return-note strong {
+        display: block;
+        margin-bottom: .2rem;
+        color: #e5f0e9;
+        font-size: .87rem;
+        font-weight: 750;
+    }
+
+    .booking-gate-back {
+        display: inline-flex;
+        align-items: center;
+        gap: .6rem;
+        color: #c5cedc;
+        font-size: .85rem;
+        font-weight: 650;
+        text-decoration: none;
+    }
+
+    .booking-gate-back:hover {
+        color: var(--cinema-gold-light);
+    }
+
+    .booking-gate-back:hover > span {
+        transform: translateX(-4px);
+    }
+
+    .booking-gate-footnote {
+        margin: 1.35rem 0 0;
+        padding-top: 1.15rem;
         border-top: 1px solid var(--cinema-border);
+        color: #9ba7b8;
+        font-size: .78rem;
+        line-height: 1.7;
     }
 
-        .login-prompt-security > span {
-            display: grid;
-            flex: 0 0 25px;
-            width: 25px;
-            height: 25px;
-            place-items: center;
-            color: #9ae8bd;
-            border: 1px solid rgba(66, 199, 131, 0.18);
-            border-radius: 50%;
-            background: rgba(66, 199, 131, 0.055);
-            font-size: 0.55rem;
-            font-weight: 900;
-        }
-
-        .login-prompt-security p {
-            margin: 0;
-            color: var(--cinema-text-muted);
-            font-size: 0.65rem;
-            line-height: 1.55;
-        }
-
-
-    /* =====================================================
-       ANIMATIONS
-       ===================================================== */
-
-    @@keyframes login-prompt-orbit-spin {
-        from {
-            transform: rotate(0deg);
-        }
-
-        to {
-            transform: rotate(360deg);
-        }
+    .booking-gate-page a:focus-visible {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 4px;
     }
 
-    @@keyframes login-prompt-ticket-float {
-        0%,
-        100% {
-            transform: rotate(-3deg) translateY(0);
+    @@keyframes booking-gate-ticket-float {
+        0%, 100% {
+            transform: rotate(-4deg) translateY(0);
         }
 
         50% {
-            transform: rotate(-1deg) translateY(-10px);
+            transform: rotate(-2deg) translateY(-9px);
         }
     }
 
-    @@keyframes login-prompt-spark-pulse {
-        0%,
-        100% {
-            opacity: 0.25;
-            transform: scale(0.7);
+    @@media (max-width: 1020px) {
+        .booking-gate-shell {
+            grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
         }
 
-        50% {
-            opacity: 1;
-            transform: scale(1.25);
+        .booking-gate-showcase,
+        .booking-gate-content {
+            padding: 2.4rem;
+        }
+
+        .booking-gate-showcase-copy h2 {
+            font-size: clamp(2.35rem, 4.5vw, 3.15rem);
+        }
+
+        .booking-gate-ticket {
+            width: min(100%, 300px);
         }
     }
 
+    @@media (max-width: 780px) {
+        .booking-gate-shell {
+            grid-template-columns: minmax(0, 1fr);
+            max-width: 650px;
+        }
 
-    /* =====================================================
-       RESPONSIVE
-       ===================================================== */
+        .booking-gate-showcase {
+            gap: 0;
+            padding: 2rem 2rem 1.85rem;
+        }
 
-    @@media (max-width: 575.98px) {
-        .login-prompt-shell {
-            min-height: 0;
-            padding: 2rem 1.1rem;
+        .booking-gate-showcase-copy h2 {
+            margin: 1rem 0 .9rem;
+            font-size: clamp(2rem, 6vw, 2.75rem);
+        }
+
+        .booking-gate-showcase-copy p {
+            font-size: .91rem;
+        }
+
+        .booking-gate-art,
+        .booking-gate-orbit {
+            display: none;
+        }
+
+        .booking-gate-content {
+            padding: 2.25rem 2rem;
+        }
+
+        .booking-gate-content-inner {
+            max-width: none;
+        }
+
+        .booking-gate-lock {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .booking-gate-shell {
             border-radius: var(--cinema-radius-lg);
         }
 
-        .login-prompt-visual {
-            width: 220px;
-            height: 180px;
+        .booking-gate-showcase,
+        .booking-gate-content {
+            padding: 1.6rem 1.25rem;
         }
 
-        .login-prompt-orbit-large {
-            width: 180px;
-            height: 180px;
+        .booking-gate-showcase-copy h2 {
+            font-size: clamp(1.85rem, 8vw, 2.3rem);
         }
 
-        .login-prompt-orbit-small {
-            width: 132px;
-            height: 132px;
+        .booking-gate-content h1 {
+            font-size: clamp(2rem, 8vw, 2.35rem);
         }
 
-        .login-prompt-ticket {
-            width: 160px;
+        .booking-gate-actions {
+            grid-template-columns: minmax(0, 1fr);
         }
 
-        .login-prompt-content h1 {
-            font-size: 2.4rem;
-        }
-
-        .login-prompt-actions {
-            align-items: stretch;
-            flex-direction: column;
-        }
-
-            .login-prompt-actions .btn {
-                width: 100%;
-            }
-
-        .login-prompt-primary,
-        .login-prompt-register {
-            min-width: 0;
+        .booking-gate-actions .btn {
+            width: 100%;
         }
     }
 
     @@media (prefers-reduced-motion: reduce) {
-        .login-prompt-orbit,
-        .login-prompt-ticket,
-        .login-prompt-spark {
+        .booking-gate-ticket {
             animation: none;
+            transform: none;
+        }
+
+        .booking-gate-primary > span:last-child,
+        .booking-gate-back > span {
+            transition: none;
+        }
+    }
+
+
+    .booking-gate-brand {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        position: relative;
+        z-index: 3;
+    }
+
+    .booking-gate-brand-link {
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+        text-decoration: none;
+    }
+
+        .booking-gate-brand-link img {
+            display: block;
+            width: 170px;
+            max-width: 100%;
+            height: 48px;
+            object-fit: contain;
+            object-position: left center;
+        }
+
+    .booking-gate-brand-label {
+        padding: 0.4rem 0.75rem;
+        border: 1px solid rgba(214, 168, 75, 0.25);
+        border-radius: 999px;
+        background: rgba(214, 168, 75, 0.07);
+        color: #f0cb76;
+        font-size: 0.66rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        white-space: nowrap;
+    }
+
+    .booking-gate-brand-link:focus-visible {
+        outline: 2px solid #f0cb76;
+        outline-offset: 4px;
+        border-radius: 8px;
+    }
+
+    @@media (max-width: 480px) {
+        .booking-gate-brand {
+            gap: 0.65rem;
+        }
+
+        .booking-gate-brand-link img {
+            width: 145px;
+            height: 42px;
+        }
+
+        .booking-gate-brand-label {
+            font-size: 0.6rem;
+            padding: 0.3rem 0.55rem;
         }
     }
 </style>

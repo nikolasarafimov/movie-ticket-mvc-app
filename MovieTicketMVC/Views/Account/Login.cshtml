@@ -5,564 +5,226 @@
     ViewBag.Title = "Најава";
 }
 
-<main class="login-page"
-      aria-labelledby="login-title">
-
+<div class="login-page" aria-labelledby="login-title">
     <section class="login-shell">
-
         <div class="login-showcase">
-
-            <div class="login-showcase-glow login-showcase-glow-one">
-            </div>
-
-            <div class="login-showcase-glow login-showcase-glow-two">
-            </div>
-
+            <div class="login-showcase-glow login-showcase-glow-gold" aria-hidden="true"></div>
+            <div class="login-showcase-glow login-showcase-glow-blue" aria-hidden="true"></div>
 
             <div class="login-showcase-content">
-
-                <a class="login-brand"
-                   href="@Url.Action("Index", "Home")">
-                    <span></span>
-                    MOVIETICKET
+                <a class="login-brand" href="@Url.Action("Index", "Home")" aria-label="MovieTicket — Почетна">
+                    <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
+                         alt="MovieTicket"
+                         width="174"
+                         height="48"
+                         decoding="async" />
                 </a>
 
-
                 <div class="login-showcase-copy">
-
-                    <div class="cinema-eyebrow">
-                        YOUR CINEMA EXPERIENCE
-                    </div>
-
-                    <h1>
-                        Филмот започнува
-                        <span class="cinema-text-gradient">
-                            тука.
-                        </span>
-                    </h1>
-
+                    <div class="cinema-eyebrow">ТВОЕТО КИНО ИСКУСТВО</div>
+                    <h2>Филмот започнува <span class="cinema-text-gradient">тука.</span></h2>
                     <p>
-                        Најави се за да резервираш седишта,
-                        да ги следиш твоите билети и да го
-                        организираш следното кино искуство.
+                        Најави се и продолжи кон следната кино вечер.
+                        Избери филм, резервирај седиште и пронајди ги своите билети на едно место.
                     </p>
-
                 </div>
-
-
-                <div class="login-showcase-features">
-
-                    <div class="login-feature">
-
-                        <span class="login-feature-number">
-                            01
-                        </span>
-
-                        <div>
-                            <strong>
-                                Real-time seats
-                            </strong>
-
-                            <small>
-                                Достапност на седишта во реално време
-                            </small>
-                        </div>
-
-                    </div>
-
-
-                    <div class="login-feature">
-
-                        <span class="login-feature-number">
-                            02
-                        </span>
-
-                        <div>
-                            <strong>
-                                Digital tickets
-                            </strong>
-
-                            <small>
-                                Сите резервации на едно место
-                            </small>
-                        </div>
-
-                    </div>
-
-
-                    <div class="login-feature">
-
-                        <span class="login-feature-number">
-                            03
-                        </span>
-
-                        <div>
-                            <strong>
-                                Fast booking
-                            </strong>
-
-                            <small>
-                                Филм, термин и седиште во неколку чекори
-                            </small>
-                        </div>
-
-                    </div>
-
-                </div>
-
             </div>
 
-
-            <div class="login-ticket-art"
-                 aria-hidden="true">
-
+            <div class="login-ticket-art" aria-hidden="true">
                 <div class="login-ticket-art-top">
-
-                    <span>
-                        MOVIETICKET
-                    </span>
-
-                    <span class="movie-badge">
-                        ADMIT ONE
-                    </span>
-
+                    <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
+                         alt=""
+                         width="105"
+                         height="32"
+                         decoding="async" />
+                    <span class="login-ticket-badge">КИНО БИЛЕТ</span>
                 </div>
 
                 <div class="login-ticket-art-title">
-                    <span>
-                        CINEMA
-                    </span>
-
-                    <strong>
-                        Tonight's
-                        <br />
-                        Feature
-                    </strong>
+                    <span>КИНО</span>
+                    <strong>Твојата<br />кино вечер</strong>
                 </div>
 
                 <div class="login-ticket-art-divider"></div>
 
                 <div class="login-ticket-art-meta">
-
                     <div>
-                        <span>
-                            SHOW
-                        </span>
-
-                        <strong>
-                            21:00
-                        </strong>
+                        <span>ТЕРМИН</span>
+                        <strong>21:00</strong>
                     </div>
 
                     <div>
-                        <span>
-                            ROW
-                        </span>
-
-                        <strong>
-                            05
-                        </strong>
+                        <span>РЕД</span>
+                        <strong>05</strong>
                     </div>
 
                     <div>
-                        <span>
-                            SEAT
-                        </span>
-
-                        <strong>
-                            07
-                        </strong>
+                        <span>СЕДИШТЕ</span>
+                        <strong>07</strong>
                     </div>
-
                 </div>
 
                 <div class="login-barcode">
-
                     @for (var i = 0; i < 18; i++)
                     {
                         <span></span>
                     }
-
                 </div>
-
             </div>
-
         </div>
 
-
         <div class="login-form-side">
-
             <div class="login-form-wrapper">
-
-                <div class="login-mobile-brand">
-
-                    <a href="@Url.Action("Index", "Home")">
-                        <span></span>
-                        MOVIETICKET
-                    </a>
-
-                </div>
-
-
                 <div class="login-heading">
-
-                    <span class="login-heading-label">
-                        WELCOME BACK
-                    </span>
-
-                    <h2 id="login-title">
-                        Најави се
-                    </h2>
-
-                    <p>
-                        Внеси ги податоците од твојот профил
-                        за да продолжиш.
-                    </p>
-
+                    <span class="login-heading-label">ДОБРЕДОЈДЕ НАЗАД</span>
+                    <h1 id="login-title">Најави се</h1>
+                    <p>Внеси ги податоците од твојот профил за да продолжиш.</p>
                 </div>
-
 
                 @using (Html.BeginForm(
                     "Login",
                     "Account",
-                    new
-                    {
-                        ReturnUrl = ViewBag.ReturnUrl
-                    },
+                    new { ReturnUrl = ViewBag.ReturnUrl },
                     FormMethod.Post,
                     new
                     {
                         role = "form",
                         id = "loginForm",
-                        @class = "login-form"
+                        @class = "login-form",
+                        aria_label = "Форма за најава"
                     }))
                 {
                     @Html.AntiForgeryToken()
 
-                    @Html.ValidationSummary(
-                        true,
-                        "",
-                        new
-                        {
-                            @class =
-                                "validation-summary-errors login-validation"
-                        })
+                    @Html.ValidationSummary(true, "", new
+                    {
+                        @class = "login-validation",
+                        role = "alert",
+                        aria_live = "assertive"
+                    })
 
-
-                    <div class="form-group">
-
-                        @Html.LabelFor(
-                            m => m.Email,
-                            "E-mail адреса",
-                            new
-                            {
-                                @class = "form-label"
-                            })
+                    <div class="login-field">
+                        @Html.LabelFor(m => m.Email, "Е-пошта", new { @class = "form-label" })
 
                         <div class="login-input-wrapper">
-
-                            <span class="login-input-icon"
-                                  aria-hidden="true">
-                                @@
-                            </span>
-
-                            @Html.TextBoxFor(
-                                m => m.Email,
-                                new
-                                {
-                                    @class =
-                                        "form-control login-input",
-                                    type =
-                                        "email",
-                                    autocomplete =
-                                        "email",
-                                    placeholder =
-                                        "name@example.com",
-                                    autofocus =
-                                        "autofocus"
-                                })
-
+                            @Html.TextBoxFor(m => m.Email, new
+                            {
+                                @class = "form-control login-input",
+                                type = "email",
+                                autocomplete = "email",
+                                inputmode = "email",
+                                autocapitalize = "none",
+                                spellcheck = "false",
+                                required = "required",
+                                aria_required = "true",
+                                aria_describedby = "loginEmailError",
+                                placeholder = "ime@primer.com",
+                                autofocus = "autofocus"
+                            })
                         </div>
 
-                        @Html.ValidationMessageFor(
-                            m => m.Email,
-                            "",
-                            new
-                            {
-                                @class = "text-danger"
-                            })
-
+                        @Html.ValidationMessageFor(m => m.Email, "", new
+                        {
+                            @class = "text-danger login-field-error",
+                            id = "loginEmailError"
+                        })
                     </div>
 
-
-                    <div class="form-group">
-
+                    <div class="login-field">
                         <div class="login-label-row">
+                            @Html.LabelFor(m => m.Password, "Лозинка", new { @class = "form-label" })
 
-                            @Html.LabelFor(
-                                m => m.Password,
-                                "Лозинка",
-                                new
-                                {
-                                    @class = "form-label"
-                                })
-
-                            @Html.ActionLink(
-                                "Ја заборави лозинката?",
-                                "ForgotPassword",
-                                "Account",
-                                routeValues: null,
-                                htmlAttributes: new
-                                {
-                                    @class =
-                                        "login-forgot-link"
-                                })
-
+                            <a class="login-forgot-link"
+                               href="@Url.Action("ForgotPassword", "Account")">
+                                Ја заборави лозинката?
+                            </a>
                         </div>
 
-
                         <div class="login-input-wrapper">
-
-                            <span class="login-input-icon login-lock-icon"
-                                  aria-hidden="true">
-                                •
-                            </span>
-
-                            @Html.PasswordFor(
-                                m => m.Password,
-                                new
-                                {
-                                    @class =
-                                        "form-control login-input login-password-input",
-                                    autocomplete =
-                                        "current-password",
-                                    placeholder =
-                                        "Внеси лозинка",
-                                    id =
-                                        "Password"
-                                })
+                            @Html.PasswordFor(m => m.Password, new
+                            {
+                                @class = "form-control login-input login-password-input",
+                                id = "Password",
+                                autocomplete = "current-password",
+                                required = "required",
+                                aria_required = "true",
+                                aria_describedby = "loginPasswordError",
+                                placeholder = "Внеси ја лозинката"
+                            })
 
                             <button type="button"
                                     id="togglePassword"
                                     class="login-password-toggle"
                                     aria-label="Прикажи лозинка"
+                                    aria-controls="Password"
                                     aria-pressed="false">
-                                <span id="passwordToggleText">
-                                    SHOW
-                                </span>
+                                <span id="passwordToggleText">Прикажи</span>
                             </button>
-
                         </div>
 
-                        @Html.ValidationMessageFor(
-                            m => m.Password,
-                            "",
-                            new
-                            {
-                                @class = "text-danger"
-                            })
-
+                        @Html.ValidationMessageFor(m => m.Password, "", new
+                        {
+                            @class = "text-danger login-field-error",
+                            id = "loginPasswordError"
+                        })
                     </div>
-
 
                     <div class="login-options">
-
-                        <label class="login-remember"
-                               for="RememberMe">
-
-                            @Html.CheckBoxFor(
-                                m => m.RememberMe,
-                                new
-                                {
-                                    @class =
-                                        "form-check-input"
-                                })
-
-                            <span>
-                                Запомни ме
-                            </span>
-
+                        <label class="login-remember" for="RememberMe">
+                            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                            <span>Запомни ме</span>
                         </label>
-
                     </div>
-
 
                     <button type="submit"
                             id="loginButton"
                             class="btn btn-primary login-submit">
-
-                        <span id="loginButtonText">
-                            Најави се
-                        </span>
-
-                        <span aria-hidden="true">
-                            →
-                        </span>
-
+                        <span id="loginButtonText">Најави се</span>
+                        <span aria-hidden="true">→</span>
                     </button>
 
-
                     <div class="login-register">
-
-                        <span>
-                            Немаш профил?
-                        </span>
+                        <span>Немаш профил?</span>
 
                         @Html.ActionLink(
-                            "Креирај сметка",
-                            "Register",
-                            "Account",
-                            new
-                            {
-                                ReturnUrl = ViewBag.ReturnUrl
-                            },
-                            null)
-
+                                 "Креирај сметка",
+                                 "Register",
+                                 "Account",
+                                 new { ReturnUrl = ViewBag.ReturnUrl },
+                                 null)
                     </div>
                 }
 
-
                 <div class="login-external">
-
-                    @Html.Partial(
-                        "_ExternalLoginsListPartial",
-                        new ExternalLoginListViewModel
-                        {
-                            ReturnUrl = ViewBag.ReturnUrl
-                        })
-
+                    @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel
+                    {
+                        ReturnUrl = ViewBag.ReturnUrl
+                    })
                 </div>
-
 
                 <div class="login-security-note">
-
-                    <span aria-hidden="true">
-                        ✓
-                    </span>
+                    <span class="login-security-icon" aria-hidden="true">✓</span>
 
                     <p>
-                        Твоите податоци за најава се користат
-                        само за пристап до MovieTicket профилот.
+                        На јавен или споделен уред не ја избирај опцијата „Запомни ме“.
+                        Никогаш не ја споделувај својата лозинка.
                     </p>
-
                 </div>
-
             </div>
-
         </div>
-
     </section>
-
-</main>
-
-
-@section scripts
-{
-    @Scripts.Render("~/bundles/jqueryval")
-
-    <script>
-        (function () {
-            var form =
-                document.getElementById(
-                    "loginForm");
-
-            var button =
-                document.getElementById(
-                    "loginButton");
-
-            var buttonText =
-                document.getElementById(
-                    "loginButtonText");
-
-            var passwordInput =
-                document.getElementById(
-                    "Password");
-
-            var toggleButton =
-                document.getElementById(
-                    "togglePassword");
-
-            var toggleText =
-                document.getElementById(
-                    "passwordToggleText");
-
-
-            if (
-                passwordInput &&
-                toggleButton &&
-                toggleText
-            ) {
-                toggleButton.addEventListener(
-                    "click",
-                    function () {
-
-                        var isHidden =
-                            passwordInput.type ===
-                            "password";
-
-                        passwordInput.type =
-                            isHidden
-                                ? "text"
-                                : "password";
-
-                        toggleText.textContent =
-                            isHidden
-                                ? "HIDE"
-                                : "SHOW";
-
-                        toggleButton.setAttribute(
-                            "aria-pressed",
-                            isHidden
-                                ? "true"
-                                : "false");
-
-                        toggleButton.setAttribute(
-                            "aria-label",
-                            isHidden
-                                ? "Сокриј лозинка"
-                                : "Прикажи лозинка");
-                    });
-            }
-
-
-            if (
-                form &&
-                button &&
-                buttonText
-            ) {
-                form.addEventListener(
-                    "submit",
-                    function () {
-
-                        if (
-                            typeof $ !== "undefined" &&
-                            $.validator &&
-                            !$(form).valid()
-                        ) {
-                            return;
-                        }
-
-                        button.disabled =
-                            true;
-
-                        buttonText.textContent =
-                            "Се најавува...";
-                    });
-            }
-        })();
-    </script>
-}
-
+</div>
 
 <style>
     .login-page {
         width: 100%;
+        min-width: 0;
     }
 
     .login-shell {
         display: grid;
-        grid-template-columns: minmax(0, 1.15fr) minmax(400px, 0.85fr);
-        min-height: 720px;
+        grid-template-columns: minmax(0, 1.1fr) minmax(380px, .9fr);
+        min-height: 680px;
         overflow: hidden;
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-xl);
@@ -570,231 +232,222 @@
         box-shadow: var(--cinema-shadow-lg);
     }
 
-
-    /* =====================================================
-       SHOWCASE
-       ===================================================== */
-
     .login-showcase {
         position: relative;
         min-width: 0;
-        padding: clamp(2rem, 5vw, 4rem);
         overflow: hidden;
-        background: radial-gradient( circle at 20% 20%, rgba(214, 168, 75, 0.12), transparent 30% ), radial-gradient( circle at 85% 85%, rgba(63, 103, 166, 0.16), transparent 30% ), linear-gradient( 145deg, #141c29 0%, #0b1018 52%, #06090e 100% );
+        padding: clamp(2rem, 4.3vw, 4rem);
         isolation: isolate;
+        background: radial-gradient(circle at 16% 20%, rgba(214, 168, 75, .13), transparent 32%), radial-gradient(circle at 88% 90%, rgba(63, 103, 166, .18), transparent 35%), linear-gradient(145deg, #141c29, #090e16 57%, #070a10);
     }
 
         .login-showcase::before {
             position: absolute;
-            z-index: -2;
+            z-index: -1;
             inset: 0;
             content: "";
-            opacity: 0.3;
-            background-image: linear-gradient( rgba(255, 255, 255, 0.022) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px );
+            opacity: .2;
+            pointer-events: none;
+            background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
             background-size: 48px 48px;
-            mask-image: linear-gradient( 135deg, #000, transparent 75% );
+            -webkit-mask-image: linear-gradient(140deg, #000, transparent 80%);
+            mask-image: linear-gradient(140deg, #000, transparent 80%);
         }
 
     .login-showcase-content {
         position: relative;
         z-index: 3;
         display: flex;
-        height: 100%;
         flex-direction: column;
+        min-width: 0;
+        height: 100%;
     }
 
     .login-brand {
         display: inline-flex;
-        align-self: flex-start;
         align-items: center;
-        gap: 0.65rem;
-        color: var(--cinema-text);
-        font-size: 0.72rem;
-        font-weight: 900;
-        letter-spacing: 0.18em;
+        align-self: flex-start;
+        border-radius: 8px;
+        text-decoration: none;
     }
 
-        .login-brand:hover {
-            color: var(--cinema-gold-light);
-        }
-
-        .login-brand > span,
-        .login-mobile-brand a > span {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: var(--cinema-gold);
-            box-shadow: 0 0 0 5px rgba(214, 168, 75, 0.10), 0 0 22px rgba(214, 168, 75, 0.6);
+        .login-brand img {
+            display: block;
+            width: 174px;
+            max-width: 100%;
+            height: 48px;
+            object-fit: contain;
+            object-position: left center;
         }
 
     .login-showcase-copy {
-        max-width: 650px;
+        max-width: 600px;
         margin-top: auto;
-        padding-top: 5rem;
+        padding-top: 7rem;
     }
 
-        .login-showcase-copy h1 {
-            margin-bottom: 1.4rem;
-            font-size: clamp( 3rem, 6vw, 5.6rem );
-            line-height: 0.96;
-            letter-spacing: -0.06em;
+        .login-showcase-copy h2 {
+            margin-bottom: 1.25rem;
+            font-size: clamp(2.8rem, 5.3vw, 5.15rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -.06em;
+            overflow-wrap: break-word;
         }
 
         .login-showcase-copy p {
-            max-width: 570px;
-            margin: 0;
-            color: var(--cinema-text-soft);
-            font-size: 1.03rem;
-            line-height: 1.8;
+            max-width: 520px;
+            margin-bottom: 0;
+            color: #c9d0da;
+            font-size: 1rem;
+            line-height: 1.85;
         }
 
-    .login-showcase-features {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.5rem;
-        margin-top: 3rem;
+    .login-showcase-glow {
+        position: absolute;
+        z-index: -1;
+        border-radius: 50%;
+        filter: blur(24px);
+        pointer-events: none;
     }
 
-    .login-feature {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.65rem;
+    .login-showcase-glow-gold {
+        top: -130px;
+        left: -140px;
+        width: 340px;
+        height: 340px;
+        background: rgba(214, 168, 75, .075);
     }
 
-    .login-feature-number {
-        margin-top: 0.12rem;
-        color: var(--cinema-gold);
-        font-size: 0.6rem;
-        font-weight: 900;
-        letter-spacing: 0.08em;
+    .login-showcase-glow-blue {
+        right: -130px;
+        bottom: -180px;
+        width: 420px;
+        height: 420px;
+        background: rgba(63, 103, 166, .11);
     }
-
-    .login-feature strong {
-        display: block;
-        color: var(--cinema-text);
-        font-size: 0.76rem;
-    }
-
-    .login-feature small {
-        display: block;
-        max-width: 155px;
-        margin-top: 0.15rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.65rem;
-        line-height: 1.45;
-    }
-
-
-    /* =====================================================
-       DECORATIVE TICKET
-       ===================================================== */
 
     .login-ticket-art {
         position: absolute;
         z-index: 1;
-        top: 8%;
-        right: -70px;
-        width: 285px;
-        padding: 1.3rem;
-        border: 1px solid rgba(255, 255, 255, 0.10);
-        border-radius: 22px;
-        background: linear-gradient( 145deg, rgba(30, 39, 53, 0.82), rgba(10, 14, 21, 0.90) );
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-        opacity: 0.62;
-        transform: rotate(8deg);
+        top: 12%;
+        right: 32px;
+        width: 230px;
+        padding: 1.12rem;
+        border: 1px solid rgba(255,255,255,.16);
+        border-radius: 21px;
+        background: linear-gradient(145deg, #1a2331, #0b101a);
+        box-shadow: 0 32px 70px rgba(0,0,0,.44);
+        opacity: .75;
+        transform: rotate(5deg);
         animation: login-ticket-float 7s ease-in-out infinite;
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
+        pointer-events: none;
     }
 
         .login-ticket-art::before,
         .login-ticket-art::after {
             position: absolute;
-            top: 57%;
-            width: 24px;
-            height: 24px;
+            top: 56%;
+            width: 20px;
+            height: 20px;
             content: "";
             border-radius: 50%;
-            background: #0a0e15;
+            background: #0c1119;
+            transform: translateY(-50%);
         }
 
         .login-ticket-art::before {
-            left: -13px;
+            left: -11px;
         }
 
         .login-ticket-art::after {
-            right: -13px;
+            right: -11px;
         }
 
     .login-ticket-art-top {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
+        gap: .45rem;
     }
 
-        .login-ticket-art-top > span:first-child {
-            color: var(--cinema-text-muted);
-            font-size: 0.54rem;
-            font-weight: 900;
-            letter-spacing: 0.14em;
+        .login-ticket-art-top img {
+            display: block;
+            flex: 1 1 auto;
+            width: 100px;
+            min-width: 0;
+            height: 30px;
+            object-fit: contain;
+            object-position: left center;
         }
 
+    .login-ticket-badge {
+        padding: .28rem .38rem;
+        border: 1px solid rgba(214,168,75,.28);
+        border-radius: 999px;
+        color: #f0cb76;
+        font-size: .49rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
     .login-ticket-art-title {
-        padding: 3.6rem 0 2.7rem;
+        padding: 3rem 0 2rem;
     }
 
         .login-ticket-art-title > span {
             display: block;
-            margin-bottom: 0.5rem;
-            color: var(--cinema-gold-light);
-            font-size: 0.55rem;
+            margin-bottom: .55rem;
+            color: #e6b956;
+            font-size: .62rem;
             font-weight: 900;
-            letter-spacing: 0.15em;
+            letter-spacing: .12em;
         }
 
         .login-ticket-art-title strong {
-            color: var(--cinema-text);
-            font-size: 1.75rem;
-            line-height: 1.05;
+            display: block;
+            color: #f5f7fb;
+            font-size: 1.56rem;
+            line-height: 1.15;
+            letter-spacing: -.035em;
         }
 
     .login-ticket-art-divider {
         height: 1px;
-        background: repeating-linear-gradient( 90deg, rgba(255, 255, 255, 0.18) 0, rgba(255, 255, 255, 0.18) 7px, transparent 7px, transparent 14px );
+        background: repeating-linear-gradient(90deg,rgba(255,255,255,.19) 0 7px,transparent 7px 14px);
     }
 
     .login-ticket-art-meta {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.5rem;
-        padding: 1.2rem 0;
+        grid-template-columns: repeat(3, minmax(0,1fr));
+        gap: .5rem;
+        padding: 1.12rem 0;
     }
 
         .login-ticket-art-meta span {
             display: block;
-            color: var(--cinema-text-muted);
-            font-size: 0.48rem;
-            font-weight: 900;
-            letter-spacing: 0.08em;
+            margin-bottom: .2rem;
+            color: #aeb8c6;
+            font-size: .53rem;
+            font-weight: 800;
         }
 
         .login-ticket-art-meta strong {
-            color: var(--cinema-text-soft);
-            font-size: 0.75rem;
+            color: #f5f7fb;
+            font-size: .78rem;
         }
 
     .login-barcode {
         display: flex;
         justify-content: center;
         gap: 3px;
-        height: 32px;
-        opacity: 0.5;
+        height: 30px;
+        opacity: .72;
     }
 
         .login-barcode span {
             width: 2px;
-            background: var(--cinema-text-soft);
+            background: #c1cad6;
         }
 
             .login-barcode span:nth-child(2n) {
@@ -805,121 +458,76 @@
                 width: 4px;
             }
 
-
-    /* =====================================================
-       GLOWS
-       ===================================================== */
-
-    .login-showcase-glow {
-        position: absolute;
-        z-index: -1;
-        border-radius: 50%;
-        filter: blur(20px);
-        pointer-events: none;
-    }
-
-    .login-showcase-glow-one {
-        top: -140px;
-        left: -120px;
-        width: 360px;
-        height: 360px;
-        background: rgba(214, 168, 75, 0.08);
-    }
-
-    .login-showcase-glow-two {
-        right: -130px;
-        bottom: -180px;
-        width: 440px;
-        height: 440px;
-        background: rgba(62, 103, 170, 0.11);
-    }
-
-
-    /* =====================================================
-       FORM SIDE
-       ===================================================== */
-
     .login-form-side {
         display: grid;
         place-items: center;
         min-width: 0;
-        padding: clamp(2rem, 5vw, 4rem);
-        background: linear-gradient( 180deg, rgba(13, 18, 27, 0.98), rgba(8, 11, 17, 0.99) );
+        padding: clamp(2rem, 4.4vw, 4rem);
+        background: linear-gradient(180deg, rgba(13,18,27,.99), rgba(8,11,17,.99));
     }
 
     .login-form-wrapper {
-        width: min(100%, 430px);
+        width: min(100%,430px);
+        min-width: 0;
     }
-
-    .login-mobile-brand {
-        display: none;
-        margin-bottom: 2.5rem;
-    }
-
-        .login-mobile-brand a {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.65rem;
-            color: var(--cinema-text);
-            font-size: 0.72rem;
-            font-weight: 900;
-            letter-spacing: 0.16em;
-        }
 
     .login-heading {
-        margin-bottom: 2rem;
+        margin-bottom: 1.9rem;
     }
 
     .login-heading-label {
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: .6rem;
         color: var(--cinema-gold-light);
-        font-size: 0.58rem;
-        font-weight: 900;
-        letter-spacing: 0.16em;
+        font-size: .7rem;
+        font-weight: 800;
+        letter-spacing: .11em;
     }
 
-    .login-heading h2 {
-        margin-bottom: 0.6rem;
-        font-size: clamp( 2rem, 4vw, 2.7rem );
+    .login-heading h1 {
+        margin: 0 0 .7rem;
+        font-size: clamp(2.05rem,4vw,2.75rem);
+        line-height: 1.2;
     }
 
     .login-heading p {
+        max-width: 380px;
         margin: 0;
-        color: var(--cinema-text-muted);
-        font-size: 0.85rem;
-        line-height: 1.65;
+        color: #aeb8c6;
+        font-size: .91rem;
+        line-height: 1.75;
     }
-
-
-    /* =====================================================
-       FORM
-       ===================================================== */
 
     .login-form {
         width: 100%;
     }
 
-    .login-validation {
-        margin-bottom: 1.25rem;
-    }
+        .login-form .login-field {
+            margin-bottom: 1.35rem;
+        }
 
-        .login-validation:empty {
-            display: none;
+        .login-form .form-label {
+            display: inline-block;
+            margin-bottom: .55rem;
+            color: #dfe4ed;
+            font-size: .86rem;
+            font-weight: 650;
         }
 
     .login-label-row {
         display: flex;
-        align-items: center;
+        align-items: baseline;
         justify-content: space-between;
-        gap: 1rem;
+        flex-wrap: wrap;
+        gap: .25rem 1rem;
     }
 
     .login-forgot-link {
-        margin-bottom: 0.5rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.72rem;
+        margin-bottom: .5rem;
+        color: #b1bac9;
+        font-size: .76rem;
         font-weight: 600;
+        text-decoration: none;
     }
 
         .login-forgot-link:hover {
@@ -928,208 +536,236 @@
 
     .login-input-wrapper {
         position: relative;
+        width: 100%;
     }
 
-    .login-input {
+    .login-page .login-form .login-input-wrapper .login-input {
+        display: block;
+        width: 100%;
         min-height: 52px;
-        padding-left: 3rem;
+        padding: .82rem 1rem;
+        border: 1px solid rgba(255,255,255,.16);
+        border-radius: 12px;
+        background: #121925;
+        color: #f5f7fb;
+        font-size: .91rem;
+        line-height: 1.5;
+        transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
     }
 
-    .login-password-input {
-        padding-right: 4.7rem;
+    .login-page .login-form .login-input-wrapper .login-password-input {
+        padding-right: 6.7rem;
     }
 
-    .login-input-icon {
-        position: absolute;
-        z-index: 2;
-        top: 50%;
-        left: 1rem;
-        display: grid;
-        place-items: center;
-        width: 20px;
-        height: 20px;
-        color: var(--cinema-text-muted);
-        font-size: 0.72rem;
-        font-weight: 800;
-        pointer-events: none;
-        transform: translateY(-50%);
+    .login-page .login-input::placeholder {
+        color: #97a2b3;
+        opacity: 1;
     }
 
-    .login-lock-icon {
-        font-size: 1.15rem;
+    .login-page .login-input::-webkit-input-placeholder {
+        color: #97a2b3;
+    }
+
+    .login-page .login-input:-webkit-autofill,
+    .login-page .login-input:-webkit-autofill:hover,
+    .login-page .login-input:-webkit-autofill:focus {
+        -webkit-text-fill-color: #f5f7fb;
+        -webkit-box-shadow: 0 0 0 1000px #121925 inset;
+        caret-color: #f5f7fb;
     }
 
     .login-password-toggle {
         position: absolute;
         z-index: 3;
         top: 50%;
-        right: 0.85rem;
-        padding: 0.25rem 0.4rem;
-        color: var(--cinema-text-muted);
+        right: .7rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: .35rem .65rem;
         border: 0;
-        border-radius: 6px;
-        outline: 0;
+        border-radius: 7px;
         background: transparent;
-        font-size: 0.55rem;
-        font-weight: 900;
-        letter-spacing: 0.08em;
+        color: #cbd3df;
+        font-size: .76rem;
+        font-weight: 700;
+        cursor: pointer;
         transform: translateY(-50%);
-        transition: color var(--cinema-transition), background-color var(--cinema-transition);
     }
 
         .login-password-toggle:hover {
             color: var(--cinema-gold-light);
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255,255,255,.055);
         }
 
-        .login-password-toggle:focus-visible {
-            box-shadow: 0 0 0 3px rgba(214, 168, 75, 0.12);
+    .login-page .login-form .login-input-wrapper .login-input:focus {
+        border-color: var(--cinema-gold);
+        background: #141d2b;
+        box-shadow: 0 0 0 3px rgba(214,168,75,.13);
+        outline: none;
+    }
+
+    .login-page .login-form .login-input-wrapper .input-validation-error {
+        border-color: rgba(239,102,115,.75);
+    }
+
+    .login-validation {
+        margin-bottom: 1.3rem;
+        padding: .9rem 1rem;
+        border: 1px solid rgba(239,102,115,.35);
+        border-radius: 12px;
+        background: rgba(239,102,115,.085);
+        color: #ffc1c7;
+        font-size: .82rem;
+        line-height: 1.6;
+    }
+
+        .login-validation ul {
+            margin: 0;
+            padding-left: 1.1rem;
+        }
+
+        .validation-summary-valid.login-validation,
+        .login-validation:empty {
+            display: none;
+        }
+
+    .login-field-error {
+        display: block;
+        margin-top: .4rem;
+        font-size: .75rem;
+        line-height: 1.5;
+    }
+
+        .login-field-error:empty {
+            display: none;
         }
 
     .login-options {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin: -0.1rem 0 1.5rem;
+        margin: .2rem 0 1.5rem;
     }
 
     .login-remember {
         display: inline-flex;
         align-items: center;
-        gap: 0.55rem;
+        gap: .65rem;
         margin: 0;
-        color: var(--cinema-text-soft);
+        color: #cbd3dd;
+        font-size: .85rem;
         cursor: pointer;
-        font-size: 0.78rem;
     }
 
         .login-remember .form-check-input {
             margin: 0;
+            cursor: pointer;
         }
 
     .login-submit {
         display: flex;
-        width: 100%;
-        min-height: 52px;
         align-items: center;
         justify-content: space-between;
-        padding-right: 1.1rem;
-        padding-left: 1.1rem;
+        width: 100%;
+        min-height: 52px;
+        padding: .75rem 1.1rem;
+        font-weight: 800;
     }
 
-        .login-submit > span:last-child {
-            transition: transform var(--cinema-transition);
-        }
-
-        .login-submit:hover > span:last-child {
-            transform: translateX(5px);
+        .login-submit:disabled,
+        .login-submit.is-submitting {
+            cursor: progress;
+            opacity: .8;
         }
 
     .login-register {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.4rem;
-        margin-top: 1.4rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.78rem;
+        flex-wrap: wrap;
+        gap: .4rem;
+        margin-top: 1.35rem;
+        color: #a5afbe;
+        font-size: .84rem;
+        text-align: center;
     }
 
         .login-register a {
             color: var(--cinema-gold-light);
-            font-weight: 700;
+            font-weight: 750;
         }
 
             .login-register a:hover {
                 color: #ffe0a0;
             }
 
-
-    /* =====================================================
-       EXTERNAL LOGIN
-       ===================================================== */
-
     .login-external {
-        margin-top: 1rem;
+        margin-top: 1.5rem;
     }
 
         .login-external:empty {
             display: none;
         }
 
-
-    /* =====================================================
-       SECURITY NOTE
-       ===================================================== */
-
     .login-security-note {
         display: flex;
         align-items: flex-start;
-        gap: 0.55rem;
-        margin-top: 2rem;
-        padding-top: 1.2rem;
+        gap: .7rem;
+        margin-top: 1.9rem;
+        padding-top: 1.1rem;
         border-top: 1px solid var(--cinema-border);
     }
 
-        .login-security-note > span {
-            display: grid;
-            flex: 0 0 24px;
-            place-items: center;
-            width: 24px;
-            height: 24px;
-            color: #9ae8bd;
-            border: 1px solid rgba(66, 199, 131, 0.18);
-            border-radius: 50%;
-            background: rgba(66, 199, 131, 0.06);
-            font-size: 0.58rem;
-            font-weight: 900;
-        }
+    .login-security-icon {
+        display: grid;
+        flex: 0 0 24px;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        border: 1px solid rgba(66,199,131,.25);
+        border-radius: 50%;
+        background: rgba(66,199,131,.07);
+        color: #95e8b5;
+        font-size: .74rem;
+        font-weight: 800;
+    }
 
-        .login-security-note p {
-            margin: 0;
-            color: var(--cinema-text-muted);
-            font-size: 0.65rem;
-            line-height: 1.55;
-        }
+    .login-security-note p {
+        margin: 0;
+        color: #a7b1c0;
+        font-size: .76rem;
+        line-height: 1.65;
+    }
 
-
-    /* =====================================================
-       ANIMATION
-       ===================================================== */
+    .login-page a:focus-visible,
+    .login-page button:focus-visible,
+    .login-page input:focus-visible {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 3px;
+    }
 
     @@keyframes login-ticket-float {
-        0%,
-        100% {
-            transform: rotate(8deg) translateY(0);
+        0%, 100% {
+            transform: rotate(5deg) translateY(0);
         }
 
         50% {
-            transform: rotate(6deg) translateY(-12px);
+            transform: rotate(3deg) translateY(-10px);
         }
     }
 
-
-    /* =====================================================
-       RESPONSIVE
-       ===================================================== */
-
-    @@media (max-width: 1050px) {
-        .login-shell {
-            grid-template-columns: minmax(0, 1fr) minmax(380px, 0.9fr);
-        }
-
+    @@media (max-width: 1170px) {
         .login-ticket-art {
             display: none;
         }
 
-        .login-showcase-copy h1 {
-            font-size: 3.8rem;
+        .login-showcase-copy {
+            padding-top: 3rem;
         }
     }
 
-    @@media (max-width: 850px) {
+    @@media (max-width: 880px) {
         .login-shell {
-            grid-template-columns: 1fr;
+            grid-template-columns: minmax(0,1fr);
             min-height: 0;
         }
 
@@ -1138,11 +774,7 @@
         }
 
         .login-form-side {
-            min-height: 650px;
-        }
-
-        .login-mobile-brand {
-            display: block;
+            padding: clamp(2rem,6vw,3.5rem);
         }
     }
 
@@ -1152,28 +784,19 @@
         }
 
         .login-form-side {
-            min-height: 0;
-            padding: 2rem 1.2rem;
+            padding: 2rem 1.15rem;
         }
 
-        .login-heading h2 {
+        .login-heading h1 {
             font-size: 2rem;
         }
 
         .login-label-row {
             align-items: flex-start;
-            flex-direction: column;
-            gap: 0;
         }
 
         .login-forgot-link {
-            order: 2;
-            margin: -0.15rem 0 0.5rem;
-        }
-
-        .login-register {
-            align-items: center;
-            flex-direction: column;
+            font-size: .75rem;
         }
     }
 
@@ -1181,5 +804,101 @@
         .login-ticket-art {
             animation: none;
         }
+
+        .login-password-toggle,
+        .login-submit {
+            transition: none;
+        }
     }
 </style>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        (function () {
+            "use strict";
+
+            var form = document.getElementById("loginForm");
+            var submitButton = document.getElementById("loginButton");
+            var submitText = document.getElementById("loginButtonText");
+            var passwordInput = document.getElementById("Password");
+            var toggleButton = document.getElementById("togglePassword");
+            var toggleText = document.getElementById("passwordToggleText");
+            var submitting = false;
+
+            if (passwordInput && toggleButton && toggleText) {
+                toggleButton.addEventListener("click", function () {
+                    var showPassword = passwordInput.type === "password";
+
+                    passwordInput.type = showPassword ? "text" : "password";
+
+                    toggleText.textContent = showPassword
+                        ? "Сокриј"
+                        : "Прикажи";
+
+                    toggleButton.setAttribute(
+                        "aria-pressed",
+                        showPassword ? "true" : "false"
+                    );
+
+                    toggleButton.setAttribute(
+                        "aria-label",
+                        showPassword
+                            ? "Сокриј лозинка"
+                            : "Прикажи лозинка"
+                    );
+                });
+            }
+
+            function resetFormState() {
+                submitting = false;
+
+                if (form) {
+                    form.removeAttribute("aria-busy");
+                }
+
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.classList.remove("is-submitting");
+                }
+
+                if (submitText) {
+                    submitText.textContent = "Најави се";
+                }
+            }
+
+            if (form && submitButton && submitText) {
+                form.addEventListener("submit", function (event) {
+                    if (submitting) {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    if (!form.checkValidity()) {
+                        return;
+                    }
+
+                    if (window.jQuery &&
+                        window.jQuery.fn &&
+                        typeof window.jQuery.fn.valid === "function" &&
+                        !window.jQuery(form).valid()) {
+                        return;
+                    }
+
+                    submitting = true;
+                    form.setAttribute("aria-busy", "true");
+                    submitButton.disabled = true;
+                    submitButton.classList.add("is-submitting");
+                    submitText.textContent = "Се најавува...";
+                });
+
+                window.addEventListener("pageshow", function (event) {
+                    if (event.persisted || submitting) {
+                        resetFormState();
+                    }
+                });
+            }
+        })();
+    </script>
+}

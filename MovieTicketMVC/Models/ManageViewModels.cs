@@ -7,6 +7,11 @@ namespace MovieTicketMVC.Models
 {
     public class IndexViewModel
     {
+        public IndexViewModel()
+        {
+            Logins = new List<UserLoginInfo>();
+        }
+
         public bool HasPassword { get; set; }
 
         public IList<UserLoginInfo> Logins { get; set; }
@@ -20,6 +25,12 @@ namespace MovieTicketMVC.Models
 
     public class ManageLoginsViewModel
     {
+        public ManageLoginsViewModel()
+        {
+            CurrentLogins = new List<UserLoginInfo>();
+            OtherLogins = new List<AuthenticationDescription>();
+        }
+
         public IList<UserLoginInfo> CurrentLogins { get; set; }
 
         public IList<AuthenticationDescription> OtherLogins { get; set; }
@@ -32,73 +43,78 @@ namespace MovieTicketMVC.Models
 
     public class SetPasswordViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Мора да внесете нова лозинка.")]
         [StringLength(
             100,
-            ErrorMessage = "The {0} must be at least {2} characters long.",
+            ErrorMessage = "Лозинката мора да содржи најмалку {2} знаци.",
             MinimumLength = 8)]
         [DataType(DataType.Password)]
-        [Display(Name = "New password")]
+        [Display(Name = "Нова лозинка")]
         public string NewPassword { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Мора да ја потврдите новата лозинка.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm new password")]
-        [Compare(
+        [Display(Name = "Потврди нова лозинка")]
+        [System.ComponentModel.DataAnnotations.Compare(
             "NewPassword",
-            ErrorMessage =
-                "The new password and confirmation password do not match.")]
+            ErrorMessage = "Новата лозинка и потврдата не се совпаѓаат.")]
         public string ConfirmPassword { get; set; }
     }
 
     public class ChangePasswordViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Мора да ја внесете тековната лозинка.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Current password")]
+        [Display(Name = "Тековна лозинка")]
         public string OldPassword { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Мора да внесете нова лозинка.")]
         [StringLength(
             100,
-            ErrorMessage = "The {0} must be at least {2} characters long.",
+            ErrorMessage = "Лозинката мора да содржи најмалку {2} знаци.",
             MinimumLength = 8)]
         [DataType(DataType.Password)]
-        [Display(Name = "New password")]
+        [Display(Name = "Нова лозинка")]
         public string NewPassword { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Мора да ја потврдите новата лозинка.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm new password")]
-        [Compare(
+        [Display(Name = "Потврди нова лозинка")]
+        [System.ComponentModel.DataAnnotations.Compare(
             "NewPassword",
-            ErrorMessage =
-                "The new password and confirmation password do not match.")]
+            ErrorMessage = "Новата лозинка и потврдата не се совпаѓаат.")]
         public string ConfirmPassword { get; set; }
     }
 
     public class AddPhoneNumberViewModel
     {
-        [Required]
-        [Phone]
-        [Display(Name = "Phone Number")]
+        [Required(ErrorMessage = "Мора да внесете телефонски број.")]
+        [Phone(ErrorMessage = "Внесете валиден телефонски број.")]
+        [Display(Name = "Телефонски број")]
         public string Number { get; set; }
     }
 
     public class VerifyPhoneNumberViewModel
     {
-        [Required]
-        [Display(Name = "Code")]
+        [Required(ErrorMessage = "Мора да внесете код за потврда.")]
+        [Display(Name = "Код за потврда")]
         public string Code { get; set; }
 
-        [Required]
-        [Phone]
-        [Display(Name = "Phone Number")]
+        [Required(ErrorMessage = "Мора да внесете телефонски број.")]
+        [Phone(ErrorMessage = "Внесете валиден телефонски број.")]
+        [Display(Name = "Телефонски број")]
         public string PhoneNumber { get; set; }
     }
 
     public class ConfigureTwoFactorViewModel
     {
+        public ConfigureTwoFactorViewModel()
+        {
+            Providers =
+                new List<System.Web.Mvc.SelectListItem>();
+        }
+
+        [Required(ErrorMessage = "Мора да одберете провајдер.")]
         public string SelectedProvider { get; set; }
 
         public ICollection<System.Web.Mvc.SelectListItem> Providers

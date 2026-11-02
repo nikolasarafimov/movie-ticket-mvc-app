@@ -1,28 +1,77 @@
 ﻿@using System
+@using System.Globalization
 @model MovieTicketMVC.Models.Movie
 
 @{
     ViewBag.Title = "Избриши филм";
 
     var isCurrent =
-        Model.ReleaseDate.Date <=
-        DateTime.Today;
+        Model.ReleaseDate.Date <= DateTime.Today;
+
+    var movieTitle =
+        string.IsNullOrWhiteSpace(Model.Title)
+            ? "Непознат филм"
+            : Model.Title.Trim();
 
     var genre =
-        string.IsNullOrWhiteSpace(
-            Model.Genre)
+        string.IsNullOrWhiteSpace(Model.Genre)
             ? "Непознат жанр"
             : Model.Genre.Trim();
 
     var language =
-        string.IsNullOrWhiteSpace(
-            Model.Language)
+        string.IsNullOrWhiteSpace(Model.Language)
             ? "Непознат"
             : Model.Language.Trim();
 
     var hasTrailer =
-        !string.IsNullOrWhiteSpace(
-            Model.LocalTrailerPath);
+        !string.IsNullOrWhiteSpace(Model.LocalTrailerPath);
+
+    var ageText =
+        Model.IsForAdults == true
+            ? "18+"
+            : Model.IsForAdults == false
+                ? "Без рестрикција"
+                : "Непозната";
+
+    var ageBadge =
+        Model.IsForAdults == true
+            ? "18+"
+            : Model.IsForAdults == false
+                ? "ALL"
+                : "N/A";
+
+    var ageClass =
+        Model.IsForAdults == true
+            ? "adult"
+            : Model.IsForAdults == false
+                ? ""
+                : "unknown";
+
+    var releaseDate =
+        Model.ReleaseDate.ToString(
+            "dd.MM.yyyy",
+            CultureInfo.InvariantCulture);
+
+    var ratingText =
+        Model.Rating.HasValue
+            ? Model.Rating.Value.ToString(
+                "0.0",
+                CultureInfo.InvariantCulture)
+            : null;
+
+    var returnAction =
+        isCurrent
+            ? "Current"
+            : "ComingSoon";
+
+    var returnUrl =
+        Url.Action(returnAction, "Movies");
+
+    var detailsUrl =
+        Url.Action(
+            "Details",
+            "Movies",
+            new { id = Model.Id });
 }
 
 <main class="movie-delete-page"
@@ -60,16 +109,14 @@
 
         </div>
 
-
         @Html.ValidationSummary(
             true,
             "",
             new
             {
-                @class =
-                    "validation-summary-errors movie-delete-validation"
+                @class = "validation-summary-errors movie-delete-validation",
+                role = "alert"
             })
-
 
         <div class="movie-delete-layout">
 
@@ -92,21 +139,14 @@
 
                     </div>
 
-                    @if (Model.IsForAdults == true)
-                    {
-                        <span class="movie-delete-age adult">
-                            18+
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="movie-delete-age">
-                            ALL
-                        </span>
-                    }
+                    <span class="movie-delete-age @ageClass"
+                          aria-label="Возрасна категорија: @ageText">
+
+                        @ageBadge
+
+                    </span>
 
                 </div>
-
 
                 <div class="movie-delete-title-area">
 
@@ -115,19 +155,20 @@
                     </span>
 
                     <h2>
-                        @Model.Title
+                        @movieTitle
                     </h2>
 
                     @if (Model.Rating.HasValue)
                     {
-                        <div class="movie-delete-rating">
+                        <div class="movie-delete-rating"
+                             aria-label="Рејтинг: @ratingText од 10">
 
                             <span aria-hidden="true">
                                 ★
                             </span>
 
                             <strong>
-                                @Model.Rating.Value.ToString("0.0")
+                                @ratingText
                             </strong>
 
                             <small>
@@ -139,13 +180,11 @@
 
                 </div>
 
-
                 <div class="movie-delete-preview-glow"
                      aria-hidden="true">
                 </div>
 
             </section>
-
 
             <section class="cinema-panel movie-delete-details">
 
@@ -169,7 +208,6 @@
 
                 </div>
 
-
                 <div class="movie-delete-info-grid">
 
                     <div class="movie-delete-info-item">
@@ -184,7 +222,6 @@
 
                     </div>
 
-
                     <div class="movie-delete-info-item">
 
                         <span>
@@ -192,12 +229,10 @@
                         </span>
 
                         <strong>
-                            @Model.ReleaseDate.ToString(
-                                "dd.MM.yyyy")
+                            @releaseDate
                         </strong>
 
                     </div>
-
 
                     <div class="movie-delete-info-item">
 
@@ -205,12 +240,11 @@
                             ЖАНР
                         </span>
 
-                        <strong>
+                        <strong title="@genre">
                             @genre
                         </strong>
 
                     </div>
-
 
                     <div class="movie-delete-info-item">
 
@@ -218,12 +252,11 @@
                             ЈАЗИК
                         </span>
 
-                        <strong>
+                        <strong title="@language">
                             @language
                         </strong>
 
                     </div>
-
 
                     <div class="movie-delete-info-item">
 
@@ -239,7 +272,6 @@
 
                     </div>
 
-
                     <div class="movie-delete-info-item">
 
                         <span>
@@ -247,9 +279,7 @@
                         </span>
 
                         <strong>
-                            @(Model.IsForAdults == true
-                                ? "18+"
-                                : "Без рестрикција")
+                            @ageText
                         </strong>
 
                     </div>
@@ -260,8 +290,8 @@
 
         </div>
 
-
-        <section class="movie-delete-consequences">
+        <section class="movie-delete-consequences"
+                 aria-labelledby="delete-consequences-title">
 
             <div class="movie-delete-consequences-icon"
                  aria-hidden="true">
@@ -270,21 +300,24 @@
 
             <div>
 
-                <strong>
+                <strong id="delete-consequences-title">
                     Што ќе се случи?
                 </strong>
 
                 <p>
                     Ако филмот нема поврзани купени билети,
-                    записот ќе биде трајно отстранет од каталогот.
-                    Доколку постојат билети за овој филм,
-                    системот ќе го блокира бришењето.
+                    записот ќе биде трајно отстранет од каталогот
+                    и неговото trailer видео ќе биде отстрането
+                    од серверот.
+
+                    Доколку постојат купени билети за овој филм,
+                    системот ќе го блокира бришењето за
+                    да ги зачува резервациите.
                 </p>
 
             </div>
 
         </section>
-
 
         @using (Html.BeginForm(
             "Delete",
@@ -312,7 +345,7 @@
 
                     <strong>
                         Дали сигурно сакаш да го избришеш
-                        „@Model.Title“?
+                        „@movieTitle“?
                     </strong>
 
                     <p>
@@ -321,27 +354,20 @@
 
                 </div>
 
-
                 <div class="movie-delete-actions">
 
                     <a class="btn btn-outline-secondary"
-                       href="@Url.Action(
-                           isCurrent
-                               ? "Current"
-                               : "ComingSoon",
-                           "Movies")">
+                       href="@returnUrl">
+
                         Откажи
+
                     </a>
 
                     <a class="btn btn-outline-primary"
-                       href="@Url.Action(
-                           "Details",
-                           "Movies",
-                           new
-                           {
-                               id = Model.Id
-                           })">
+                       href="@detailsUrl">
+
                         Прегледај филм
+
                     </a>
 
                     <button type="submit"
@@ -367,60 +393,73 @@
 
 </main>
 
-
 @section scripts
 {
     <script>
         (function () {
+            "use strict";
+
             var form =
-                document.getElementById(
-                    "deleteMovieForm");
+                document.getElementById("deleteMovieForm");
 
             var button =
-                document.getElementById(
-                    "deleteMovieButton");
+                document.getElementById("deleteMovieButton");
 
             var buttonText =
-                document.getElementById(
-                    "deleteMovieButtonText");
+                document.getElementById("deleteMovieButtonText");
 
-            if (
-                !form ||
-                !button ||
-                !buttonText
-            ) {
+            if (!form || !button || !buttonText) {
                 return;
             }
 
-            form.addEventListener(
-                "submit",
-                function () {
+            var submitting = false;
 
-                    button.disabled =
-                        true;
+            form.addEventListener("submit", function (event) {
+                if (submitting) {
+                    event.preventDefault();
+                    return;
+                }
 
-                    buttonText.textContent =
-                        "Се брише...";
-                });
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    form.reportValidity();
+                    return;
+                }
+
+                if (event.defaultPrevented) {
+                    return;
+                }
+
+                submitting = true;
+
+                button.disabled = true;
+                buttonText.textContent = "Се брише...";
+                button.setAttribute("aria-busy", "true");
+            });
+
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted && submitting) {
+                    submitting = false;
+
+                    button.disabled = false;
+                    buttonText.textContent = "Избриши филм";
+                    button.removeAttribute("aria-busy");
+                }
+            });
         })();
     </script>
 }
-
 
 <style>
     .movie-delete-page {
         display: flex;
         justify-content: center;
+        width: 100%;
     }
 
     .movie-delete-shell {
         width: min(100%, 1050px);
     }
-
-
-    /* =====================================================
-       WARNING HEADER
-       ===================================================== */
 
     .movie-delete-warning {
         position: relative;
@@ -481,7 +520,7 @@
 
     .movie-delete-warning h1 {
         margin-bottom: 0.65rem;
-        font-size: clamp( 2.2rem, 4vw, 3.5rem );
+        font-size: clamp(2.2rem, 4vw, 3.5rem);
     }
 
         .movie-delete-warning h1 span {
@@ -494,13 +533,9 @@
         color: var(--cinema-text-muted);
     }
 
-
-    /* =====================================================
-       VALIDATION
-       ===================================================== */
-
     .movie-delete-validation {
         margin-bottom: 1.5rem;
+        color: #ffabb2;
         border-color: rgba(239, 102, 115, 0.35);
         background: rgba(239, 102, 115, 0.10);
     }
@@ -509,10 +544,14 @@
             display: none;
         }
 
+        .movie-delete-validation ul {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
 
-    /* =====================================================
-       CONTENT
-       ===================================================== */
+        .movie-delete-validation li {
+            line-height: 1.6;
+        }
 
     .movie-delete-layout {
         display: grid;
@@ -521,19 +560,14 @@
         margin-bottom: 1.5rem;
     }
 
-
-    /* =====================================================
-       MOVIE PREVIEW
-       ===================================================== */
-
     .movie-delete-preview {
         position: relative;
         display: flex;
-        overflow: hidden;
         flex-direction: column;
         justify-content: space-between;
         min-height: 380px;
         padding: 1.5rem;
+        overflow: hidden;
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-lg);
         background: radial-gradient( circle at 75% 25%, rgba(214, 168, 75, 0.12), transparent 30% ), radial-gradient( circle at 10% 90%, rgba(239, 102, 115, 0.08), transparent 32% ), linear-gradient( 145deg, #192230, #0b1018 58%, #080a0f );
@@ -603,6 +637,12 @@
             background: rgba(239, 102, 115, 0.08);
         }
 
+        .movie-delete-age.unknown {
+            color: var(--cinema-text-muted);
+            border-color: var(--cinema-border-strong);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
     .movie-delete-title-area {
         position: relative;
         z-index: 2;
@@ -620,8 +660,9 @@
     .movie-delete-title-area h2 {
         max-width: 90%;
         margin-bottom: 1rem;
-        font-size: clamp( 1.8rem, 3vw, 2.6rem );
+        font-size: clamp(1.8rem, 3vw, 2.6rem);
         line-height: 1.05;
+        overflow-wrap: anywhere;
     }
 
     .movie-delete-rating {
@@ -653,12 +694,8 @@
         border-radius: 50%;
         background: rgba(239, 102, 115, 0.07);
         filter: blur(14px);
+        pointer-events: none;
     }
-
-
-    /* =====================================================
-       DETAILS
-       ===================================================== */
 
     .movie-delete-details {
         padding: 1.6rem;
@@ -688,7 +725,7 @@
 
     .movie-delete-info-grid {
         display: grid;
-        grid-template-columns: repeat( 2, minmax(0, 1fr) );
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.8rem;
     }
 
@@ -717,11 +754,6 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-
-
-    /* =====================================================
-       CONSEQUENCES
-       ===================================================== */
 
     .movie-delete-consequences {
         display: flex;
@@ -762,11 +794,6 @@
         line-height: 1.65;
     }
 
-
-    /* =====================================================
-       FINAL CONFIRMATION
-       ===================================================== */
-
     .movie-delete-confirmation {
         display: flex;
         align-items: center;
@@ -795,6 +822,7 @@
             display: block;
             color: var(--cinema-text);
             font-size: 0.94rem;
+            overflow-wrap: anywhere;
         }
 
         .movie-delete-confirmation-copy p {
@@ -813,9 +841,9 @@
     .movie-delete-button {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.55rem;
         min-width: 145px;
-        justify-content: center;
     }
 
         .movie-delete-button > span:first-child {
@@ -823,10 +851,10 @@
             line-height: 1;
         }
 
-
-    /* =====================================================
-       RESPONSIVE
-       ===================================================== */
+        .movie-delete-button:disabled {
+            cursor: wait;
+            opacity: 0.7;
+        }
 
     @@media (max-width: 900px) {
         .movie-delete-layout {
@@ -889,6 +917,12 @@
 
         .movie-delete-preview-top {
             flex-direction: column;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .movie-delete-button {
+            transition: none;
         }
     }
 </style>

@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
+using Microsoft.Owin.Host.SystemWeb;
 using Microsoft.Owin.Security.Cookies;
 using MovieTicketMVC.Models;
 using Owin;
@@ -30,6 +31,14 @@ namespace MovieTicketMVC
                     LoginPath =
                         new PathString("/Account/Login"),
 
+                    CookieHttpOnly = true,
+
+                    CookieSecure = CookieSecureOption.Always,
+
+                    CookieSameSite = SameSiteMode.Lax,
+
+                    CookieManager = new SystemWebCookieManager(),
+
                     Provider =
                         new CookieAuthenticationProvider
                         {
@@ -40,6 +49,7 @@ namespace MovieTicketMVC
                                         ApplicationUser>(
                                         validateInterval:
                                             TimeSpan.FromMinutes(30),
+
                                         regenerateIdentity:
                                             (manager, user) =>
                                                 user.GenerateUserIdentityAsync(

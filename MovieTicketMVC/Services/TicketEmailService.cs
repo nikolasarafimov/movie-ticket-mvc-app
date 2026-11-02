@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MovieTicketMVC.Services
@@ -37,27 +38,23 @@ namespace MovieTicketMVC.Services
 
             if (string.IsNullOrWhiteSpace(smtpHost))
             {
-                smtpHost =
-                    "smtp.gmail.com";
+                smtpHost = "smtp.gmail.com";
             }
             else
             {
-                smtpHost =
-                    smtpHost.Trim();
+                smtpHost = smtpHost.Trim();
             }
 
             var smtpPortValue =
                 Environment.GetEnvironmentVariable(
                     "MOVIETICKET_SMTP_PORT");
 
-            var smtpPort =
-                587;
+            var smtpPort = 587;
 
-            if (!string.IsNullOrWhiteSpace(
-                    smtpPortValue))
+            if (!string.IsNullOrWhiteSpace(smtpPortValue))
             {
                 if (!int.TryParse(
-                        smtpPortValue,
+                        smtpPortValue.Trim(),
                         out smtpPort) ||
                     smtpPort < 1 ||
                     smtpPort > 65535)
@@ -69,7 +66,8 @@ namespace MovieTicketMVC.Services
 
             var smtpUsername =
                 GetRequiredEnvironmentVariable(
-                    "MOVIETICKET_SMTP_USERNAME");
+                    "MOVIETICKET_SMTP_USERNAME")
+                .Trim();
 
             var smtpPassword =
                 GetRequiredEnvironmentVariable(
@@ -79,60 +77,62 @@ namespace MovieTicketMVC.Services
                 Environment.GetEnvironmentVariable(
                     "MOVIETICKET_SMTP_FROM");
 
-            if (string.IsNullOrWhiteSpace(
-                    fromAddress))
+            if (string.IsNullOrWhiteSpace(fromAddress))
             {
-                fromAddress =
-                    smtpUsername;
+                fromAddress = smtpUsername;
             }
             else
             {
-                fromAddress =
-                    fromAddress.Trim();
+                fromAddress = fromAddress.Trim();
             }
 
             var safeAttachmentName =
-                Path.GetFileName(
-                    attachmentName);
+                Path.GetFileName(attachmentName);
 
-            if (string.IsNullOrWhiteSpace(
-                    safeAttachmentName))
+            if (string.IsNullOrWhiteSpace(safeAttachmentName))
             {
-                safeAttachmentName =
-                    "MovieTickets.pdf";
+                safeAttachmentName = "MovieTickets.pdf";
             }
 
-            using (var message =
-                new MailMessage())
+            using (var mailMessage = new MailMessage())
             {
-                message.From =
-                    new MailAddress(
-                        fromAddress,
-                        "MovieTicket App");
+                mailMessage.From = new MailAddress(
+                    fromAddress,
+                    "MovieTicket App",
+                    Encoding.UTF8);
 
-                message.To.Add(
-                    new MailAddress(
-                        to.Trim()));
+                mailMessage.To.Add(
+                    new MailAddress(to.Trim()));
 
-                message.Subject =
+                mailMessage.Subject =
                     subject ?? string.Empty;
 
-                message.Body =
+                mailMessage.Body =
                     body ?? string.Empty;
 
-                message.IsBodyHtml =
-                    false;
+                mailMessage.IsBodyHtml = false;
+
+                mailMessage.SubjectEncoding =
+                    Encoding.UTF8;
+
+                mailMessage.BodyEncoding =
+                    Encoding.UTF8;
+
+                mailMessage.HeadersEncoding =
+                    Encoding.UTF8;
 
                 using (var attachmentStream =
-                    new MemoryStream(
-                        attachmentBytes))
+                    new MemoryStream(attachmentBytes))
                 using (var attachment =
                     new Attachment(
                         attachmentStream,
                         safeAttachmentName,
                         MediaTypeNames.Application.Pdf))
                 {
-                    message.Attachments.Add(
+                    attachment.NameEncoding =
+                        Encoding.UTF8;
+
+                    mailMessage.Attachments.Add(
                         attachment);
 
                     using (var client =
@@ -140,11 +140,12 @@ namespace MovieTicketMVC.Services
                             smtpHost,
                             smtpPort))
                     {
-                        client.EnableSsl =
-                            true;
+                        client.DeliveryMethod =
+                            SmtpDeliveryMethod.Network;
 
-                        client.UseDefaultCredentials =
-                            false;
+                        client.EnableSsl = true;
+
+                        client.UseDefaultCredentials = false;
 
                         client.Credentials =
                             new NetworkCredential(
@@ -152,29 +153,26 @@ namespace MovieTicketMVC.Services
                                 smtpPassword);
 
                         await client.SendMailAsync(
-                            message);
+                            mailMessage);
                     }
                 }
             }
         }
 
-        private static string
-            GetRequiredEnvironmentVariable(
-                string name)
+        private static string GetRequiredEnvironmentVariable(
+            string name)
         {
             var value =
-                Environment.GetEnvironmentVariable(
-                    name);
+                Environment.GetEnvironmentVariable(name);
 
-            if (string.IsNullOrWhiteSpace(
-                    value))
+            if (string.IsNullOrWhiteSpace(value))
             {
                 throw new InvalidOperationException(
-                    name
-                    + " environment variable is not configured.");
+                    name +
+                    " environment variable is not configured.");
             }
 
-            return value.Trim();
+            return value;
         }
     }
 }

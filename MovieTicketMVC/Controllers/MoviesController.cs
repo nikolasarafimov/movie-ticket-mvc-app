@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -11,17 +12,20 @@ namespace MovieTicketMVC.Controllers
 {
     public class MoviesController : Controller
     {
-        private const int MaxTrailerSizeBytes =
-            200 * 1024 * 1024;
+        private const int MaxTrailerSizeBytes = 200 * 1024 * 1024;
+
+        private const string VideosVirtualDirectory =
+            "~/Content/Videos/";
+
+        private const string EditableMovieProperties =
+            "Title,LengthInMinutes,ReleaseDate,Description,Genre,IsForAdults,Rating,Actors,Language";
+
+        private const string EditableMoviePropertiesWithId =
+            "Id," + EditableMovieProperties;
 
         private static readonly HashSet<string> AllowedVideoExtensions =
             new HashSet<string>(
-                new[]
-                {
-                    ".mp4",
-                    ".webm",
-                    ".ogg"
-                },
+                new[] { ".mp4", ".webm", ".ogg" },
                 StringComparer.OrdinalIgnoreCase);
 
         private readonly ApplicationDbContext _context;
@@ -31,131 +35,38 @@ namespace MovieTicketMVC.Controllers
             _context = new ApplicationDbContext();
         }
 
-        // GET: Movies/Current
         [HttpGet]
         public ActionResult Current(
             string searchString,
             string sortOrder,
             string ageFilter)
         {
-            var today = DateTime.Today;
-
-            IQueryable<Movie> query =
-                _context.Movies
-                    .AsNoTracking()
-                    .Where(m => m.ReleaseDate <= today);
-
-            if (string.Equals(
-                    ageFilter,
-                    "Over18",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                query = query.Where(
-                    m => m.IsForAdults == true);
-            }
-
-            if (!string.IsNullOrWhiteSpace(searchString))
-            {
-                var search =
-                    searchString.Trim();
-
-                query = query.Where(
-                    m => m.Title.Contains(search));
-            }
-
-            if (string.IsNullOrWhiteSpace(sortOrder))
-            {
-                sortOrder = "title_asc";
-            }
-
-            ViewBag.TitleSortParam =
-                sortOrder == "title_asc"
-                    ? "title_desc"
-                    : "title_asc";
-
-            switch (sortOrder)
-            {
-                case "title_desc":
-                    query = query.OrderByDescending(
-                        m => m.Title);
-                    break;
-
-                default:
-                    query = query.OrderBy(
-                        m => m.Title);
-                    break;
-            }
-
-            return View(query.ToList());
+            return ListMovies(
+                true,
+                searchString,
+                sortOrder,
+                ageFilter);
         }
 
-        // GET: Movies/ComingSoon
         [HttpGet]
         public ActionResult ComingSoon(
             string searchString,
             string sortOrder,
             string ageFilter)
         {
-            var today = DateTime.Today;
-
-            IQueryable<Movie> query =
-                _context.Movies
-                    .AsNoTracking()
-                    .Where(m => m.ReleaseDate > today);
-
-            if (string.Equals(
-                    ageFilter,
-                    "Over18",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                query = query.Where(
-                    m => m.IsForAdults == true);
-            }
-
-            if (!string.IsNullOrWhiteSpace(searchString))
-            {
-                var search =
-                    searchString.Trim();
-
-                query = query.Where(
-                    m => m.Title.Contains(search));
-            }
-
-            if (string.IsNullOrWhiteSpace(sortOrder))
-            {
-                sortOrder = "title_asc";
-            }
-
-            ViewBag.TitleSortParam =
-                sortOrder == "title_asc"
-                    ? "title_desc"
-                    : "title_asc";
-
-            switch (sortOrder)
-            {
-                case "title_desc":
-                    query = query.OrderByDescending(
-                        m => m.Title);
-                    break;
-
-                default:
-                    query = query.OrderBy(
-                        m => m.Title);
-                    break;
-            }
-
-            return View(query.ToList());
+            return ListMovies(
+                false,
+                searchString,
+                sortOrder,
+                ageFilter);
         }
 
-        // GET: Movies/Details/5
         [HttpGet]
         public ActionResult Details(int id)
         {
-            var movie =
-                _context.Movies
-                    .AsNoTracking()
-                    .SingleOrDefault(
-                        m => m.Id == id);
+            var movie = _context.Movies
+                .AsNoTracking()
+                .SingleOrDefault(m => m.Id == id);
 
             if (movie == null)
             {
@@ -163,34 +74,35 @@ namespace MovieTicketMVC.Controllers
             }
 
             ViewBag.ActiveMovieSection =
-                IsCurrentlyShowing(movie)
-                    ? "Current"
-                    : "ComingSoon";
+                GetMovieSection(movie);
 
             return View(movie);
         }
 
-        // GET: Movies/Create
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
-            ViewBag.ActiveMovieSection =
-                "ComingSoon";
+            ViewBag.ActiveMovieSection = "ComingSoon";
 
             return View(new Movie());
         }
 
-        // POST: Movies/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public ActionResult Create(
-            Movie movie,
+            [Bind(Include = EditableMovieProperties)] Movie movie,
             HttpPostedFileBase videoFile)
         {
-            ViewBag.ActiveMovieSection =
-                "ComingSoon";
+            ViewBag.ActiveMovieSection = "ComingSoon";
+
+            if (movie.ReleaseDate == default(DateTime))
+            {
+                ModelState.AddModelError(
+                    "ReleaseDate",
+                    "Мора да внесете валиден датум на премиера.");
+            }
 
             if (videoFile == null ||
                 videoFile.ContentLength <= 0)
@@ -220,14 +132,9 @@ namespace MovieTicketMVC.Controllers
                 return View(movie);
             }
 
-            movie.ReleaseDate =
-                movie.ReleaseDate.Date;
-
-            movie.LocalTrailerPath =
-                trailerPath;
-
-            movie.IsCurrentlyShowing =
-                movie.ReleaseDate <= DateTime.Today;
+            movie.ReleaseDate = movie.ReleaseDate.Date;
+            movie.LocalTrailerPath = trailerPath;
+            movie.IsCurrentlyShowing = IsCurrentlyShowing(movie);
 
             try
             {
@@ -236,25 +143,19 @@ namespace MovieTicketMVC.Controllers
             }
             catch
             {
-                TryDeleteTrailer(
-                    trailerPath);
-
+                TryDeleteTrailer(trailerPath);
                 throw;
             }
 
             return RedirectToAction(
-                IsCurrentlyShowing(movie)
-                    ? "Current"
-                    : "ComingSoon");
+                GetMovieSection(movie));
         }
 
-        // GET: Movies/Edit/5
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public ActionResult Edit(int id)
         {
-            var movie =
-                _context.Movies.Find(id);
+            var movie = _context.Movies.Find(id);
 
             if (movie == null)
             {
@@ -262,37 +163,36 @@ namespace MovieTicketMVC.Controllers
             }
 
             ViewBag.ActiveMovieSection =
-                IsCurrentlyShowing(movie)
-                    ? "Current"
-                    : "ComingSoon";
+                GetMovieSection(movie);
 
             return View(movie);
         }
 
-        // POST: Movies/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public ActionResult Edit(
-            Movie movie,
+            [Bind(Include = EditableMoviePropertiesWithId)] Movie movie,
             string ReturnSection,
             HttpPostedFileBase videoFile)
         {
-            var movieInDb =
-                _context.Movies.Find(movie.Id);
+            var movieInDb = _context.Movies.Find(movie.Id);
 
             if (movieInDb == null)
             {
                 return HttpNotFound();
             }
 
-            ViewBag.ReturnSection =
-                ReturnSection;
-
+            ViewBag.ReturnSection = ReturnSection;
             ViewBag.ActiveMovieSection =
-                IsCurrentlyShowing(movieInDb)
-                    ? "Current"
-                    : "ComingSoon";
+                GetMovieSection(movieInDb);
+
+            if (movie.ReleaseDate == default(DateTime))
+            {
+                ModelState.AddModelError(
+                    "ReleaseDate",
+                    "Мора да внесете валиден датум на премиера.");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -302,8 +202,7 @@ namespace MovieTicketMVC.Controllers
                 return View(movie);
             }
 
-            string newTrailerPath =
-                null;
+            string newTrailerPath = null;
 
             if (videoFile != null &&
                 videoFile.ContentLength > 0)
@@ -329,38 +228,20 @@ namespace MovieTicketMVC.Controllers
             var oldTrailerPath =
                 movieInDb.LocalTrailerPath;
 
-            movieInDb.Title =
-                movie.Title;
-
-            movieInDb.LengthInMinutes =
-                movie.LengthInMinutes;
-
-            movieInDb.ReleaseDate =
-                movie.ReleaseDate.Date;
-
-            movieInDb.Description =
-                movie.Description;
-
-            movieInDb.Genre =
-                movie.Genre;
-
-            movieInDb.IsForAdults =
-                movie.IsForAdults;
-
-            movieInDb.Rating =
-                movie.Rating;
-
-            movieInDb.Actors =
-                movie.Actors;
-
-            movieInDb.Language =
-                movie.Language;
+            movieInDb.Title = movie.Title;
+            movieInDb.LengthInMinutes = movie.LengthInMinutes;
+            movieInDb.ReleaseDate = movie.ReleaseDate.Date;
+            movieInDb.Description = movie.Description;
+            movieInDb.Genre = movie.Genre;
+            movieInDb.IsForAdults = movie.IsForAdults;
+            movieInDb.Rating = movie.Rating;
+            movieInDb.Actors = movie.Actors;
+            movieInDb.Language = movie.Language;
 
             movieInDb.IsCurrentlyShowing =
-                movieInDb.ReleaseDate <= DateTime.Today;
+                IsCurrentlyShowing(movieInDb);
 
-            if (!string.IsNullOrWhiteSpace(
-                    newTrailerPath))
+            if (!string.IsNullOrWhiteSpace(newTrailerPath))
             {
                 movieInDb.LocalTrailerPath =
                     newTrailerPath;
@@ -372,45 +253,35 @@ namespace MovieTicketMVC.Controllers
             }
             catch
             {
-                if (!string.IsNullOrWhiteSpace(
-                        newTrailerPath))
+                if (!string.IsNullOrWhiteSpace(newTrailerPath))
                 {
-                    TryDeleteTrailer(
-                        newTrailerPath);
+                    TryDeleteTrailer(newTrailerPath);
                 }
 
                 throw;
             }
 
-            if (!string.IsNullOrWhiteSpace(
-                    newTrailerPath) &&
-                !string.IsNullOrWhiteSpace(
-                    oldTrailerPath) &&
+            if (!string.IsNullOrWhiteSpace(newTrailerPath) &&
+                !string.IsNullOrWhiteSpace(oldTrailerPath) &&
                 !string.Equals(
                     newTrailerPath,
                     oldTrailerPath,
                     StringComparison.OrdinalIgnoreCase))
             {
-                TryDeleteTrailer(
-                    oldTrailerPath);
+                DeleteTrailerIfUnused(oldTrailerPath);
             }
 
             return RedirectToAction(
-                IsCurrentlyShowing(movieInDb)
-                    ? "Current"
-                    : "ComingSoon");
+                GetMovieSection(movieInDb));
         }
 
-        // GET: Movies/Delete/5
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
-            var movie =
-                _context.Movies
-                    .AsNoTracking()
-                    .SingleOrDefault(
-                        m => m.Id == id);
+            var movie = _context.Movies
+                .AsNoTracking()
+                .SingleOrDefault(m => m.Id == id);
 
             if (movie == null)
             {
@@ -418,68 +289,118 @@ namespace MovieTicketMVC.Controllers
             }
 
             ViewBag.ActiveMovieSection =
-                IsCurrentlyShowing(movie)
-                    ? "Current"
-                    : "ComingSoon";
+                GetMovieSection(movie);
 
             return View(movie);
         }
 
-        // POST: Movies/Delete/5
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public ActionResult DeleteConfirmed(int id)
         {
-            var movie =
-                _context.Movies.Find(id);
+            var movie = _context.Movies.Find(id);
 
             if (movie == null)
             {
                 return HttpNotFound();
             }
 
-            var hasTickets =
-                _context.Tickets.Any(
-                    t => t.MovieId == movie.Id);
+            ViewBag.ActiveMovieSection =
+                GetMovieSection(movie);
+
+            var hasTickets = _context.Tickets
+                .Any(t => t.MovieId == movie.Id);
 
             if (hasTickets)
             {
-                ViewBag.ActiveMovieSection =
-                    IsCurrentlyShowing(movie)
-                        ? "Current"
-                        : "ComingSoon";
-
                 ModelState.AddModelError(
                     "",
                     "Филмот не може да се избрише бидејќи за него веќе постојат купени билети.");
 
-                return View(
-                    "Delete",
-                    movie);
+                return View("Delete", movie);
             }
 
-            var trailerPath =
-                movie.LocalTrailerPath;
-
-            var wasCurrent =
-                IsCurrentlyShowing(movie);
+            var trailerPath = movie.LocalTrailerPath;
+            var section = GetMovieSection(movie);
 
             _context.Movies.Remove(movie);
-            _context.SaveChanges();
 
-            if (!string.IsNullOrWhiteSpace(
-                    trailerPath))
+            try
             {
-                TryDeleteTrailer(
-                    trailerPath);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                _context.Entry(movie).State =
+                    EntityState.Unchanged;
+
+                ModelState.AddModelError(
+                    "",
+                    "Филмот не можеше да се избрише. Можно е во меѓувреме да се создадени поврзани билети.");
+
+                return View("Delete", movie);
             }
 
-            return RedirectToAction(
-                wasCurrent
-                    ? "Current"
-                    : "ComingSoon");
+            if (!string.IsNullOrWhiteSpace(trailerPath))
+            {
+                DeleteTrailerIfUnused(trailerPath);
+            }
+
+            return RedirectToAction(section);
+        }
+
+        private ActionResult ListMovies(
+            bool current,
+            string searchString,
+            string sortOrder,
+            string ageFilter)
+        {
+            var today = DateTime.Today;
+
+            IQueryable<Movie> query = _context.Movies
+                .AsNoTracking();
+
+            query = current
+                ? query.Where(m => m.ReleaseDate <= today)
+                : query.Where(m => m.ReleaseDate > today);
+
+            if (string.Equals(
+                    ageFilter,
+                    "Over18",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(
+                    m => m.IsForAdults == true);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                var search = searchString.Trim();
+
+                query = query.Where(
+                    m => m.Title.Contains(search));
+            }
+
+            var descending = string.Equals(
+                sortOrder,
+                "title_desc",
+                StringComparison.OrdinalIgnoreCase);
+
+            ViewBag.TitleSortParam = descending
+                ? "title_asc"
+                : "title_desc";
+
+            query = descending
+                ? query.OrderByDescending(m => m.Title)
+                    .ThenBy(m => m.Id)
+                : query.OrderBy(m => m.Title)
+                    .ThenBy(m => m.Id);
+
+            return View(
+                current ? "Current" : "ComingSoon",
+                query.ToList());
         }
 
         private bool TrySaveTrailer(
@@ -487,11 +408,8 @@ namespace MovieTicketMVC.Controllers
             out string virtualPath,
             out string errorMessage)
         {
-            virtualPath =
-                null;
-
-            errorMessage =
-                null;
+            virtualPath = null;
+            errorMessage = null;
 
             if (videoFile == null ||
                 videoFile.ContentLength <= 0)
@@ -502,8 +420,7 @@ namespace MovieTicketMVC.Controllers
                 return false;
             }
 
-            if (videoFile.ContentLength >
-                MaxTrailerSizeBytes)
+            if (videoFile.ContentLength > MaxTrailerSizeBytes)
             {
                 errorMessage =
                     "Trailer видеото не смее да биде поголемо од 200 MB.";
@@ -511,14 +428,11 @@ namespace MovieTicketMVC.Controllers
                 return false;
             }
 
-            var extension =
-                Path.GetExtension(
-                    videoFile.FileName);
+            var extension = Path.GetExtension(
+                videoFile.FileName);
 
-            if (string.IsNullOrWhiteSpace(
-                    extension) ||
-                !AllowedVideoExtensions.Contains(
-                    extension))
+            if (string.IsNullOrWhiteSpace(extension) ||
+                !AllowedVideoExtensions.Contains(extension))
             {
                 errorMessage =
                     "Дозволени се само MP4, WebM и Ogg видео датотеки.";
@@ -526,12 +440,9 @@ namespace MovieTicketMVC.Controllers
                 return false;
             }
 
-            extension =
-                extension.ToLowerInvariant();
+            extension = extension.ToLowerInvariant();
 
-            if (!HasValidVideoSignature(
-                    videoFile,
-                    extension))
+            if (!HasValidVideoSignature(videoFile, extension))
             {
                 errorMessage =
                     "Прикачената датотека не е валидно видео од дозволениот формат.";
@@ -540,18 +451,16 @@ namespace MovieTicketMVC.Controllers
             }
 
             var fileName =
-                Guid.NewGuid()
-                    .ToString("N")
-                + extension;
+                Guid.NewGuid().ToString("N") + extension;
+
+            string physicalPath = null;
 
             try
             {
-                var videosDirectory =
-                    Server.MapPath(
-                        "~/Content/Videos/");
+                var videosDirectory = Server.MapPath(
+                    VideosVirtualDirectory);
 
-                if (string.IsNullOrWhiteSpace(
-                        videosDirectory))
+                if (string.IsNullOrWhiteSpace(videosDirectory))
                 {
                     errorMessage =
                         "Не можеше да се одреди директориумот за trailer видеата.";
@@ -559,23 +468,18 @@ namespace MovieTicketMVC.Controllers
                     return false;
                 }
 
-                if (!Directory.Exists(
-                        videosDirectory))
-                {
-                    Directory.CreateDirectory(
-                        videosDirectory);
-                }
+                Directory.CreateDirectory(videosDirectory);
 
-                var physicalPath =
-                    Path.Combine(
-                        videosDirectory,
-                        fileName);
+                physicalPath = Path.Combine(
+                    videosDirectory,
+                    fileName);
 
-                videoFile.SaveAs(
-                    physicalPath);
+                videoFile.SaveAs(physicalPath);
             }
             catch (IOException)
             {
+                TryDeletePhysicalFile(physicalPath);
+
                 errorMessage =
                     "Trailer видеото не можеше да се зачува.";
 
@@ -583,6 +487,8 @@ namespace MovieTicketMVC.Controllers
             }
             catch (UnauthorizedAccessException)
             {
+                TryDeletePhysicalFile(physicalPath);
+
                 errorMessage =
                     "Апликацијата нема дозвола да го зачува trailer видеото.";
 
@@ -590,15 +496,15 @@ namespace MovieTicketMVC.Controllers
             }
             catch (HttpException)
             {
+                TryDeletePhysicalFile(physicalPath);
+
                 errorMessage =
                     "Trailer видеото не можеше да се зачува.";
 
                 return false;
             }
 
-            virtualPath =
-                "~/Content/Videos/"
-                + fileName;
+            virtualPath = VideosVirtualDirectory + fileName;
 
             return true;
         }
@@ -607,41 +513,42 @@ namespace MovieTicketMVC.Controllers
             HttpPostedFileBase videoFile,
             string extension)
         {
-            var stream =
-                videoFile.InputStream;
+            var stream = videoFile.InputStream;
 
             if (stream == null ||
-                !stream.CanRead)
+                !stream.CanRead ||
+                !stream.CanSeek)
             {
                 return false;
             }
 
-            long originalPosition =
-                0;
-
-            if (stream.CanSeek)
-            {
-                originalPosition =
-                    stream.Position;
-
-                stream.Position =
-                    0;
-            }
+            var originalPosition = stream.Position;
 
             try
             {
-                var header =
-                    new byte[12];
+                stream.Position = 0;
 
-                var bytesRead =
-                    stream.Read(
+                var header = new byte[12];
+                var totalBytesRead = 0;
+
+                while (totalBytesRead < header.Length)
+                {
+                    var bytesRead = stream.Read(
                         header,
-                        0,
-                        header.Length);
+                        totalBytesRead,
+                        header.Length - totalBytesRead);
+
+                    if (bytesRead == 0)
+                    {
+                        break;
+                    }
+
+                    totalBytesRead += bytesRead;
+                }
 
                 if (extension == ".mp4")
                 {
-                    return bytesRead >= 8 &&
+                    return totalBytesRead >= 12 &&
                            header[4] == (byte)'f' &&
                            header[5] == (byte)'t' &&
                            header[6] == (byte)'y' &&
@@ -650,7 +557,7 @@ namespace MovieTicketMVC.Controllers
 
                 if (extension == ".webm")
                 {
-                    return bytesRead >= 4 &&
+                    return totalBytesRead >= 4 &&
                            header[0] == 0x1A &&
                            header[1] == 0x45 &&
                            header[2] == 0xDF &&
@@ -659,7 +566,7 @@ namespace MovieTicketMVC.Controllers
 
                 if (extension == ".ogg")
                 {
-                    return bytesRead >= 4 &&
+                    return totalBytesRead >= 4 &&
                            header[0] == (byte)'O' &&
                            header[1] == (byte)'g' &&
                            header[2] == (byte)'g' &&
@@ -670,62 +577,117 @@ namespace MovieTicketMVC.Controllers
             }
             finally
             {
-                if (stream.CanSeek)
-                {
-                    stream.Position =
-                        originalPosition;
-                }
+                stream.Position = originalPosition;
             }
         }
 
-        private static bool IsCurrentlyShowing(
-            Movie movie)
+        private static bool IsCurrentlyShowing(Movie movie)
         {
             return movie != null &&
                    movie.ReleaseDate.Date <= DateTime.Today;
         }
 
-        private void TryDeleteTrailer(
-            string localTrailerPath)
+        private static string GetMovieSection(Movie movie)
         {
-            if (string.IsNullOrWhiteSpace(
-                    localTrailerPath))
+            return IsCurrentlyShowing(movie)
+                ? "Current"
+                : "ComingSoon";
+        }
+
+        private void DeleteTrailerIfUnused(string trailerPath)
+        {
+            if (string.IsNullOrWhiteSpace(trailerPath))
             {
                 return;
             }
 
-            var fileName =
-                Path.GetFileName(
-                    localTrailerPath);
+            var stillInUse = _context.Movies
+                .AsNoTracking()
+                .Any(m => m.LocalTrailerPath == trailerPath);
 
-            if (string.IsNullOrWhiteSpace(
-                    fileName))
+            if (!stillInUse)
+            {
+                TryDeleteTrailer(trailerPath);
+            }
+        }
+
+        private void TryDeleteTrailer(string localTrailerPath)
+        {
+            if (string.IsNullOrWhiteSpace(localTrailerPath))
+            {
+                return;
+            }
+
+            var fileName = Path.GetFileName(
+                localTrailerPath);
+
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return;
+            }
+
+            if (!string.Equals(
+                    localTrailerPath,
+                    VideosVirtualDirectory + fileName,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            var extension = Path.GetExtension(fileName);
+
+            if (!AllowedVideoExtensions.Contains(extension))
+            {
+                return;
+            }
+
+            var nameWithoutExtension =
+                Path.GetFileNameWithoutExtension(fileName);
+
+            Guid parsedGuid;
+
+            if (!Guid.TryParseExact(
+                    nameWithoutExtension,
+                    "N",
+                    out parsedGuid))
             {
                 return;
             }
 
             try
             {
-                var videosDirectory =
-                    Server.MapPath(
-                        "~/Content/Videos/");
+                var videosDirectory = Server.MapPath(
+                    VideosVirtualDirectory);
 
-                if (string.IsNullOrWhiteSpace(
-                        videosDirectory))
+                if (string.IsNullOrWhiteSpace(videosDirectory))
                 {
                     return;
                 }
 
-                var physicalPath =
-                    Path.Combine(
-                        videosDirectory,
-                        fileName);
+                var physicalPath = Path.Combine(
+                    videosDirectory,
+                    fileName);
 
-                if (System.IO.File.Exists(
-                        physicalPath))
+                TryDeletePhysicalFile(physicalPath);
+            }
+            catch (HttpException)
+            {
+            }
+        }
+
+        private static void TryDeletePhysicalFile(
+            string physicalPath)
+        {
+            if (string.IsNullOrWhiteSpace(physicalPath))
+            {
+                return;
+            }
+
+            try
+            {
+                if (System.IO.File.Exists(physicalPath))
                 {
-                    System.IO.File.Delete(
-                        physicalPath);
+                    System.IO.File.Delete(physicalPath);
                 }
             }
             catch (IOException)
@@ -734,13 +696,9 @@ namespace MovieTicketMVC.Controllers
             catch (UnauthorizedAccessException)
             {
             }
-            catch (HttpException)
-            {
-            }
         }
 
-        protected override void Dispose(
-            bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {

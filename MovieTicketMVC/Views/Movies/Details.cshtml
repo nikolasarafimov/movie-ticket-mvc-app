@@ -1,616 +1,280 @@
 ﻿@using System
+@using System.Globalization
 @using System.Linq
+@using System.Text.RegularExpressions
 @model MovieTicketMVC.Models.Movie
 
 @{
-    ViewBag.Title = Model.Title;
+    var movieTitle = string.IsNullOrWhiteSpace(Model.Title)
+        ? "Непознат филм"
+        : Model.Title.Trim();
 
-    var hasTrailer =
-        !string.IsNullOrWhiteSpace(
-            Model.LocalTrailerPath);
+    ViewBag.Title = movieTitle;
 
-    var trailerUrl =
-        string.Empty;
+    var culture = CultureInfo.InvariantCulture;
+    var isCurrent = Model.ReleaseDate.Date <= DateTime.Today;
+    var daysUntilRelease = Math.Max(0, (Model.ReleaseDate.Date - DateTime.Today).Days);
 
-    var trailerMime =
-        "video/mp4";
+    var genre = string.IsNullOrWhiteSpace(Model.Genre)
+        ? "Филм"
+        : Model.Genre.Trim();
 
-    if (hasTrailer)
-    {
-        trailerUrl =
-            Url.Content(
-                Model.LocalTrailerPath);
+    var language = string.IsNullOrWhiteSpace(Model.Language)
+        ? "Непознат"
+        : Model.Language.Trim();
 
-        var extension =
-            System.IO.Path.GetExtension(
-                Model.LocalTrailerPath);
+    var description = string.IsNullOrWhiteSpace(Model.Description)
+        ? "Нема достапен опис за овој филм."
+        : Model.Description.Trim();
 
-        if (!string.IsNullOrWhiteSpace(extension))
-        {
-            extension =
-                extension.ToLowerInvariant();
+    var actors = string.IsNullOrWhiteSpace(Model.Actors)
+        ? new string[0]
+        : Model.Actors
+            .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(actor => actor.Trim())
+            .Where(actor => !string.IsNullOrWhiteSpace(actor))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
 
-            if (extension == ".webm")
-            {
-                trailerMime =
-                    "video/webm";
-            }
-            else if (extension == ".ogg")
-            {
-                trailerMime =
-                    "video/ogg";
-            }
-        }
-    }
-
-    var isCurrent =
-        Model.ReleaseDate.Date <=
-        DateTime.Today;
-
-    var daysUntilRelease =
-        (Model.ReleaseDate.Date - DateTime.Today)
-            .Days;
-
-    var genre =
-        string.IsNullOrWhiteSpace(
-            Model.Genre)
-            ? "Филм"
-            : Model.Genre.Trim();
-
-    var language =
-        string.IsNullOrWhiteSpace(
-            Model.Language)
-            ? "Непознат"
-            : Model.Language.Trim();
-
-    var description =
-        string.IsNullOrWhiteSpace(
-            Model.Description)
-            ? "Нема достапен опис за овој филм."
-            : Model.Description.Trim();
-
-    var actors =
-        string.IsNullOrWhiteSpace(
-            Model.Actors)
-            ? new string[0]
-            : Model.Actors
-                .Split(
-                    new[] { ',' },
-                    StringSplitOptions.RemoveEmptyEntries)
-                .Select(actor =>
-                    actor.Trim())
-                .Where(actor =>
-                    !string.IsNullOrWhiteSpace(actor))
-                .ToArray();
-
-    var isAdmin =
-        User != null &&
+    var isAdmin = User != null &&
         User.Identity != null &&
         User.Identity.IsAuthenticated &&
         User.IsInRole("Admin");
+
+    var ageLabel = Model.IsForAdults == true
+        ? "18+"
+        : Model.IsForAdults == false ? "ALL" : "N/A";
+
+    var ageDescription = Model.IsForAdults == true
+        ? "само за возрасни"
+        : Model.IsForAdults == false ? "без рестрикција" : "непозната категорија";
+
+    var ageCssClass = Model.IsForAdults == true
+        ? "adult"
+        : Model.IsForAdults == false ? "" : "unknown";
+
+    var ratingText = Model.Rating.HasValue
+        ? Model.Rating.Value.ToString("0.0", culture)
+        : "N/A";
+
+    var trailerPath = (Model.LocalTrailerPath ?? string.Empty)
+        .Trim()
+        .Replace('\\', '/');
+
+    var trailerPrefix = "~/Content/Videos/";
+    var trailerFileName = trailerPath.StartsWith(
+        trailerPrefix, StringComparison.OrdinalIgnoreCase)
+        ? trailerPath.Substring(trailerPrefix.Length)
+        : string.Empty;
+
+    var hasTrailer = Regex.IsMatch(
+        trailerFileName,
+        @"^[a-zA-Z0-9_-]+\.(mp4|webm|ogg)$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    var trailerUrl = hasTrailer ? Url.Content(trailerPath) : string.Empty;
+    var trailerExtension = System.IO.Path.GetExtension(trailerFileName).ToLowerInvariant();
+    var trailerMime = trailerExtension == ".webm"
+        ? "video/webm"
+        : trailerExtension == ".ogg" ? "video/ogg" : "video/mp4";
+
+    var backAction = isCurrent ? "Current" : "ComingSoon";
+    var backUrl = Url.Action(backAction, "Movies");
+    var buyUrl = Url.Action("Buy", "Tickets");
 }
 
-<main class="movie-details-page"
-      aria-labelledby="movie-title">
-
+<main class="movie-details-page" aria-labelledby="movie-title">
     <section class="movie-details-hero">
-
         <div class="movie-details-hero-content">
-
             <div class="movie-details-badges">
-
                 <span class="movie-details-status">
-                    <span class="movie-details-status-dot"></span>
-
-                    @(isCurrent
-                        ? "СЕ ПРИКАЖУВА"
-                        : "НАСКОРО")
+                    <span class="movie-details-status-dot" aria-hidden="true"></span>
+                    @(isCurrent ? "СЕ ПРИКАЖУВА" : "НАСКОРО")
                 </span>
-
-                <span class="movie-details-genre">
-                    @genre
-                </span>
-
-                @if (Model.IsForAdults == true)
-                {
-                    <span class="movie-details-age adult">
-                        18+
-                    </span>
-                }
-                else
-                {
-                    <span class="movie-details-age">
-                        ALL
-                    </span>
-                }
-
+                <span class="movie-details-genre">@genre</span>
+                <span class="movie-details-age @ageCssClass" aria-label="Возрасна категорија: @ageDescription">@ageLabel</span>
             </div>
 
-
-            <h1 id="movie-title">
-                @Model.Title
-            </h1>
-
+            <h1 id="movie-title">@movieTitle</h1>
 
             <div class="movie-details-rating-row">
-
-                <div class="movie-details-rating">
-
-                    <span class="movie-details-star"
-                          aria-hidden="true">
-                        ★
-                    </span>
-
-                    <strong>
-                        @(Model.Rating.HasValue
-                            ? Model.Rating.Value.ToString("0.0")
-                            : "N/A")
-                    </strong>
-
+                <div class="movie-details-rating" aria-label="Рејтинг: @(Model.Rating.HasValue ? ratingText + " од 10" : "нема оценка")">
                     @if (Model.Rating.HasValue)
                     {
-                        <small>
-                            / 10
-                        </small>
+                        <span class="movie-details-star" aria-hidden="true">★</span>
+                        <strong>@ratingText</strong>
+                        <small>/ 10</small>
                     }
-
+                    else
+                    {
+                        <strong>N/A</strong>
+                    }
                 </div>
-
-                <span class="movie-details-separator">
-                    ·
-                </span>
-
-                <span>
-                    @Model.LengthInMinutes мин.
-                </span>
-
-                <span class="movie-details-separator">
-                    ·
-                </span>
-
-                <span>
-                    @language
-                </span>
-
+                <span class="movie-details-separator" aria-hidden="true">·</span>
+                <span>@Model.LengthInMinutes мин.</span>
+                <span class="movie-details-separator" aria-hidden="true">·</span>
+                <span>@language</span>
             </div>
 
-
-            <p class="movie-details-description">
-                @description
-            </p>
-
+            <p class="movie-details-description">@description</p>
 
             <div class="movie-details-actions">
-
-                <a class="btn btn-primary movie-details-primary-action"
-                   href="@Url.Action("Buy", "Tickets")">
-
-                    @(isCurrent
-                        ? "Купи билет"
-                        : "Резервирај за премиера")
-
-                    <span aria-hidden="true">
-                        →
-                    </span>
+                <a class="btn btn-primary movie-details-primary-action" href="@buyUrl">
+                    @(isCurrent ? "Купи билет" : "Резервирај за премиера")
+                    <span aria-hidden="true">→</span>
                 </a>
-
-                <a class="btn btn-outline-secondary"
-                   href="@Url.Action(
-                       isCurrent
-                           ? "Current"
-                           : "ComingSoon",
-                       "Movies")">
-                    Назад кон филмови
-                </a>
-
+                <a class="btn btn-outline-secondary" href="@backUrl">Назад кон филмови</a>
             </div>
 
-
-            @if (!isCurrent &&
-                 daysUntilRelease > 0)
+            @if (!isCurrent && daysUntilRelease > 0)
             {
                 <div class="movie-details-premiere-note">
-
-                    <span class="movie-details-premiere-icon"
-                          aria-hidden="true">
-                        ◷
-                    </span>
-
+                    <span class="movie-details-premiere-icon" aria-hidden="true">◷</span>
                     <div>
-                        <span>
-                            ПРЕМИЕРА
-                        </span>
-
-                        <strong>
-                            За @daysUntilRelease
-                            @(daysUntilRelease == 1
-                                ? "ден"
-                                : "дена")
-                        </strong>
+                        <span>ПРЕМИЕРА</span>
+                        <strong>За @daysUntilRelease @(daysUntilRelease == 1 ? "ден" : "дена")</strong>
                     </div>
-
                 </div>
             }
-
         </div>
 
-
         <div class="movie-details-feature">
-
             @if (hasTrailer)
             {
                 <div class="movie-trailer-frame">
-
                     <div class="movie-trailer-header">
-
                         <div class="movie-trailer-label">
-                            <span></span>
+                            <span aria-hidden="true"></span>
                             OFFICIAL TRAILER
                         </div>
-
-                        <div class="movie-trailer-duration">
-                            @genre
-                        </div>
-
+                        <div class="movie-trailer-duration">@genre</div>
                     </div>
-
                     <div class="movie-trailer-video">
-
-                        <video controls
-                               preload="metadata"
-                               playsinline>
-
-                            <source src="@trailerUrl"
-                                    type="@trailerMime" />
-
+                        <video controls preload="metadata" playsinline aria-label="Trailer за @movieTitle">
+                            <source src="@trailerUrl" type="@trailerMime" />
                             Вашиот прелистувач не поддржува HTML5 видео.
                         </video>
-
                     </div>
-
                 </div>
             }
             else
             {
                 <div class="movie-no-trailer">
-
-                    <div class="movie-no-trailer-orbit
-                                movie-no-trailer-orbit-large">
-                    </div>
-
-                    <div class="movie-no-trailer-orbit
-                                movie-no-trailer-orbit-small">
-                    </div>
-
+                    <div class="movie-no-trailer-orbit movie-no-trailer-orbit-large" aria-hidden="true"></div>
+                    <div class="movie-no-trailer-orbit movie-no-trailer-orbit-small" aria-hidden="true"></div>
                     <div class="movie-no-trailer-content">
-
-                        <span class="movie-no-trailer-label">
-                            MOVIETICKET PRESENTS
-                        </span>
-
-                        <strong>
-                            @Model.Title
-                        </strong>
-
-                        <span class="movie-no-trailer-genre">
-                            @genre
-                        </span>
-
+                        <span class="movie-no-trailer-label">MOVIETICKET PRESENTS</span>
+                        <strong>@movieTitle</strong>
+                        <span class="movie-no-trailer-genre">@genre</span>
                     </div>
-
-                    <div class="movie-no-trailer-message">
-                        Трејлерот сè уште не е достапен
-                    </div>
-
+                    <div class="movie-no-trailer-message">Трејлерот сè уште не е достапен</div>
                 </div>
             }
-
         </div>
 
-
-        <div class="movie-details-hero-glow"
-             aria-hidden="true">
-        </div>
-
+        <div class="movie-details-hero-glow" aria-hidden="true"></div>
     </section>
 
-
-    <section class="movie-details-information"
-             aria-labelledby="information-title">
-
+    <section class="movie-details-information" aria-labelledby="information-title">
         <div class="cinema-page-header">
-
             <div>
-                <div class="cinema-eyebrow">
-                    MOVIE INFORMATION
-                </div>
-
-                <h2 id="information-title">
-                    Детали за
-                    <span class="cinema-text-gradient">
-                        филмот
-                    </span>
-                </h2>
+                <div class="cinema-eyebrow">MOVIE INFORMATION</div>
+                <h2 id="information-title">Детали за <span class="cinema-text-gradient">филмот</span></h2>
             </div>
-
         </div>
-
-
         <div class="movie-details-info-grid">
-
             <article class="movie-info-card">
-
-                <span class="movie-info-label">
-                    ВРЕМЕТРАЕЊЕ
-                </span>
-
-                <strong>
-                    @Model.LengthInMinutes
-                </strong>
-
-                <small>
-                    минути
-                </small>
-
+                <span class="movie-info-label">ВРЕМЕТРАЕЊЕ</span>
+                <strong>@Model.LengthInMinutes</strong>
+                <small>минути</small>
             </article>
-
-
             <article class="movie-info-card">
-
-                <span class="movie-info-label">
-                    ПРЕМИЕРА
-                </span>
-
-                <strong class="movie-info-date">
-                    @Model.ReleaseDate.ToString(
-                        "dd.MM")
-                </strong>
-
-                <small>
-                    @Model.ReleaseDate.ToString(
-                        "yyyy")
-                </small>
-
+                <span class="movie-info-label">ПРЕМИЕРА</span>
+                <strong class="movie-info-date">@Model.ReleaseDate.ToString("dd.MM", culture)</strong>
+                <small>@Model.ReleaseDate.ToString("yyyy", culture)</small>
             </article>
-
-
             <article class="movie-info-card">
-
-                <span class="movie-info-label">
-                    ОЦЕНКА
-                </span>
-
-                <strong>
-                    @(Model.Rating.HasValue
-                        ? Model.Rating.Value.ToString("0.0")
-                        : "—")
-                </strong>
-
-                <small>
-                    @(Model.Rating.HasValue
-                        ? "од 10"
-                        : "нема оценка")
-                </small>
-
+                <span class="movie-info-label">ОЦЕНКА</span>
+                <strong>@(Model.Rating.HasValue ? ratingText : "—")</strong>
+                <small>@(Model.Rating.HasValue ? "од 10" : "нема оценка")</small>
             </article>
-
-
             <article class="movie-info-card">
-
-                <span class="movie-info-label">
-                    ВОЗРАСНА КАТЕГОРИЈА
-                </span>
-
-                <strong>
-                    @(Model.IsForAdults == true
-                        ? "18+"
-                        : "ALL")
-                </strong>
-
-                <small>
-                    @(Model.IsForAdults == true
-                        ? "само за возрасни"
-                        : "без рестрикција")
-                </small>
-
+                <span class="movie-info-label">ВОЗРАСНА КАТЕГОРИЈА</span>
+                <strong>@ageLabel</strong>
+                <small>@ageDescription</small>
             </article>
-
-
             <article class="movie-info-card">
-
-                <span class="movie-info-label">
-                    ЖАНР
-                </span>
-
-                <strong class="movie-info-text">
-                    @genre
-                </strong>
-
-                <small>
-                    категорија
-                </small>
-
+                <span class="movie-info-label">ЖАНР</span>
+                <strong class="movie-info-text" title="@genre">@genre</strong>
+                <small>категорија</small>
             </article>
-
-
             <article class="movie-info-card">
-
-                <span class="movie-info-label">
-                    ЈАЗИК
-                </span>
-
-                <strong class="movie-info-text">
-                    @language
-                </strong>
-
-                <small>
-                    оригинален јазик
-                </small>
-
+                <span class="movie-info-label">ЈАЗИК</span>
+                <strong class="movie-info-text" title="@language">@language</strong>
+                <small>оригинален јазик</small>
             </article>
-
         </div>
-
     </section>
 
-
-    <section class="movie-details-story"
-             aria-labelledby="story-title">
-
+    <section class="movie-details-story" aria-labelledby="story-title">
         <div class="movie-story-card">
-
             <div class="movie-story-heading">
-
-                <div class="cinema-eyebrow">
-                    THE STORY
-                </div>
-
-                <h2 id="story-title">
-                    За филмот
-                </h2>
-
+                <div class="cinema-eyebrow">THE STORY</div>
+                <h2 id="story-title">За филмот</h2>
             </div>
-
-            <div class="movie-story-copy">
-                <p>
-                    @description
-                </p>
-            </div>
-
+            <div class="movie-story-copy"><p>@description</p></div>
         </div>
-
     </section>
 
-
-    <section class="movie-details-cast"
-             aria-labelledby="cast-title">
-
+    <section class="movie-details-cast" aria-labelledby="cast-title">
         <div class="cinema-page-header">
-
             <div>
-                <div class="cinema-eyebrow">
-                    CAST
-                </div>
-
-                <h2 id="cast-title">
-                    Актерска
-                    <span class="cinema-text-gradient">
-                        екипа
-                    </span>
-                </h2>
+                <div class="cinema-eyebrow">CAST</div>
+                <h2 id="cast-title">Актерска <span class="cinema-text-gradient">екипа</span></h2>
             </div>
-
         </div>
-
         @if (actors.Any())
         {
             <div class="movie-cast-grid">
-
-                @for (var index = 0;
-                      index < actors.Length;
-                      index++)
+                @foreach (var actor in actors)
                 {
-                    var actor =
-                        actors[index];
-
-                    var initials =
-                        string.Join(
-                            "",
-                            actor
-                                .Split(
-                                    new[] { ' ' },
-                                    StringSplitOptions.RemoveEmptyEntries)
-                                .Take(2)
-                                .Select(part =>
-                                    part.Substring(0, 1)
-                                        .ToUpperInvariant()));
+                    var initials = string.Concat(
+                        actor.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Take(2)
+                            .Select(part => part.Substring(0, 1).ToUpperInvariant()));
 
                     <article class="movie-cast-card">
-
-                        <div class="movie-cast-avatar"
-                             aria-hidden="true">
-                            @initials
-                        </div>
-
+                        <div class="movie-cast-avatar" aria-hidden="true">@initials</div>
                         <div>
-                            <span>
-                                CAST
-                            </span>
-
-                            <strong>
-                                @actor
-                            </strong>
+                            <span>CAST</span>
+                            <strong title="@actor">@actor</strong>
                         </div>
-
                     </article>
                 }
-
             </div>
         }
         else
         {
             <div class="cinema-empty-state movie-cast-empty">
-
-                <p>
-                    Нема достапни информации за актерската екипа.
-                </p>
-
+                <p>Нема достапни информации за актерската екипа.</p>
             </div>
         }
-
     </section>
-
 
     @if (isAdmin)
     {
         <section class="movie-admin-panel">
-
             <div>
-
-                <span class="movie-admin-label">
-                    ADMIN CONTROLS
-                </span>
-
-                <strong>
-                    Управување со филмот
-                </strong>
-
-                <p>
-                    Промени ги информациите или отстрани го
-                    филмот од каталогот.
-                </p>
-
+                <span class="movie-admin-label">ADMIN CONTROLS</span>
+                <strong>Управување со филмот</strong>
+                <p>Промени ги информациите или отстрани го филмот од каталогот.</p>
             </div>
-
             <div class="movie-admin-actions">
-
-                <a class="btn btn-outline-primary"
-                   href="@Url.Action(
-                       "Edit",
-                       "Movies",
-                       new
-                       {
-                           id = Model.Id
-                       })">
-                    Уреди
-                </a>
-
-                <a class="btn btn-outline-danger"
-                   href="@Url.Action(
-                       "Delete",
-                       "Movies",
-                       new
-                       {
-                           id = Model.Id
-                       })">
-                    Избриши
-                </a>
-
+                <a class="btn btn-outline-primary" href="@Url.Action("Edit", "Movies", new { id = Model.Id })">Уреди</a>
+                <a class="btn btn-outline-danger" href="@Url.Action("Delete", "Movies", new { id = Model.Id })">Избриши</a>
             </div>
-
         </section>
     }
-
 </main>
 
 <style>
@@ -619,11 +283,6 @@
         flex-direction: column;
         gap: 5rem;
     }
-
-
-    /* =====================================================
-       HERO
-       ===================================================== */
 
     .movie-details-hero {
         position: relative;
@@ -650,7 +309,8 @@
             opacity: 0.2;
             background-image: linear-gradient( rgba(255, 255, 255, 0.025) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px );
             background-size: 48px 48px;
-            mask-image: linear-gradient( 90deg, #000, transparent );
+            mask-image: linear-gradient(90deg, #000, transparent);
+            -webkit-mask-image: linear-gradient(90deg, #000, transparent);
         }
 
     .movie-details-hero-content {
@@ -666,9 +326,7 @@
         margin-bottom: 1.4rem;
     }
 
-    .movie-details-status,
-    .movie-details-genre,
-    .movie-details-age {
+    .movie-details-status, .movie-details-genre, .movie-details-age {
         display: inline-flex;
         align-items: center;
         min-height: 30px;
@@ -706,6 +364,12 @@
         background: rgba(66, 199, 131, 0.07);
     }
 
+        .movie-details-age.unknown {
+            color: var(--cinema-text-muted);
+            border-color: var(--cinema-border-strong);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
         .movie-details-age.adult {
             color: #ff9ba4;
             border-color: rgba(239, 102, 115, 0.25);
@@ -713,6 +377,7 @@
         }
 
     .movie-details-hero h1 {
+        overflow-wrap: anywhere;
         max-width: 720px;
         margin-bottom: 1.3rem;
         font-size: clamp( 2.7rem, 5.2vw, 5rem );
@@ -755,6 +420,7 @@
     }
 
     .movie-details-description {
+        white-space: pre-line;
         max-width: 680px;
         margin-bottom: 2rem;
         color: var(--cinema-text-soft);
@@ -817,11 +483,6 @@
         color: var(--cinema-text);
         font-size: 0.86rem;
     }
-
-
-    /* =====================================================
-       TRAILER
-       ===================================================== */
 
     .movie-details-feature {
         position: relative;
@@ -889,14 +550,9 @@
             height: 100%;
             border: 0;
             border-radius: 0;
-            object-fit: cover;
+            object-fit: contain;
             box-shadow: none;
         }
-
-
-    /* =====================================================
-       NO TRAILER
-       ===================================================== */
 
     .movie-no-trailer {
         position: relative;
@@ -995,11 +651,6 @@
         filter: blur(20px);
     }
 
-
-    /* =====================================================
-       INFORMATION
-       ===================================================== */
-
     .movie-details-information {
         position: relative;
     }
@@ -1074,11 +725,6 @@
         font-size: 0.68rem;
     }
 
-
-    /* =====================================================
-       STORY
-       ===================================================== */
-
     .movie-story-card {
         display: grid;
         grid-template-columns: minmax(230px, 0.35fr) minmax(0, 0.65fr);
@@ -1095,16 +741,12 @@
     }
 
     .movie-story-copy p {
+        white-space: pre-line;
         margin: 0;
         color: var(--cinema-text-soft);
         font-size: 1.04rem;
         line-height: 1.95;
     }
-
-
-    /* =====================================================
-       CAST
-       ===================================================== */
 
     .movie-cast-grid {
         display: grid;
@@ -1175,11 +817,6 @@
             margin: 0;
         }
 
-
-    /* =====================================================
-       ADMIN
-       ===================================================== */
-
     .movie-admin-panel {
         display: flex;
         align-items: center;
@@ -1217,22 +854,17 @@
         gap: 0.6rem;
     }
 
-    .btn-outline-danger {
+    .movie-details-page .btn-outline-danger {
         color: #ff8d97;
         border-color: rgba(239, 102, 115, 0.35);
         background: transparent;
     }
 
-        .btn-outline-danger:hover {
+        .movie-details-page .btn-outline-danger:hover {
             color: #fff;
             border-color: #d94c5b;
             background: #b83c49;
         }
-
-
-    /* =====================================================
-       ANIMATIONS
-       ===================================================== */
 
     @@keyframes movie-orbit-spin {
         from {
@@ -1244,11 +876,6 @@
         }
     }
 
-
-    /* =====================================================
-       RESPONSIVE
-       ===================================================== */
-
     @@media (max-width: 1199.98px) {
         .movie-details-hero {
             grid-template-columns: minmax(0, 0.9fr) minmax(380px, 1.1fr);
@@ -1258,7 +885,6 @@
             grid-template-columns: repeat( 3, minmax(0, 1fr) );
         }
     }
-
 
     @@media (max-width: 991.98px) {
         .movie-details-page {
@@ -1287,13 +913,13 @@
         }
     }
 
-
     @@media (max-width: 767.98px) {
         .movie-details-hero {
             padding: 1.6rem 1.3rem;
         }
 
             .movie-details-hero h1 {
+                overflow-wrap: anywhere;
                 font-size: 2.7rem;
             }
 
@@ -1311,13 +937,13 @@
         }
     }
 
-
     @@media (max-width: 575.98px) {
         .movie-details-page {
             gap: 3.25rem;
         }
 
         .movie-details-hero h1 {
+            overflow-wrap: anywhere;
             font-size: 2.25rem;
         }
 
@@ -1350,7 +976,6 @@
                 flex: 1;
             }
     }
-
 
     @@media (prefers-reduced-motion: reduce) {
         .movie-no-trailer-orbit {

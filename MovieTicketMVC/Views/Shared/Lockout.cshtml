@@ -1,217 +1,113 @@
-﻿@model System.Web.Mvc.HandleErrorInfo
-
-@{
-    ViewBag.Title = "Профилот е заклучен";
+﻿@{
+    ViewBag.Title = "Привремено заклучен профил";
 }
 
-<main class="lockout-page"
-      aria-labelledby="lockout-title">
-
+<main class="lockout-page" aria-labelledby="lockout-title">
     <section class="lockout-shell">
-
-        <div class="lockout-grid"
-             aria-hidden="true">
-        </div>
-
-        <div class="lockout-glow lockout-glow-one"
-             aria-hidden="true">
-        </div>
-
-        <div class="lockout-glow lockout-glow-two"
-             aria-hidden="true">
-        </div>
-
+        <div class="lockout-grid" aria-hidden="true"></div>
+        <div class="lockout-glow lockout-glow-one" aria-hidden="true"></div>
+        <div class="lockout-glow lockout-glow-two" aria-hidden="true"></div>
 
         <a class="lockout-brand"
-           href="@Url.Action("Index", "Home")">
-
-            <span></span>
-
+           href="@Url.Action("Index", "Home")"
+           aria-label="MovieTicket – Почетна страница">
+            <span aria-hidden="true"></span>
             MOVIETICKET
         </a>
 
-
-        <div class="lockout-visual"
-             aria-hidden="true">
-
-            <div class="lockout-orbit
-                        lockout-orbit-large">
-            </div>
-
-            <div class="lockout-orbit
-                        lockout-orbit-small">
-            </div>
-
+        <div class="lockout-visual" aria-hidden="true">
+            <div class="lockout-orbit lockout-orbit-large"></div>
+            <div class="lockout-orbit lockout-orbit-small"></div>
 
             <div class="lockout-lock">
-
-                <div class="lockout-shackle">
-                </div>
-
+                <div class="lockout-shackle"></div>
                 <div class="lockout-lock-body">
-
-                    <div class="lockout-keyhole">
-                    </div>
-
+                    <div class="lockout-keyhole"></div>
                 </div>
-
             </div>
 
-
-            <div class="lockout-signal
-                        lockout-signal-one">
-            </div>
-
-            <div class="lockout-signal
-                        lockout-signal-two">
-            </div>
-
+            <div class="lockout-signal lockout-signal-one"></div>
+            <div class="lockout-signal lockout-signal-two"></div>
         </div>
 
-
         <div class="lockout-content">
-
-            <div class="cinema-eyebrow lockout-eyebrow">
-                SECURITY LOCK
-            </div>
+            <div class="cinema-eyebrow lockout-eyebrow">ACCOUNT SECURITY</div>
 
             <h1 id="lockout-title">
                 Профилот е
-                <span class="lockout-title-accent">
-                    привремено заклучен
-                </span>
+                <span class="lockout-title-accent">привремено заклучен.</span>
             </h1>
 
             <p class="lockout-description">
-                Пристапот до профилот е ограничен поради
-                безбедносната заштита на MovieTicket.
-                Обиди се повторно подоцна.
+                Поради повеќе неуспешни обиди за најава, пристапот е привремено ограничен.
+                Оваа мерка помага да се заштити твојот MovieTicket профил.
             </p>
 
-
-            <div class="lockout-status-card">
-
-                <div class="lockout-status-icon"
-                     aria-hidden="true">
-                    !
-                </div>
-
-                <div>
-
-                    <span>
-                        ACCOUNT SECURITY
-                    </span>
-
-                    <strong>
-                        Најавувањето е моментално ограничено
-                    </strong>
-
+            <div class="lockout-status-card" role="status">
+                <div class="lockout-status-icon" aria-hidden="true">!</div>
+                <div class="lockout-status-copy">
+                    <span>ПРИВРЕМЕНО ОГРАНИЧУВАЊЕ</span>
+                    <strong>Најавувањето моментално не е достапно</strong>
                     <p>
-                        Оваа заштита спречува продолжени
-                        неуспешни обиди за пристап до профилот.
+                        Според поставките на MovieTicket, привременото заклучување трае
+                        5 минути. Оваа страница не го прикажува точниот преостанат период.
                     </p>
-
                 </div>
-
             </div>
 
+            <div class="lockout-advice" aria-label="Препорачани следни чекори">
+                <div class="lockout-advice-item">
+                    <span class="lockout-advice-number" aria-hidden="true">01</span>
+                    <div>
+                        <strong>Почекај пред следниот обид</strong>
+                        <p>
+                            Обиди се повторно по неколку минути, наместо да испраќаш
+                            нови барања додека пристапот е ограничен.
+                        </p>
+                    </div>
+                </div>
 
-            <div class="lockout-advice">
+                <div class="lockout-advice-divider" aria-hidden="true"></div>
 
                 <div class="lockout-advice-item">
-
-                    <span class="lockout-advice-number">
-                        01
-                    </span>
-
+                    <span class="lockout-advice-number" aria-hidden="true">02</span>
                     <div>
-
-                        <strong>
-                            Почекај пред нов обид
-                        </strong>
-
+                        <strong>Провери ги податоците за најава</strong>
                         <p>
-                            Не испраќај повторени обиди за
-                            најава додека профилот е заклучен.
+                            Пред да се најавиш повторно, провери ги e-mail адресата и лозинката.
+                            Ако не ја паметиш лозинката, можеш да побараш нова.
                         </p>
-
                     </div>
-
                 </div>
-
-
-                <div class="lockout-advice-divider">
-                </div>
-
-
-                <div class="lockout-advice-item">
-
-                    <span class="lockout-advice-number">
-                        02
-                    </span>
-
-                    <div>
-
-                        <strong>
-                            Провери ги податоците
-                        </strong>
-
-                        <p>
-                            При следниот обид провери дали
-                            користиш точна e-mail адреса
-                            и лозинка.
-                        </p>
-
-                    </div>
-
-                </div>
-
             </div>
-
 
             <div class="lockout-actions">
-
                 <a class="btn btn-primary lockout-primary-action"
                    href="@Url.Action("Index", "Home")">
-
-                    <span>
-                        Назад кон почетна
-                    </span>
-
-                    <span aria-hidden="true">
-                        →
-                    </span>
-
+                    <span>Назад кон почетна</span>
+                    <span aria-hidden="true">→</span>
                 </a>
-
-
                 <a class="btn btn-outline-secondary"
                    href="@Url.Action("Contact", "Home")">
-
-                    Контакт
-
+                    Контакт и поддршка
                 </a>
-
             </div>
 
-
-            <a class="lockout-login-link"
-               href="@Url.Action("Login", "Account")">
-
-                <span aria-hidden="true">
-                    ←
-                </span>
-
-                Назад кон најава
-
-            </a>
-
+            <div class="lockout-secondary-actions">
+                <a class="lockout-secondary-link"
+                   href="@Url.Action("Login", "Account")">
+                    <span aria-hidden="true">←</span>
+                    Назад кон најава
+                </a>
+                <span class="lockout-link-separator" aria-hidden="true"></span>
+                <a class="lockout-secondary-link"
+                   href="@Url.Action("ForgotPassword", "Account")">
+                    Ја заборави лозинката?
+                </a>
+            </div>
         </div>
-
     </section>
-
 </main>
-
 
 <style>
     .lockout-page {
@@ -222,31 +118,28 @@
 
     .lockout-shell {
         position: relative;
+        isolation: isolate;
         width: min(100%, 860px);
         min-height: 700px;
-        padding: clamp(2rem, 6vw, 4.5rem);
         overflow: hidden;
+        padding: clamp(2rem, 6vw, 4.5rem);
         text-align: center;
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-xl);
-        background: radial-gradient( circle at 50% 18%, rgba(246, 200, 95, 0.10), transparent 30% ), radial-gradient( circle at 0% 100%, rgba(58, 100, 168, 0.11), transparent 32% ), linear-gradient( 145deg, #161e2a, #090e16 58%, #06090e );
+        background: radial-gradient(circle at 50% 18%, rgba(246, 200, 95, .10), transparent 30%), radial-gradient(circle at 0% 100%, rgba(58, 100, 168, .11), transparent 32%), linear-gradient(145deg, #161e2a, #090e16 58%, #06090e);
         box-shadow: var(--cinema-shadow-lg);
-        isolation: isolate;
     }
-
-
-    /* =====================================================
-       BACKGROUND
-       ===================================================== */
 
     .lockout-grid {
         position: absolute;
         z-index: -3;
         inset: 0;
-        opacity: 0.24;
-        background-image: linear-gradient( rgba(255, 255, 255, 0.021) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.021) 1px, transparent 1px );
+        opacity: .24;
+        background-image: linear-gradient(rgba(255, 255, 255, .021) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .021) 1px, transparent 1px);
         background-size: 48px 48px;
-        mask-image: linear-gradient( 180deg, #000, transparent 82% );
+        -webkit-mask-image: linear-gradient(180deg, #000, transparent 82%);
+        mask-image: linear-gradient(180deg, #000, transparent 82%);
+        pointer-events: none;
     }
 
     .lockout-glow {
@@ -262,7 +155,7 @@
         right: -120px;
         width: 450px;
         height: 450px;
-        background: rgba(246, 200, 95, 0.06);
+        background: rgba(246, 200, 95, .06);
     }
 
     .lockout-glow-two {
@@ -270,25 +163,20 @@
         left: -120px;
         width: 450px;
         height: 450px;
-        background: rgba(58, 100, 168, 0.07);
+        background: rgba(58, 100, 168, .07);
     }
-
-
-    /* =====================================================
-       BRAND
-       ===================================================== */
 
     .lockout-brand {
         position: relative;
         z-index: 5;
         display: inline-flex;
         align-items: center;
-        gap: 0.65rem;
+        gap: .65rem;
         margin-bottom: 2.2rem;
         color: var(--cinema-text);
-        font-size: 0.68rem;
+        font-size: .68rem;
         font-weight: 900;
-        letter-spacing: 0.17em;
+        letter-spacing: .17em;
     }
 
         .lockout-brand:hover {
@@ -300,34 +188,24 @@
             height: 8px;
             border-radius: 50%;
             background: var(--cinema-gold);
-            box-shadow: 0 0 0 5px rgba(214, 168, 75, 0.09), 0 0 18px rgba(214, 168, 75, 0.55);
+            box-shadow: 0 0 0 5px rgba(214, 168, 75, .09), 0 0 18px rgba(214, 168, 75, .55);
         }
-
-
-    /* =====================================================
-       VISUAL
-       ===================================================== */
 
     .lockout-visual {
         position: relative;
         display: grid;
+        place-items: center;
         width: 270px;
         height: 205px;
         margin: 0 auto 1.8rem;
-        place-items: center;
     }
-
-
-    /* =====================================================
-       LOCK
-       ===================================================== */
 
     .lockout-lock {
         position: relative;
         z-index: 5;
         width: 98px;
         height: 120px;
-        animation: lockout-enter 650ms cubic-bezier( 0.22, 1, 0.36, 1 );
+        animation: lockout-enter 650ms cubic-bezier(.22, 1, .36, 1) both;
     }
 
     .lockout-shackle {
@@ -339,7 +217,7 @@
         border: 5px solid #e5c071;
         border-bottom: 0;
         border-radius: 31px 31px 0 0;
-        box-shadow: 0 0 25px rgba(246, 200, 95, 0.13);
+        box-shadow: 0 0 25px rgba(246, 200, 95, .13);
     }
 
     .lockout-lock-body {
@@ -348,10 +226,10 @@
         bottom: 0;
         left: 3px;
         height: 72px;
-        border: 1px solid rgba(246, 200, 95, 0.31);
+        border: 1px solid rgba(246, 200, 95, .31);
         border-radius: 19px;
-        background: linear-gradient( 145deg, rgba(246, 200, 95, 0.16), rgba(246, 200, 95, 0.045) );
-        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35), 0 0 40px rgba(246, 200, 95, 0.06);
+        background: linear-gradient(145deg, rgba(246, 200, 95, .16), rgba(246, 200, 95, .045));
+        box-shadow: 0 24px 60px rgba(0, 0, 0, .35), 0 0 40px rgba(246, 200, 95, .06);
     }
 
     .lockout-keyhole {
@@ -362,18 +240,13 @@
         height: 25px;
         border-radius: 50% 50% 4px 4px;
         background: #f0cd7d;
-        box-shadow: 0 0 16px rgba(246, 200, 95, 0.24);
+        box-shadow: 0 0 16px rgba(246, 200, 95, .24);
         transform: translateX(-50%);
     }
 
-
-    /* =====================================================
-       ORBITS
-       ===================================================== */
-
     .lockout-orbit {
         position: absolute;
-        border: 1px solid rgba(246, 200, 95, 0.09);
+        border: 1px solid rgba(246, 200, 95, .09);
         border-radius: 50%;
         animation: lockout-orbit-spin 25s linear infinite;
     }
@@ -387,7 +260,7 @@
             content: "";
             border-radius: 50%;
             background: var(--cinema-warning);
-            box-shadow: 0 0 16px rgba(246, 200, 95, 0.62);
+            box-shadow: 0 0 16px rgba(246, 200, 95, .62);
         }
 
     .lockout-orbit-large {
@@ -402,18 +275,13 @@
         animation-duration: 18s;
     }
 
-
-    /* =====================================================
-       SIGNALS
-       ===================================================== */
-
     .lockout-signal {
         position: absolute;
         width: 5px;
         height: 5px;
         border-radius: 50%;
         background: var(--cinema-warning);
-        box-shadow: 0 0 12px rgba(246, 200, 95, 0.58);
+        box-shadow: 0 0 12px rgba(246, 200, 95, .58);
         animation: lockout-signal-pulse 2.7s ease-in-out infinite;
     }
 
@@ -428,11 +296,6 @@
         animation-delay: 1s;
     }
 
-
-    /* =====================================================
-       CONTENT
-       ===================================================== */
-
     .lockout-content {
         position: relative;
         z-index: 5;
@@ -445,131 +308,125 @@
     .lockout-content h1 {
         max-width: 720px;
         margin: 0 auto 1rem;
-        font-size: clamp( 2.6rem, 6vw, 4.2rem );
-        line-height: 0.98;
-        letter-spacing: -0.055em;
+        font-size: clamp(2.6rem, 6vw, 4.2rem);
+        line-height: 1.07;
+        letter-spacing: -.055em;
     }
 
     .lockout-title-accent {
-        background: linear-gradient( 135deg, #f4d997, #d4a84b );
-        -webkit-background-clip: text;
+        color: #f4d997;
+        background: linear-gradient(135deg, #f4d997, #d4a84b);
         background-clip: text;
-        color: transparent;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .lockout-description {
         max-width: 590px;
         margin: 0 auto 1.8rem;
         color: var(--cinema-text-muted);
-        font-size: 0.88rem;
+        font-size: .88rem;
         line-height: 1.75;
     }
 
-
-    /* =====================================================
-       STATUS CARD
-       ===================================================== */
-
     .lockout-status-card {
         display: flex;
-        max-width: 580px;
         align-items: flex-start;
-        gap: 0.9rem;
+        gap: .9rem;
+        max-width: 580px;
         margin: 0 auto 1.4rem;
         padding: 1rem;
         text-align: left;
-        border: 1px solid rgba(246, 200, 95, 0.16);
+        border: 1px solid rgba(246, 200, 95, .16);
         border-radius: 14px;
-        background: rgba(246, 200, 95, 0.035);
+        background: rgba(246, 200, 95, .035);
     }
 
     .lockout-status-icon {
         display: grid;
         flex: 0 0 42px;
+        place-items: center;
         width: 42px;
         height: 42px;
-        place-items: center;
         color: #f1d489;
-        border: 1px solid rgba(246, 200, 95, 0.23);
+        border: 1px solid rgba(246, 200, 95, .23);
         border-radius: 12px;
-        background: rgba(246, 200, 95, 0.07);
-        font-size: 0.85rem;
+        background: rgba(246, 200, 95, .07);
+        font-size: .85rem;
         font-weight: 900;
     }
 
-    .lockout-status-card
-    div:last-child > span {
-        display: block;
-        margin-bottom: 0.15rem;
-        color: #dfbe70;
-        font-size: 0.5rem;
-        font-weight: 900;
-        letter-spacing: 0.11em;
+    .lockout-status-copy {
+        min-width: 0;
     }
 
-    .lockout-status-card strong {
-        display: block;
-        color: var(--cinema-text);
-        font-size: 0.8rem;
-    }
+        .lockout-status-copy > span {
+            display: block;
+            margin-bottom: .15rem;
+            color: #dfbe70;
+            font-size: .55rem;
+            font-weight: 900;
+            letter-spacing: .09em;
+        }
 
-    .lockout-status-card p {
-        margin: 0.25rem 0 0;
-        color: var(--cinema-text-muted);
-        font-size: 0.67rem;
-        line-height: 1.55;
-    }
+        .lockout-status-copy strong {
+            display: block;
+            color: var(--cinema-text);
+            font-size: .82rem;
+        }
 
-
-    /* =====================================================
-       ADVICE
-       ===================================================== */
+        .lockout-status-copy p {
+            margin: .3rem 0 0;
+            color: var(--cinema-text-muted);
+            font-size: .69rem;
+            line-height: 1.65;
+        }
 
     .lockout-advice {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-        max-width: 580px;
         align-items: stretch;
+        max-width: 580px;
         margin: 0 auto 1.7rem;
         padding: 1rem;
         text-align: left;
         border: 1px solid var(--cinema-border);
         border-radius: 14px;
-        background: rgba(255, 255, 255, 0.016);
+        background: rgba(255, 255, 255, .016);
     }
 
     .lockout-advice-item {
         display: flex;
         align-items: flex-start;
-        gap: 0.65rem;
-        padding: 0.2rem 0.7rem;
+        gap: .65rem;
+        padding: .2rem .7rem;
     }
 
     .lockout-advice-number {
         display: grid;
         flex: 0 0 29px;
+        place-items: center;
         width: 29px;
         height: 29px;
-        place-items: center;
         color: var(--cinema-gold-light);
-        border: 1px solid rgba(214, 168, 75, 0.17);
+        border: 1px solid rgba(214, 168, 75, .17);
         border-radius: 9px;
-        background: rgba(214, 168, 75, 0.05);
-        font-size: 0.48rem;
+        background: rgba(214, 168, 75, .05);
+        font-size: .52rem;
         font-weight: 900;
     }
 
     .lockout-advice-item strong {
         display: block;
         color: var(--cinema-text-soft);
-        font-size: 0.7rem;
+        font-size: .73rem;
     }
 
     .lockout-advice-item p {
-        margin: 0.2rem 0 0;
+        margin: .3rem 0 0;
         color: var(--cinema-text-muted);
-        font-size: 0.61rem;
-        line-height: 1.5;
+        font-size: .64rem;
+        line-height: 1.55;
     }
 
     .lockout-advice-divider {
@@ -577,15 +434,11 @@
         background: var(--cinema-border);
     }
 
-
-    /* =====================================================
-       ACTIONS
-       ===================================================== */
-
     .lockout-actions {
         display: flex;
+        flex-wrap: wrap;
         justify-content: center;
-        gap: 0.7rem;
+        gap: .7rem;
     }
 
     .lockout-primary-action {
@@ -604,42 +457,51 @@
             transform: translateX(5px);
         }
 
+    .lockout-secondary-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: .85rem;
+        margin-top: 1.6rem;
+    }
 
-    /* =====================================================
-       LOGIN LINK
-       ===================================================== */
-
-    .lockout-login-link {
+    .lockout-secondary-link {
         display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
-        margin-top: 1.5rem;
+        gap: .45rem;
         color: var(--cinema-text-muted);
-        font-size: 0.7rem;
+        font-size: .72rem;
         font-weight: 600;
     }
 
-        .lockout-login-link > span {
-            transition: transform var(--cinema-transition);
-        }
-
-        .lockout-login-link:hover {
+        .lockout-secondary-link:hover {
             color: var(--cinema-gold-light);
         }
 
-            .lockout-login-link:hover > span {
-                transform: translateX(-4px);
-            }
+        .lockout-secondary-link > span {
+            transition: transform var(--cinema-transition);
+        }
 
+        .lockout-secondary-link:hover > span {
+            transform: translateX(-4px);
+        }
 
-    /* =====================================================
-       ANIMATIONS
-       ===================================================== */
+    .lockout-link-separator {
+        width: 1px;
+        height: 17px;
+        background: var(--cinema-border-strong);
+    }
+
+    .lockout-shell a:focus-visible {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 4px;
+    }
 
     @@keyframes lockout-enter {
         from {
             opacity: 0;
-            transform: translateY(16px) scale(0.78);
+            transform: translateY(16px) scale(.78);
         }
 
         to {
@@ -659,10 +521,9 @@
     }
 
     @@keyframes lockout-signal-pulse {
-        0%,
-        100% {
-            opacity: 0.25;
-            transform: scale(0.7);
+        0%, 100% {
+            opacity: .25;
+            transform: scale(.7);
         }
 
         50% {
@@ -671,15 +532,10 @@
         }
     }
 
-
-    /* =====================================================
-       RESPONSIVE
-       ===================================================== */
-
     @@media (max-width: 640px) {
         .lockout-advice {
             grid-template-columns: 1fr;
-            gap: 0.9rem;
+            gap: .9rem;
         }
 
         .lockout-advice-divider {
@@ -688,7 +544,7 @@
         }
 
         .lockout-advice-item {
-            padding: 0.2rem;
+            padding: .2rem;
         }
     }
 
@@ -715,7 +571,7 @@
         }
 
         .lockout-content h1 {
-            font-size: 2.4rem;
+            font-size: clamp(2rem, 9vw, 2.4rem);
         }
 
         .lockout-actions {
@@ -733,10 +589,12 @@
     }
 
     @@media (prefers-reduced-motion: reduce) {
-        .lockout-lock,
-        .lockout-orbit,
-        .lockout-signal {
+        .lockout-lock, .lockout-orbit, .lockout-signal {
             animation: none;
+        }
+
+        .lockout-primary-action > span:last-child, .lockout-secondary-link > span {
+            transition: none;
         }
     }
 </style>

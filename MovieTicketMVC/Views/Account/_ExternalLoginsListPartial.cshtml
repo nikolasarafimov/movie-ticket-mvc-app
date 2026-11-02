@@ -1,4 +1,5 @@
 ﻿@model MovieTicketMVC.Models.ExternalLoginListViewModel
+@using System
 @using System.Linq
 @using Microsoft.Owin.Security
 
@@ -7,36 +8,281 @@
         .GetOwinContext()
         .Authentication
         .GetExternalAuthenticationTypes()
+        .Where(provider =>
+            provider != null &&
+            !string.IsNullOrWhiteSpace(provider.AuthenticationType))
         .ToList();
+
+    var returnUrl = Model == null
+        ? null
+        : Model.ReturnUrl;
 }
 
-@if (loginProviders.Any())
+@if (loginProviders.Count > 0)
 {
-    <div class="external-login-section">
-        <h4>Use another service to log in.</h4>
-        <hr />
+    <section class="external-login-section"
+             aria-labelledby="external-login-heading">
+
+        <div class="external-login-separator"
+             aria-hidden="true">
+            <span>ИЛИ</span>
+        </div>
+
+        <div class="external-login-heading">
+            <span class="external-login-eyebrow">
+                ДРУГ НАЧИН ЗА НАЈАВА
+            </span>
+
+            <h3 id="external-login-heading">
+                Продолжи со друг профил
+            </h3>
+
+            <p>
+                Избери една од достапните услуги за
+                безбедна најава на MovieTicket.
+            </p>
+        </div>
 
         @using (Html.BeginForm(
             "ExternalLogin",
             "Account",
-            new { ReturnUrl = Model?.ReturnUrl },
+            new
+            {
+                ReturnUrl = returnUrl
+            },
             FormMethod.Post,
-            new { role = "form" }))
+            new
+            {
+                role = "form",
+                @class = "external-login-form"
+            }))
         {
             @Html.AntiForgeryToken()
 
-            <div id="socialLoginList">
+            <div id="socialLoginList"
+                 class="external-login-list">
+
                 @foreach (AuthenticationDescription provider in loginProviders)
                 {
+                    var providerName =
+                        !string.IsNullOrWhiteSpace(provider.Caption)
+                            ? provider.Caption.Trim()
+                            : provider.AuthenticationType;
+
+                    var providerInitial =
+                        providerName.Substring(0, 1).ToUpperInvariant();
+
                     <button type="submit"
-                            class="btn btn-outline-dark"
+                            class="external-login-provider"
                             name="provider"
                             value="@provider.AuthenticationType"
-                            title="Log in using your @provider.Caption account">
-                        @provider.Caption
+                            title="Најави се преку @providerName"
+                            aria-label="Најави се преку @providerName">
+
+                        <span class="external-login-provider-icon"
+                              aria-hidden="true">
+                            @providerInitial
+                        </span>
+
+                        <span class="external-login-provider-text">
+                            <span class="external-login-provider-label">
+                                НАЈАВА ПРЕКУ
+                            </span>
+
+                            <strong>@providerName</strong>
+                        </span>
+
+                        <span class="external-login-provider-arrow"
+                              aria-hidden="true">
+                            →
+                        </span>
+
                     </button>
                 }
+
             </div>
         }
-    </div>
+
+        <p class="external-login-notice">
+            Ќе бидеш пренасочен кон избраната услуга за потврда на најавувањето.
+        </p>
+
+    </section>
+
+    <style>
+        .external-login-section {
+            width: 100%;
+            margin: 0;
+            color: var(--cinema-text-soft);
+        }
+
+        .external-login-separator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.6rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.64rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+        }
+
+            .external-login-separator::before,
+            .external-login-separator::after {
+                flex: 1;
+                height: 1px;
+                content: "";
+                background: linear-gradient(90deg, transparent, var(--cinema-border-strong));
+            }
+
+            .external-login-separator::after {
+                transform: rotate(180deg);
+            }
+
+        .external-login-heading {
+            margin-bottom: 1rem;
+        }
+
+        .external-login-eyebrow {
+            display: block;
+            margin-bottom: 0.35rem;
+            color: var(--cinema-gold-light);
+            font-size: 0.59rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+        }
+
+        .external-login-heading h3 {
+            margin: 0 0 0.35rem;
+            color: var(--cinema-text);
+            font-size: clamp(1.08rem, 2.4vw, 1.3rem);
+            line-height: 1.35;
+        }
+
+        .external-login-heading p {
+            margin: 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.77rem;
+            line-height: 1.65;
+        }
+
+        .external-login-form {
+            width: 100%;
+            margin: 0;
+        }
+
+        .external-login-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.7rem;
+        }
+
+        .external-login-provider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            min-width: 0;
+            min-height: 70px;
+            padding: 0.8rem 0.85rem;
+            border: 1px solid var(--cinema-border-strong);
+            border-radius: var(--cinema-radius-sm);
+            background: linear-gradient(145deg, rgba(24, 32, 45, 0.93), rgba(11, 15, 23, 0.97));
+            color: var(--cinema-text);
+            text-align: left;
+            cursor: pointer;
+            box-shadow: var(--cinema-shadow-sm);
+            transition: transform var(--cinema-transition), border-color var(--cinema-transition), background-color var(--cinema-transition), box-shadow var(--cinema-transition);
+        }
+
+            .external-login-provider:hover {
+                border-color: rgba(214, 168, 75, 0.44);
+                background: linear-gradient(145deg, rgba(33, 42, 56, 0.97), rgba(16, 21, 30, 0.98));
+                box-shadow: var(--cinema-shadow);
+                transform: translateY(-2px);
+            }
+
+            .external-login-provider:focus-visible {
+                outline: 2px solid var(--cinema-gold-light);
+                outline-offset: 3px;
+            }
+
+            .external-login-provider:active {
+                transform: translateY(0);
+            }
+
+        .external-login-provider-icon {
+            display: grid;
+            flex: 0 0 39px;
+            width: 39px;
+            height: 39px;
+            place-items: center;
+            border: 1px solid rgba(214, 168, 75, 0.25);
+            border-radius: 11px;
+            background: rgba(214, 168, 75, 0.07);
+            color: var(--cinema-gold-light);
+            font-size: 1.02rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .external-login-provider-text {
+            display: block;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .external-login-provider-label {
+            display: block;
+            margin-bottom: 0.15rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.47rem;
+            font-weight: 800;
+            letter-spacing: 0.11em;
+        }
+
+        .external-login-provider-text strong {
+            display: block;
+            overflow-wrap: anywhere;
+            color: var(--cinema-text);
+            font-size: 0.81rem;
+            font-weight: 750;
+            line-height: 1.35;
+        }
+
+        .external-login-provider-arrow {
+            flex: 0 0 auto;
+            color: var(--cinema-gold-light);
+            font-size: 0.95rem;
+            transition: transform var(--cinema-transition);
+        }
+
+        .external-login-provider:hover .external-login-provider-arrow {
+            transform: translateX(3px);
+        }
+
+        .external-login-notice {
+            margin: 0.85rem 0 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.66rem;
+            line-height: 1.55;
+        }
+
+        @@media (max-width: 575.98px) {
+            .external-login-list {
+                grid-template-columns: 1fr;
+            }
+
+            .external-login-provider {
+                min-height: 64px;
+            }
+        }
+
+        @@media (prefers-reduced-motion: reduce) {
+            .external-login-provider,
+            .external-login-provider-arrow {
+                transition: none;
+            }
+        }
+    </style>
 }

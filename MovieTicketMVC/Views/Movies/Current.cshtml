@@ -1,23 +1,26 @@
 ﻿@using System
 @using System.Collections.Generic
 @using System.Linq
+@using System.Globalization
+@using System.Text.RegularExpressions
 @model IEnumerable<MovieTicketMVC.Models.Movie>
 
 @{
     ViewBag.Title = "Актуелни филмови";
+    ViewBag.ActiveMovieSection = "Current";
 
     var searchString =
-        Request["searchString"];
+        (Request.QueryString["searchString"] ?? string.Empty).Trim();
 
     var ageFilter =
-        Request["ageFilter"];
+        Request.QueryString["ageFilter"];
 
     var sortOrder =
-        Request["sortOrder"];
+        Request.QueryString["sortOrder"];
 
     var movies =
         Model != null
-            ? Model.ToList()
+            ? Model.Where(m => m != null).ToList()
             : new List<MovieTicketMVC.Models.Movie>();
 
     var isAdmin =
@@ -31,16 +34,21 @@
             sortOrder,
             "title_desc",
             StringComparison.OrdinalIgnoreCase);
+
+    var nextSortOrder =
+        isDescending
+            ? "title_asc"
+            : "title_desc";
 }
 
-<main class="movies-page"
-      aria-labelledby="movies-title">
+<div class="movies-page"
+     aria-labelledby="movies-title">
 
     <section class="movies-hero">
 
         <div>
             <div class="cinema-eyebrow">
-                NOW SHOWING
+                НА РЕПЕРТОАР
             </div>
 
             <h1 id="movies-title">
@@ -51,18 +59,17 @@
             </h1>
 
             <p>
-                Откриј што се прикажува во моментов, спореди жанрови,
-                оценки и времетраење и избери го следниот филм за
-                твојата кино вечер.
+                Откриј што се прикажува во моментов,
+                спореди жанрови, оценки и времетраење
+                и избери го следниот филм за твојата
+                кино вечер.
             </p>
         </div>
 
         <div class="movies-hero-actions">
 
             <div class="movies-count">
-                <span>
-                    @movies.Count
-                </span>
+                <span>@movies.Count</span>
 
                 <small>
                     @(movies.Count == 1
@@ -75,10 +82,9 @@
             {
                 <a class="btn btn-primary"
                    href="@Url.Action("Create", "Movies")">
+
                     <span class="movies-button-icon"
-                          aria-hidden="true">
-                        +
-                    </span>
+                          aria-hidden="true">+</span>
 
                     Додади филм
                 </a>
@@ -87,7 +93,6 @@
         </div>
 
     </section>
-
 
     <section class="cinema-filter-bar movies-filter"
              aria-label="Филтрирање на филмови">
@@ -98,12 +103,11 @@
             FormMethod.Get,
             new
             {
-                @class = "movies-filter-form"
+                @class = "movies-filter-form",
+                role = "search"
             }))
         {
-            @Html.Hidden(
-                "sortOrder",
-                sortOrder)
+            @Html.Hidden("sortOrder", sortOrder)
 
             <div class="movies-filter-field movies-search-field">
 
@@ -113,18 +117,18 @@
                 </label>
 
                 <div class="movies-search-input">
-                    <span class="movies-search-icon"
-                          aria-hidden="true">
-                        ⌕
-                    </span>
 
-                    <input type="text"
+                    <span class="movies-search-icon"
+                          aria-hidden="true">⌕</span>
+
+                    <input type="search"
                            id="searchString"
                            name="searchString"
                            value="@searchString"
                            class="form-control"
                            placeholder="Наслов на филм..."
                            autocomplete="off" />
+
                 </div>
 
             </div>
@@ -146,7 +150,7 @@
                     </option>
 
                     <option value="Over18"
-                            @(string.Equals( ageFilter, "Over18", StringComparison.OrdinalIgnoreCase) ? "selected" : "")>
+                            @(string.Equals(ageFilter, "Over18", StringComparison.OrdinalIgnoreCase) ? "selected" : "")>
                         Само 18+
                     </option>
 
@@ -161,98 +165,159 @@
                     Пребарај
                 </button>
 
-                @Html.ActionLink(
-                    "Исчисти",
-                    "Current",
-                    "Movies",
-                    routeValues: null,
-                    htmlAttributes: new
-                    {
-                        @class =
-                            "btn btn-outline-secondary"
-                    })
+                <a class="btn btn-outline-secondary"
+                   href="@Url.Action("Current", "Movies")">
+                    Исчисти
+                </a>
 
             </div>
         }
 
         <div class="movies-sort">
 
-            @Html.ActionLink(
-                isDescending
+            <a class="btn btn-outline-secondary movies-sort-button"
+               href="@Url.Action(
+                   "Current",
+                   "Movies",
+                   new
+                   {
+                       sortOrder = nextSortOrder,
+                       searchString = searchString,
+                       ageFilter = ageFilter
+                   })">
+
+                @(isDescending
                     ? "Наслов: Z → A"
-                    : "Наслов: A → Z",
-                "Current",
-                "Movies",
-                new
-                {
-                    sortOrder =
-                        ViewBag.TitleSortParam,
+                    : "Наслов: A → Z")
 
-                    searchString =
-                        searchString,
-
-                    ageFilter =
-                        ageFilter
-                },
-                new
-                {
-                    @class =
-                        "btn btn-outline-secondary movies-sort-button"
-                })
+            </a>
 
         </div>
 
     </section>
-
 
     @if (movies.Any())
     {
         <section class="movie-catalog"
                  aria-label="Актуелни филмови">
 
-            @for (var index = 0;
-                  index < movies.Count;
-                  index++)
+            @for (var index = 0; index < movies.Count; index++)
             {
-                var movie =
-                    movies[index];
+                var movie = movies[index];
 
-                var description =
-                    string.IsNullOrWhiteSpace(
-                        movie.Description)
-                        ? "Нема достапен опис за овој филм."
-                        : movie.Description.Trim();
-
-                if (description.Length > 155)
-                {
-                    description =
-                        description.Substring(
-                            0,
-                            152)
-                        + "...";
-                }
-
-                var language =
-                    string.IsNullOrWhiteSpace(
-                        movie.Language)
-                        ? "Непознат"
-                        : movie.Language;
+                var movieTitle =
+                    string.IsNullOrWhiteSpace(movie.Title)
+                        ? "Непознат филм"
+                        : movie.Title.Trim();
 
                 var genre =
-                    string.IsNullOrWhiteSpace(
-                        movie.Genre)
+                    string.IsNullOrWhiteSpace(movie.Genre)
                         ? "Филм"
-                        : movie.Genre;
+                        : movie.Genre.Trim();
+
+                var language =
+                    string.IsNullOrWhiteSpace(movie.Language)
+                        ? "Непознат"
+                        : movie.Language.Trim();
 
                 var cardNumber =
-                    (index + 1)
-                        .ToString("00");
+                    (index + 1).ToString(
+                        "00",
+                        CultureInfo.InvariantCulture);
+
+                var ratingText =
+                    movie.Rating.HasValue
+                        ? movie.Rating.Value.ToString(
+                            "0.0",
+                            CultureInfo.InvariantCulture)
+                        : "—";
+
+                var releaseDateText =
+                    movie.ReleaseDate.ToString(
+                        "dd.MM.yyyy",
+                        CultureInfo.InvariantCulture);
+
+                var posterBaseName =
+                    Regex.Replace(
+                        movieTitle.ToLowerInvariant()
+                            .Replace("’", string.Empty)
+                            .Replace("‘", string.Empty)
+                            .Replace("'", string.Empty),
+                        @"[^a-z0-9]+",
+                        "_").Trim('_');
+
+                var posterUrl = string.Empty;
+
+                if (!string.IsNullOrWhiteSpace(posterBaseName))
+                {
+                    var posterNames = new[]
+                    {
+                        posterBaseName,
+                        posterBaseName + "_poster",
+                        posterBaseName + "-poster"
+                    };
+
+                    var posterExtensions = new[]
+                    {
+                        ".png",
+                        ".webp",
+                        ".jpg",
+                        ".jpeg"
+                    };
+
+                    foreach (var posterName in posterNames)
+                    {
+                        foreach (var extension in posterExtensions)
+                        {
+                            var virtualPath =
+                                "~/Content/Images/"
+                                + posterName
+                                + extension;
+
+                            var physicalPath =
+                                System.Web.Hosting.HostingEnvironment
+                                    .MapPath(virtualPath);
+
+                            if (!string.IsNullOrEmpty(physicalPath) &&
+                                System.IO.File.Exists(physicalPath))
+                            {
+                                posterUrl =
+                                    Url.Content(virtualPath);
+
+                                break;
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(posterUrl))
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                var hasPoster =
+                    !string.IsNullOrEmpty(posterUrl);
 
                 <article class="catalog-movie-card">
 
-                    <div class="catalog-movie-visual">
+                    <div class="catalog-movie-visual @(hasPoster ? "catalog-has-poster" : "catalog-no-poster")">
 
-                        <div class="catalog-card-glow"></div>
+                        @if (hasPoster)
+                        {
+                            <img class="catalog-movie-poster"
+                                 src="@posterUrl"
+                                 alt=""
+                                 loading="lazy"
+                                 decoding="async" />
+                        }
+
+                        <div class="catalog-card-glow"
+                             aria-hidden="true">
+                        </div>
+
+                        <div class="catalog-card-shade"
+                             aria-hidden="true">
+                        </div>
 
                         <div class="catalog-card-top">
 
@@ -260,18 +325,13 @@
                                 @cardNumber
                             </span>
 
-                            @if (movie.IsForAdults == true)
-                            {
-                                <span class="catalog-age-badge adult">
-                                    18+
+                            <span class="catalog-status-badge">
+                                <span class="catalog-status-dot"
+                                      aria-hidden="true">
                                 </span>
-                            }
-                            else
-                            {
-                                <span class="catalog-age-badge">
-                                    ALL
-                                </span>
-                            }
+
+                                СЕ ПРИКАЖУВА
+                            </span>
 
                         </div>
 
@@ -282,42 +342,71 @@
                             </span>
 
                             <h2>
-                                @movie.Title
+                                @movieTitle
                             </h2>
 
-                            <div class="catalog-rating">
-                                <span aria-hidden="true">
-                                    ★
-                                </span>
+                            <div class="catalog-rating-row">
 
-                                <strong>
-                                    @(movie.Rating.HasValue
-                                        ? movie.Rating.Value.ToString("0.0")
-                                        : "N/A")
-                                </strong>
+                                <div class="catalog-rating"
+                                     aria-label="Оценка: @(movie.Rating.HasValue ? ratingText + " од 10" : "нема оценка")">
 
-                                <small>
-                                    / 10
-                                </small>
+                                    @if (movie.Rating.HasValue)
+                                    {
+                                        <span aria-hidden="true">
+                                            ★
+                                        </span>
+
+                                        <strong>
+                                            @ratingText
+                                        </strong>
+
+                                        <small>
+                                            / 10
+                                        </small>
+                                    }
+                                    else
+                                    {
+                                        <strong>
+                                            Без оценка
+                                        </strong>
+                                    }
+
+                                </div>
+
+                                @if (movie.IsForAdults == true)
+                                {
+                                    <span class="catalog-age-badge adult"
+                                          aria-label="Само за лица над 18 години">
+                                        18+
+                                    </span>
+                                }
+                                else if (movie.IsForAdults == false)
+                                {
+                                    <span class="catalog-age-badge"
+                                          aria-label="За сите возрасти">
+                                        ЗА СИТЕ
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="catalog-age-badge unknown"
+                                          aria-label="Непозната возрасна категорија">
+                                        —
+                                    </span>
+                                }
+
                             </div>
 
                         </div>
 
-                        <div class="catalog-screen-lines"
-                             aria-hidden="true">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
-
                     </div>
-
 
                     <div class="catalog-movie-body">
 
                         <div class="catalog-meta">
 
                             <div class="catalog-meta-item">
+
                                 <span>
                                     ВРЕМЕТРАЕЊЕ
                                 </span>
@@ -325,34 +414,34 @@
                                 <strong>
                                     @movie.LengthInMinutes мин.
                                 </strong>
+
                             </div>
 
                             <div class="catalog-meta-item">
+
                                 <span>
                                     ЈАЗИК
                                 </span>
 
-                                <strong>
+                                <strong title="@language">
                                     @language
                                 </strong>
+
                             </div>
 
                             <div class="catalog-meta-item">
+
                                 <span>
                                     ПРЕМИЕРА
                                 </span>
 
                                 <strong>
-                                    @movie.ReleaseDate.ToString(
-                                        "dd.MM.yyyy")
+                                    @releaseDateText
                                 </strong>
+
                             </div>
 
                         </div>
-
-                        <p class="catalog-description">
-                            @description
-                        </p>
 
                         <div class="catalog-actions">
 
@@ -360,46 +449,43 @@
                                href="@Url.Action(
                                    "Details",
                                    "Movies",
-                                   new
-                                   {
-                                       id = movie.Id
-                                   })">
+                                   new { id = movie.Id })"
+                               aria-label="Детали за филмот @movieTitle">
+
                                 Детали за филмот
+
                                 <span aria-hidden="true">
                                     →
                                 </span>
+
                             </a>
 
-                            @if (isAdmin)
-                            {
-                                <div class="catalog-admin-actions">
-
-                                    <a class="btn btn-outline-secondary btn-sm"
-                                       href="@Url.Action(
-                                           "Edit",
-                                           "Movies",
-                                           new
-                                           {
-                                               id = movie.Id
-                                           })">
-                                        Уреди
-                                    </a>
-
-                                    <a class="btn btn-outline-danger btn-sm"
-                                       href="@Url.Action(
-                                           "Delete",
-                                           "Movies",
-                                           new
-                                           {
-                                               id = movie.Id
-                                           })">
-                                        Избриши
-                                    </a>
-
-                                </div>
-                            }
-
                         </div>
+
+                        @if (isAdmin)
+                        {
+                            <div class="catalog-admin-actions">
+
+                                <a class="btn btn-outline-secondary btn-sm"
+                                   href="@Url.Action(
+                                       "Edit",
+                                       "Movies",
+                                       new { id = movie.Id })"
+                                   aria-label="Уреди го филмот @movieTitle">
+                                    Уреди
+                                </a>
+
+                                <a class="btn btn-outline-danger btn-sm"
+                                   href="@Url.Action(
+                                       "Delete",
+                                       "Movies",
+                                       new { id = movie.Id })"
+                                   aria-label="Избриши го филмот @movieTitle">
+                                    Избриши
+                                </a>
+
+                            </div>
+                        }
 
                     </div>
 
@@ -410,16 +496,17 @@
     }
     else
     {
-        <section class="cinema-empty-state">
+        <section class="cinema-empty-state movies-empty-state"
+                 aria-labelledby="movies-empty-title">
 
             <div class="movies-empty-icon"
                  aria-hidden="true">
                 ◇
             </div>
 
-            <h3>
+            <h2 id="movies-empty-title">
                 Нема пронајдени филмови
-            </h3>
+            </h2>
 
             <p>
                 Ниту еден актуелен филм не одговара на
@@ -427,536 +514,590 @@
                 или исчисти ги филтрите.
             </p>
 
-            @Html.ActionLink(
-                "Исчисти филтри",
-                "Current",
-                "Movies",
-                routeValues: null,
-                htmlAttributes: new
-                {
-                    @class = "btn btn-primary"
-                })
+            <a class="btn btn-primary"
+               href="@Url.Action("Current", "Movies")">
+                Исчисти филтри
+            </a>
 
         </section>
     }
 
-</main>
+</div>
 
 <style>
     .movies-page {
         display: flex;
         flex-direction: column;
-        gap: 2rem;
+        gap: 1.65rem;
+        min-width: 0;
     }
 
-    .movies-hero {
-        position: relative;
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 2rem;
-        padding: clamp(2rem, 5vw, 3.5rem);
-        overflow: hidden;
-        border: 1px solid var(--cinema-border);
-        border-radius: var(--cinema-radius-xl);
-        background: radial-gradient( circle at 85% 10%, rgba(214, 168, 75, 0.13), transparent 30% ), linear-gradient( 135deg, rgba(20, 27, 39, 0.97), rgba(8, 11, 17, 0.98) );
-        box-shadow: var(--cinema-shadow);
-    }
-
-        .movies-hero::after {
-            position: absolute;
-            top: -160px;
-            right: -110px;
-            width: 380px;
-            height: 380px;
-            content: "";
-            pointer-events: none;
-            border: 1px solid rgba(214, 168, 75, 0.09);
-            border-radius: 50%;
+        .movies-page .movies-hero {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 2rem;
+            padding: clamp(2rem, 5vw, 3.5rem);
+            overflow: hidden;
+            border: 1px solid var(--cinema-border);
+            border-radius: var(--cinema-radius-xl);
+            background: radial-gradient( circle at 86% 8%, rgba(214, 168, 75, 0.12), transparent 35% ), linear-gradient( 135deg, #141c29, #090d14 );
+            box-shadow: var(--cinema-shadow);
         }
 
-        .movies-hero > div:first-child {
+            .movies-page .movies-hero::after {
+                position: absolute;
+                top: -160px;
+                right: -110px;
+                width: 380px;
+                height: 380px;
+                content: "";
+                pointer-events: none;
+                border: 1px solid rgba(214, 168, 75, 0.09);
+                border-radius: 50%;
+            }
+
+            .movies-page .movies-hero > div:first-child {
+                position: relative;
+                z-index: 1;
+                max-width: 760px;
+            }
+
+            .movies-page .movies-hero h1 {
+                margin-bottom: 0.85rem;
+            }
+
+            .movies-page .movies-hero p {
+                max-width: 690px;
+                margin: 0;
+                color: #acb5c4;
+                font-size: 1rem;
+                line-height: 1.7;
+            }
+
+        .movies-page .movies-hero-actions {
             position: relative;
             z-index: 1;
-            max-width: 760px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.85rem;
         }
 
-        .movies-hero h1 {
-            margin-bottom: 1rem;
-        }
-
-        .movies-hero p {
-            max-width: 680px;
-            margin: 0;
-            color: var(--cinema-text-muted);
-            font-size: 1.04rem;
-        }
-
-    .movies-hero-actions {
-        position: relative;
-        z-index: 1;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .movies-count {
-        display: flex;
-        align-items: baseline;
-        gap: 0.45rem;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--cinema-border);
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.035);
-    }
-
-        .movies-count span {
-            color: var(--cinema-gold-light);
-            font-size: 1.55rem;
-            font-weight: 800;
-            line-height: 1;
-        }
-
-        .movies-count small {
-            color: var(--cinema-text-muted);
-            font-size: 0.78rem;
-        }
-
-    .movies-button-icon {
-        display: inline-block;
-        margin-right: 0.35rem;
-        font-size: 1.2rem;
-        line-height: 1;
-    }
-
-
-    .movies-filter {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 1rem;
-        margin: 0;
-    }
-
-    .movies-filter-form {
-        display: flex;
-        flex: 1;
-        flex-wrap: wrap;
-        align-items: flex-end;
-        gap: 0.9rem;
-    }
-
-    .movies-filter-field {
-        min-width: 200px;
-    }
-
-    .movies-search-field {
-        flex: 1;
-        min-width: 260px;
-    }
-
-    .movies-search-input {
-        position: relative;
-    }
-
-    .movies-search-icon {
-        position: absolute;
-        z-index: 2;
-        top: 50%;
-        left: 1rem;
-        color: var(--cinema-text-muted);
-        font-size: 1.15rem;
-        pointer-events: none;
-        transform: translateY(-50%);
-    }
-
-    .movies-search-input .form-control {
-        padding-left: 2.8rem;
-    }
-
-    .movies-filter-actions {
-        display: flex;
-        gap: 0.55rem;
-    }
-
-    .movies-sort {
-        flex: 0 0 auto;
-    }
-
-    .movies-sort-button {
-        white-space: nowrap;
-    }
-
-
-    .movie-catalog {
-        display: grid;
-        grid-template-columns: repeat( 3, minmax(0, 1fr) );
-        gap: 1.5rem;
-    }
-
-    .catalog-movie-card {
-        position: relative;
-        display: flex;
-        overflow: hidden;
-        flex-direction: column;
-        min-width: 0;
-        border: 1px solid var(--cinema-border);
-        border-radius: var(--cinema-radius-lg);
-        background: linear-gradient( 160deg, rgba(20, 27, 39, 0.98), rgba(9, 13, 20, 0.98) );
-        box-shadow: var(--cinema-shadow-sm);
-        transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), border-color 320ms ease, box-shadow 320ms ease;
-    }
-
-        .catalog-movie-card:hover {
-            border-color: rgba(214, 168, 75, 0.28);
-            transform: translateY(-8px);
-            box-shadow: var(--cinema-shadow-lg);
-        }
-
-    .catalog-movie-visual {
-        position: relative;
-        display: flex;
-        overflow: hidden;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 300px;
-        padding: 1.4rem;
-        isolation: isolate;
-        background: radial-gradient( circle at 78% 25%, rgba(214, 168, 75, 0.16), transparent 30% ), radial-gradient( circle at 15% 85%, rgba(61, 94, 145, 0.17), transparent 32% ), linear-gradient( 145deg, #182130 0%, #0d121b 55%, #080b10 100% );
-    }
-
-        .catalog-movie-visual::before {
-            position: absolute;
-            z-index: -1;
-            top: -70px;
-            right: -60px;
-            width: 220px;
-            height: 220px;
-            content: "";
-            border: 1px solid rgba(255, 255, 255, 0.055);
-            border-radius: 50%;
-            transition: transform 600ms ease;
-        }
-
-    .catalog-movie-card:hover
-    .catalog-movie-visual::before {
-        transform: scale(1.18) rotate(20deg);
-    }
-
-    .catalog-card-glow {
-        position: absolute;
-        z-index: -1;
-        right: -20%;
-        bottom: -38%;
-        width: 300px;
-        height: 300px;
-        border-radius: 50%;
-        background: rgba(214, 168, 75, 0.08);
-        filter: blur(12px);
-    }
-
-    .catalog-card-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .catalog-index {
-        color: rgba(255, 255, 255, 0.22);
-        font-size: 0.72rem;
-        font-weight: 800;
-        letter-spacing: 0.16em;
-    }
-
-    .catalog-age-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 44px;
-        min-height: 28px;
-        padding: 0.2rem 0.55rem;
-        color: #9ae8bd;
-        border: 1px solid rgba(66, 199, 131, 0.22);
-        border-radius: 999px;
-        background: rgba(66, 199, 131, 0.08);
-        font-size: 0.66rem;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-    }
-
-        .catalog-age-badge.adult {
-            color: #ff9ba4;
-            border-color: rgba(239, 102, 115, 0.24);
-            background: rgba(239, 102, 115, 0.09);
-        }
-
-    .catalog-visual-content {
-        margin-top: auto;
-        padding-top: 4rem;
-    }
-
-    .catalog-genre {
-        display: inline-block;
-        margin-bottom: 0.75rem;
-        color: var(--cinema-gold-light);
-        font-size: 0.7rem;
-        font-weight: 800;
-        letter-spacing: 0.13em;
-        text-transform: uppercase;
-    }
-
-    .catalog-visual-content h2 {
-        max-width: 90%;
-        margin-bottom: 1rem;
-        font-size: clamp( 1.65rem, 2.5vw, 2.15rem );
-        line-height: 1.08;
-    }
-
-    .catalog-rating {
-        display: inline-flex;
-        align-items: baseline;
-        gap: 0.25rem;
-        color: var(--cinema-text);
-    }
-
-        .catalog-rating > span {
-            margin-right: 0.15rem;
-            color: var(--cinema-gold-light);
-        }
-
-        .catalog-rating strong {
-            font-size: 1.05rem;
-        }
-
-        .catalog-rating small {
-            color: var(--cinema-text-muted);
-            font-size: 0.72rem;
-        }
-
-    .catalog-screen-lines {
-        position: absolute;
-        right: 1.4rem;
-        bottom: 1.4rem;
-        display: flex;
-        align-items: flex-end;
-        gap: 3px;
-        opacity: 0.32;
-    }
-
-        .catalog-screen-lines span {
-            display: block;
-            width: 3px;
-            height: 22px;
-            border-radius: 99px;
-            background: var(--cinema-gold);
-        }
-
-            .catalog-screen-lines span:nth-child(2) {
-                height: 34px;
-            }
-
-            .catalog-screen-lines span:nth-child(3) {
-                height: 16px;
-            }
-
-
-    .catalog-movie-body {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-        padding: 1.4rem;
-    }
-
-    .catalog-meta {
-        display: grid;
-        grid-template-columns: repeat( 3, minmax(0, 1fr) );
-        gap: 0.7rem;
-        margin-bottom: 1.25rem;
-    }
-
-    .catalog-meta-item {
-        min-width: 0;
-        padding: 0.7rem;
-        border: 1px solid var(--cinema-border);
-        border-radius: 11px;
-        background: rgba(255, 255, 255, 0.025);
-    }
-
-        .catalog-meta-item span {
-            display: block;
-            margin-bottom: 0.25rem;
-            overflow: hidden;
-            color: var(--cinema-text-muted);
-            font-size: 0.57rem;
-            font-weight: 800;
-            letter-spacing: 0.07em;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .catalog-meta-item strong {
-            display: block;
-            overflow: hidden;
-            color: var(--cinema-text-soft);
-            font-size: 0.77rem;
-            font-weight: 650;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-    .catalog-description {
-        flex: 1;
-        margin-bottom: 1.4rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.91rem;
-        line-height: 1.7;
-    }
-
-    .catalog-actions {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-        margin-top: auto;
-    }
-
-        .catalog-actions > .btn-primary {
+        .movies-page .movies-count {
             display: inline-flex;
+            align-items: baseline;
+            gap: 0.4rem;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid var(--cinema-border-strong);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            white-space: nowrap;
+        }
+
+            .movies-page .movies-count span {
+                color: var(--cinema-gold-light);
+                font-size: 1.4rem;
+                font-weight: 800;
+                line-height: 1;
+            }
+
+            .movies-page .movies-count small {
+                color: #aeb8c7;
+                font-size: 0.76rem;
+            }
+
+        .movies-page .movies-button-icon {
+            display: inline-block;
+            margin-right: 0.3rem;
+            font-size: 1.1rem;
+        }
+
+        .movies-page .movies-filter {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 0.9rem;
+            margin: 0;
+        }
+
+        .movies-page .movies-filter-form {
+            display: flex;
+            align-items: flex-end;
             flex: 1;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            min-width: 0;
+        }
+
+        .movies-page .movies-filter-field {
+            flex: 0 1 190px;
+            min-width: 0;
+        }
+
+        .movies-page .movies-search-field {
+            flex: 1 1 265px;
+        }
+
+        .movies-page .movies-search-input {
+            position: relative;
+        }
+
+        .movies-page .movies-search-icon {
+            position: absolute;
+            z-index: 1;
+            top: 50%;
+            left: 0.9rem;
+            color: var(--cinema-text-muted);
+            font-size: 1.1rem;
+            pointer-events: none;
+            transform: translateY(-50%);
+        }
+
+        .movies-page .movies-search-input .form-control {
+            padding-left: 2.6rem;
+        }
+
+        .movies-page .movies-filter-actions {
+            display: flex;
+            gap: 0.55rem;
+        }
+
+        .movies-page .movies-sort {
+            flex: 0 0 auto;
+        }
+
+        .movies-page .movies-sort-button {
+            white-space: nowrap;
+        }
+
+        .movies-page .movie-catalog {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            align-items: stretch;
+            gap: 1rem;
+        }
+
+        .movies-page .catalog-movie-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 19px;
+            background: #0b1018;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.21);
+            transition: transform 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+        }
+
+            .movies-page .catalog-movie-card:hover {
+                transform: translateY(-5px);
+                border-color: rgba(214, 168, 75, 0.38);
+                box-shadow: 0 22px 45px rgba(0, 0, 0, 0.37);
+            }
+
+        .movies-page .catalog-movie-visual {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 285px;
+            padding: 0.8rem 0.8rem 0.95rem;
+            overflow: hidden;
+            isolation: isolate;
+            background: radial-gradient( circle at 78% 25%, rgba(214, 168, 75, 0.16), transparent 36% ), linear-gradient( 145deg, #192334, #0a0e15 );
+        }
+
+        .movies-page .catalog-movie-poster {
+            position: absolute;
+            z-index: 0;
+            inset: 0;
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 36%;
+            transition: transform 440ms cubic-bezier( 0.22, 1, 0.36, 1 );
+        }
+
+        .movies-page .catalog-movie-card:hover .catalog-movie-poster {
+            transform: scale(1.055);
+        }
+
+        .movies-page .catalog-card-glow {
+            position: absolute;
+            z-index: 0;
+            top: -80px;
+            right: -65px;
+            width: 240px;
+            height: 240px;
+            border: 1px solid rgba(214, 168, 75, 0.12);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .movies-page .catalog-has-poster .catalog-card-glow {
+            display: none;
+        }
+
+        .movies-page .catalog-card-shade {
+            position: absolute;
+            z-index: 1;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient( 180deg, rgba(4, 7, 12, 0.5) 0%, rgba(4, 7, 12, 0.06) 30%, rgba(4, 7, 12, 0.45) 53%, rgba(4, 7, 12, 0.95) 100% );
+        }
+
+        .movies-page .catalog-no-poster .catalog-card-shade {
+            background: linear-gradient( 180deg, transparent 30%, rgba(4, 7, 12, 0.55) 100% );
+        }
+
+        .movies-page .catalog-card-top {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.3rem;
+        }
+
+        .movies-page .catalog-index {
+            color: #f7f8fa;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9);
+        }
+
+        .movies-page .catalog-status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            max-width: 88%;
+            padding: 0.28rem 0.4rem;
+            color: #b0f5d1;
+            border: 1px solid rgba(71, 213, 140, 0.36);
+            border-radius: 999px;
+            background: rgba(13, 73, 48, 0.86);
+            font-size: 0.55rem;
+            font-weight: 800;
+            line-height: 1.15;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .movies-page .catalog-status-dot {
+            flex: 0 0 5px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #8deeba;
+        }
+
+        .movies-page .catalog-visual-content {
+            position: relative;
+            z-index: 2;
+            margin-top: auto;
+            min-width: 0;
+        }
+
+        .movies-page .catalog-genre {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #f0cb76;
+            font-size: 0.63rem;
+            font-weight: 800;
+            line-height: 1.3;
+            letter-spacing: 0.065em;
+            text-transform: uppercase;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+        }
+
+        .movies-page .catalog-visual-content h2 {
+            display: -webkit-box;
+            min-height: 2.48em;
+            margin: 0 0 0.65rem;
+            overflow: hidden;
+            color: #fff;
+            font-size: clamp(1rem, 1.12vw, 1.24rem);
+            font-weight: 800;
+            line-height: 1.24;
+            letter-spacing: -0.025em;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.96);
+            overflow-wrap: anywhere;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        .movies-page .catalog-rating-row {
+            display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.35rem;
         }
 
-            .catalog-actions > .btn-primary span {
-                transition: transform var(--cinema-transition);
-            }
-
-            .catalog-actions > .btn-primary:hover span {
-                transform: translateX(4px);
-            }
-
-    .catalog-admin-actions {
-        display: flex;
-        gap: 0.4rem;
-    }
-
-    .btn-outline-danger {
-        color: #ff8d97;
-        border-color: rgba(239, 102, 115, 0.35);
-        background: transparent;
-    }
-
-        .btn-outline-danger:hover {
+        .movies-page .catalog-rating {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 0.22rem;
             color: #fff;
-            border-color: #d94c5b;
-            background: #b83c49;
+            white-space: nowrap;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
         }
 
-    .movies-empty-icon {
-        margin-bottom: 1rem;
-        color: var(--cinema-gold);
-        font-size: 2.4rem;
-    }
+            .movies-page .catalog-rating > span {
+                color: #f0cb76;
+                font-size: 0.86rem;
+            }
 
+            .movies-page .catalog-rating strong {
+                font-size: 0.92rem;
+                font-weight: 800;
+            }
+
+            .movies-page .catalog-rating small {
+                color: #d2d8e1;
+                font-size: 0.65rem;
+            }
+
+        .movies-page .catalog-age-badge {
+            padding: 0.22rem 0.38rem;
+            color: #9ae8bd;
+            border: 1px solid rgba(66, 199, 131, 0.32);
+            border-radius: 7px;
+            background: rgba(16, 45, 32, 0.82);
+            font-size: 0.56rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+            .movies-page .catalog-age-badge.adult {
+                color: #ffadb6;
+                border-color: rgba(239, 102, 115, 0.35);
+                background: rgba(67, 24, 29, 0.78);
+            }
+
+            .movies-page .catalog-age-badge.unknown {
+                color: #d3d8e0;
+                border-color: rgba(255, 255, 255, 0.25);
+                background: rgba(17, 22, 30, 0.8);
+            }
+
+        .movies-page .catalog-movie-body {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 0.8rem;
+            padding: 0.75rem 0.75rem 0.9rem;
+        }
+
+        .movies-page .catalog-meta {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.32rem;
+        }
+
+        .movies-page .catalog-meta-item {
+            min-width: 0;
+            padding: 0.48rem 0.34rem;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+            .movies-page .catalog-meta-item span {
+                display: block;
+                margin-bottom: 0.27rem;
+                overflow: hidden;
+                color: #aeb9c8;
+                font-size: 0.54rem;
+                font-weight: 800;
+                letter-spacing: 0.025em;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .movies-page .catalog-meta-item strong {
+                display: block;
+                overflow: hidden;
+                color: #e0e5ed;
+                font-size: 0.66rem;
+                font-weight: 700;
+                line-height: 1.3;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+        .movies-page .catalog-actions {
+            display: flex;
+            margin-top: auto;
+        }
+
+            .movies-page .catalog-actions > .btn-primary {
+                display: inline-flex;
+                flex: 1;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.4rem;
+                min-width: 0;
+                min-height: 39px;
+                padding: 0.57rem 0.7rem;
+                font-size: 0.74rem;
+                font-weight: 800;
+                white-space: nowrap;
+            }
+
+        .movies-page .catalog-admin-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.4rem;
+            margin-top: 0.05rem;
+        }
+
+            .movies-page .catalog-admin-actions .btn {
+                min-width: 0;
+                padding-inline: 0.25rem;
+            }
+
+        .movies-page .btn-outline-danger {
+            color: #ff9da8;
+            border-color: rgba(239, 102, 115, 0.35);
+            background: transparent;
+        }
+
+            .movies-page .btn-outline-danger:hover {
+                color: #fff;
+                border-color: #d94c5b;
+                background: #b83c49;
+            }
+
+        .movies-page .movies-empty-icon {
+            margin-bottom: 0.9rem;
+            color: var(--cinema-gold);
+            font-size: 2.3rem;
+        }
+
+        .movies-page a:focus-visible,
+        .movies-page button:focus-visible,
+        .movies-page input:focus-visible,
+        .movies-page select:focus-visible {
+            outline: 2px solid var(--cinema-gold-light);
+            outline-offset: 3px;
+        }
 
     @@media (max-width: 1199.98px) {
-        .movie-catalog {
-            grid-template-columns: repeat( 2, minmax(0, 1fr) );
+        .movies-page .movie-catalog {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
-        .movies-filter {
-            align-items: stretch;
+        .movies-page .movies-filter {
             flex-direction: column;
+            align-items: stretch;
         }
 
-        .movies-sort {
+        .movies-page .movies-sort {
             align-self: flex-end;
         }
     }
 
+    @@media (max-width: 991.98px) {
+        .movies-page .movie-catalog {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
 
     @@media (max-width: 767.98px) {
-        .movies-hero {
+        .movies-page .movies-hero {
             align-items: flex-start;
             flex-direction: column;
         }
 
-        .movies-hero-actions {
+        .movies-page .movies-hero-actions {
             width: 100%;
-            justify-content: space-between;
         }
 
-        .movies-filter-form {
-            align-items: stretch;
+        .movies-page .movies-filter-form {
             flex-direction: column;
+            align-items: stretch;
         }
 
-        .movies-filter-field,
-        .movies-search-field {
+        .movies-page .movies-filter-field,
+        .movies-page .movies-search-field,
+        .movies-page .movies-filter-actions {
             width: 100%;
-            min-width: 0;
+            flex-basis: auto;
         }
 
-        .movies-filter-actions {
-            width: 100%;
-        }
-
-            .movies-filter-actions .btn {
+            .movies-page .movies-filter-actions .btn {
                 flex: 1;
             }
 
-        .movies-sort {
+        .movies-page .movies-sort,
+        .movies-page .movies-sort-button {
             width: 100%;
         }
 
-        .movies-sort-button {
-            width: 100%;
-        }
-
-        .movie-catalog {
-            grid-template-columns: 1fr;
-        }
-
-        .catalog-movie-visual {
-            min-height: 270px;
+        .movies-page .movie-catalog {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
 
-
     @@media (max-width: 575.98px) {
-        .movies-hero {
+        .movies-page .movies-hero {
             padding: 1.6rem 1.2rem;
         }
 
-        .movies-hero-actions {
-            align-items: stretch;
+        .movies-page .movies-hero-actions {
             flex-direction: column;
-        }
-
-        .movies-count {
-            justify-content: center;
-        }
-
-        .catalog-meta {
-            grid-template-columns: 1fr;
-        }
-
-        .catalog-actions {
             align-items: stretch;
-            flex-direction: column;
         }
 
-            .catalog-actions > .btn-primary {
-                width: 100%;
-            }
-
-        .catalog-admin-actions {
-            width: 100%;
+        .movies-page .movies-filter-actions {
+            flex-wrap: wrap;
         }
 
-            .catalog-admin-actions .btn {
-                flex: 1;
+        .movies-page .catalog-movie-visual {
+            min-height: 305px;
+        }
+
+        .movies-page .movie-catalog {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .movies-page .catalog-meta-item span {
+            font-size: 0.68rem;
+        }
+
+        .movies-page .catalog-meta-item strong {
+            font-size: 0.81rem;
+        }
+
+        .movies-page .catalog-visual-content h2 {
+            font-size: 1.55rem;
+        }
+
+        .movies-page .catalog-status-badge {
+            font-size: 0.68rem;
+        }
+
+        .movies-page .catalog-actions > .btn-primary {
+            font-size: 0.86rem;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .movies-page .catalog-movie-card,
+        .movies-page .catalog-movie-poster {
+            transition: none;
+        }
+
+            .movies-page .catalog-movie-card:hover,
+            .movies-page .catalog-movie-card:hover .catalog-movie-poster {
+                transform: none;
             }
     }
 </style>

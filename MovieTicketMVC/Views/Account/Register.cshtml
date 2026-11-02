@@ -4,1139 +4,628 @@
     ViewBag.Title = "Регистрација";
 }
 
-<main class="register-page"
-      aria-labelledby="register-title">
-
+<main class="register-page" aria-labelledby="register-title">
     <section class="register-shell">
-
         <div class="register-showcase">
-
-            <div class="register-showcase-glow register-showcase-glow-one">
-            </div>
-
-            <div class="register-showcase-glow register-showcase-glow-two">
-            </div>
-
+            <div class="register-showcase-glow register-showcase-glow-gold" aria-hidden="true"></div>
+            <div class="register-showcase-glow register-showcase-glow-blue" aria-hidden="true"></div>
 
             <div class="register-showcase-content">
-
-                <a class="register-brand"
-                   href="@Url.Action("Index", "Home")">
-
-                    <span></span>
-
-                    MOVIETICKET
+                <a class="register-brand" href="@Url.Action("Index", "Home")" aria-label="MovieTicket — Почетна">
+                    <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
+                         alt="MovieTicket"
+                         width="174"
+                         height="48"
+                         decoding="async" />
                 </a>
 
-
                 <div class="register-showcase-copy">
-
-                    <div class="cinema-eyebrow">
-                        JOIN THE EXPERIENCE
-                    </div>
-
-                    <h1>
+                    <div class="cinema-eyebrow">ТВОЈОТ СЛЕДЕН ФИЛМСКИ МОМЕНТ</div>
+                    <h2>
                         Твојот следен
-                        <span class="cinema-text-gradient">
-                            филм
-                        </span>
+                        <span class="cinema-text-gradient">филм</span>
                         е на само неколку клика.
-                    </h1>
-
+                    </h2>
                     <p>
-                        Креирај MovieTicket профил и добиј пристап
-                        до real-time избор на седишта, дигитални
-                        билети и целата твоја историја на резервации.
+                        Креирај MovieTicket профил, избери ги своите седишта
+                        и чувај ги сите билети на едно место.
                     </p>
+                </div>
+            </div>
 
+            <div class="register-ticket-art" aria-hidden="true">
+                <div class="register-ticket-top">
+                    <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
+                         alt=""
+                         width="105"
+                         height="30"
+                         decoding="async" />
+                    <span>КИНО БИЛЕТ</span>
                 </div>
 
-
-                <div class="register-benefits">
-
-                    <article class="register-benefit">
-
-                        <span class="register-benefit-icon"
-                              aria-hidden="true">
-                            01
-                        </span>
-
-                        <div>
-                            <strong>
-                                Избери седиште
-                            </strong>
-
-                            <p>
-                                Интерактивен избор со достапност
-                                во реално време.
-                            </p>
-                        </div>
-
-                    </article>
-
-
-                    <article class="register-benefit">
-
-                        <span class="register-benefit-icon"
-                              aria-hidden="true">
-                            02
-                        </span>
-
-                        <div>
-                            <strong>
-                                Чувај ги билетите
-                            </strong>
-
-                            <p>
-                                Сите твои резервации остануваат
-                                достапни во профилот.
-                            </p>
-                        </div>
-
-                    </article>
-
-
-                    <article class="register-benefit">
-
-                        <span class="register-benefit-icon"
-                              aria-hidden="true">
-                            03
-                        </span>
-
-                        <div>
-                            <strong>
-                                Брза резервација
-                            </strong>
-
-                            <p>
-                                Од филм до потврден билет
-                                во едноставен booking flow.
-                            </p>
-                        </div>
-
-                    </article>
-
+                <div class="register-ticket-title">
+                    <small>ТВОЕТО КИНО ИСКУСТВО</small>
+                    <strong>Следната<br />кино вечер</strong>
                 </div>
 
+                <div class="register-ticket-divider"></div>
+
+                <div class="register-ticket-lines">
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
             </div>
-
-
-            <div class="register-orbit register-orbit-large"
-                 aria-hidden="true">
-            </div>
-
-            <div class="register-orbit register-orbit-small"
-                 aria-hidden="true">
-            </div>
-
         </div>
 
-
         <div class="register-form-side">
-
             <div class="register-form-wrapper">
-
-                <div class="register-mobile-brand">
-
-                    <a href="@Url.Action("Index", "Home")">
-
-                        <span></span>
-
-                        MOVIETICKET
-                    </a>
-
-                </div>
-
-
                 <div class="register-heading">
-
-                    <span class="register-heading-label">
-                        CREATE ACCOUNT
-                    </span>
-
-                    <h2 id="register-title">
-                        Креирај профил
-                    </h2>
-
+                    <span class="register-heading-label">ПРИДРУЖИ СЕ НА MOVIETICKET</span>
+                    <h1 id="register-title">Креирај профил</h1>
                     <p>
-                        Внеси e-mail адреса и безбедна лозинка
-                        за да започнеш.
+                        Внеси е-пошта и лозинка. По успешната регистрација
+                        автоматски ќе бидеш најавен.
                     </p>
-
                 </div>
 
-
-                @using (Html.BeginForm(
-                    "Register",
-                    "Account",
-                    FormMethod.Post,
-                    new
-                    {
-                        role = "form",
-                        id = "registerForm",
-                        @class = "register-form"
-                    }))
+                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new
+                {
+                    id = "registerForm",
+                    @class = "register-form",
+                    role = "form",
+                    aria_label = "Форма за регистрација"
+                }))
                 {
                     @Html.AntiForgeryToken()
 
-                    @Html.ValidationSummary(
-                        true,
-                        "",
-                        new
-                        {
-                            @class =
-                                "validation-summary-errors register-validation"
-                        })
+                    @Html.ValidationSummary(true, "Неуспешна регистрација", new
+                    {
+                        @class = "register-validation",
+                        role = "alert"
+                    })
 
+                    <div id="registerClientError"
+                         class="register-client-error"
+                         role="alert"
+                         hidden></div>
 
-                    <div class="form-group">
-
-                        @Html.LabelFor(
-                            m => m.Email,
-                            "E-mail адреса",
-                            new
-                            {
-                                @class =
-                                    "form-label"
-                            })
+                    <div class="register-field">
+                        @Html.LabelFor(m => m.Email, "Е-пошта", new { @class = "form-label" })
 
                         <div class="register-input-wrapper">
-
-                            <span class="register-input-icon"
-                                  aria-hidden="true">
-                                &#64;
-                            </span>
-
-                            @Html.TextBoxFor(
-                                m => m.Email,
-                                new
-                                {
-                                    @class =
-                                        "form-control register-input",
-                                    type =
-                                        "email",
-                                    autocomplete =
-                                        "email",
-                                    placeholder =
-                                        "name@example.com",
-                                    autofocus =
-                                        "autofocus"
-                                })
-
+                            @Html.TextBoxFor(m => m.Email, new
+                            {
+                                @class = "form-control register-input",
+                                type = "email",
+                                autocomplete = "email",
+                                inputmode = "email",
+                                autocapitalize = "none",
+                                spellcheck = "false",
+                                placeholder = "ime@primer.com",
+                                required = "required",
+                                aria_required = "true",
+                                aria_describedby = "registerEmailError",
+                                autofocus = "autofocus"
+                            })
                         </div>
 
-                        @Html.ValidationMessageFor(
-                            m => m.Email,
-                            "",
-                            new
-                            {
-                                @class =
-                                    "text-danger"
-                            })
-
+                        @Html.ValidationMessageFor(m => m.Email, "", new
+                        {
+                            @class = "register-field-error",
+                            id = "registerEmailError"
+                        })
                     </div>
 
-
-                    <div class="form-group">
-
-                        @Html.LabelFor(
-                            m => m.Password,
-                            "Лозинка",
-                            new
-                            {
-                                @class =
-                                    "form-label"
-                            })
+                    <div class="register-field">
+                        @Html.LabelFor(m => m.Password, "Лозинка", new { @class = "form-label" })
 
                         <div class="register-input-wrapper">
-
-                            <span class="register-input-icon register-password-icon"
-                                  aria-hidden="true">
-                                •
-                            </span>
-
-                            @Html.PasswordFor(
-                                m => m.Password,
-                                new
-                                {
-                                    @class =
-                                        "form-control register-input register-password-field",
-                                    autocomplete =
-                                        "new-password",
-                                    placeholder =
-                                        "Креирај лозинка",
-                                    id =
-                                        "Password"
-                                })
+                            @Html.PasswordFor(m => m.Password, new
+                            {
+                                @class = "form-control register-input register-password-input",
+                                id = "Password",
+                                autocomplete = "new-password",
+                                placeholder = "Креирај лозинка",
+                                minlength = "8",
+                                maxlength = "100",
+                                required = "required",
+                                aria_required = "true",
+                                aria_describedby = "registerPasswordError registerPasswordRules"
+                            })
 
                             <button type="button"
                                     class="register-password-toggle"
                                     data-password-target="Password"
                                     aria-label="Прикажи лозинка"
+                                    aria-controls="Password"
                                     aria-pressed="false">
-                                SHOW
+                                Прикажи
                             </button>
-
                         </div>
 
-                        @Html.ValidationMessageFor(
-                            m => m.Password,
-                            "",
-                            new
-                            {
-                                @class =
-                                    "text-danger"
-                            })
-
+                        @Html.ValidationMessageFor(m => m.Password, "", new
+                        {
+                            @class = "register-field-error",
+                            id = "registerPasswordError"
+                        })
 
                         <div class="register-password-strength">
-
                             <div class="register-strength-header">
-
-                                <span>
-                                    Сигурност на лозинката
-                                </span>
-
-                                <strong id="passwordStrengthText">
-                                    —
-                                </strong>
-
+                                <span>Исполнетост на условите</span>
+                                <strong id="passwordStrengthText" aria-live="polite">—</strong>
                             </div>
 
-                            <div class="register-strength-track">
-
-                                <span id="passwordStrengthBar">
-                                </span>
-
+                            <div class="register-strength-track" aria-hidden="true">
+                                <span id="passwordStrengthBar"></span>
                             </div>
-
                         </div>
 
-
-                        <div class="register-requirements"
+                        <div id="registerPasswordRules"
+                             class="register-requirements"
                              aria-label="Услови за лозинка">
 
-                            <div class="register-requirement"
-                                 id="requirementLength">
-
-                                <span aria-hidden="true">
-                                    ✓
-                                </span>
-
-                                Најмалку 8 карактери
-
+                            <div class="register-requirement" id="requirementLength">
+                                <span aria-hidden="true">✓</span>
+                                Од 8 до 100 знаци
                             </div>
 
-                            <div class="register-requirement"
-                                 id="requirementUpper">
-
-                                <span aria-hidden="true">
-                                    ✓
-                                </span>
-
+                            <div class="register-requirement" id="requirementUpper">
+                                <span aria-hidden="true">✓</span>
                                 Голема буква
-
                             </div>
 
-                            <div class="register-requirement"
-                                 id="requirementLower">
-
-                                <span aria-hidden="true">
-                                    ✓
-                                </span>
-
+                            <div class="register-requirement" id="requirementLower">
+                                <span aria-hidden="true">✓</span>
                                 Мала буква
-
                             </div>
 
-                            <div class="register-requirement"
-                                 id="requirementNumber">
-
-                                <span aria-hidden="true">
-                                    ✓
-                                </span>
-
+                            <div class="register-requirement" id="requirementNumber">
+                                <span aria-hidden="true">✓</span>
                                 Број
-
                             </div>
 
-                            <div class="register-requirement"
-                                 id="requirementSpecial">
-
-                                <span aria-hidden="true">
-                                    ✓
-                                </span>
-
-                                Специјален карактер
-
+                            <div class="register-requirement" id="requirementSpecial">
+                                <span aria-hidden="true">✓</span>
+                                Специјален знак
                             </div>
-
                         </div>
-
                     </div>
 
-
-                    <div class="form-group">
-
-                        @Html.LabelFor(
-                            m => m.ConfirmPassword,
-                            "Потврди лозинка",
-                            new
-                            {
-                                @class =
-                                    "form-label"
-                            })
+                    <div class="register-field register-confirm-field">
+                        @Html.LabelFor(m => m.ConfirmPassword, "Потврди лозинка", new { @class = "form-label" })
 
                         <div class="register-input-wrapper">
-
-                            <span class="register-input-icon register-password-icon"
-                                  aria-hidden="true">
-                                •
-                            </span>
-
-                            @Html.PasswordFor(
-                                m => m.ConfirmPassword,
-                                new
-                                {
-                                    @class =
-                                        "form-control register-input register-password-field",
-                                    autocomplete =
-                                        "new-password",
-                                    placeholder =
-                                        "Повтори ја лозинката",
-                                    id =
-                                        "ConfirmPassword"
-                                })
+                            @Html.PasswordFor(m => m.ConfirmPassword, new
+                            {
+                                @class = "form-control register-input register-password-input",
+                                id = "ConfirmPassword",
+                                autocomplete = "new-password",
+                                placeholder = "Повтори ја лозинката",
+                                maxlength = "100",
+                                required = "required",
+                                aria_required = "true",
+                                aria_describedby = "registerConfirmError passwordMatchIndicator"
+                            })
 
                             <button type="button"
                                     class="register-password-toggle"
                                     data-password-target="ConfirmPassword"
                                     aria-label="Прикажи лозинка"
+                                    aria-controls="ConfirmPassword"
                                     aria-pressed="false">
-                                SHOW
+                                Прикажи
                             </button>
-
                         </div>
 
-                        @Html.ValidationMessageFor(
-                            m => m.ConfirmPassword,
-                            "",
-                            new
-                            {
-                                @class =
-                                    "text-danger"
-                            })
+                        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new
+                        {
+                            @class = "register-field-error",
+                            id = "registerConfirmError"
+                        })
 
                         <div id="passwordMatchIndicator"
                              class="register-match-indicator"
-                             aria-live="polite">
-                        </div>
-
+                             aria-live="polite"></div>
                     </div>
-
 
                     <button type="submit"
                             id="registerButton"
                             class="btn btn-primary register-submit">
-
-                        <span id="registerButtonText">
-                            Креирај профил
-                        </span>
-
-                        <span aria-hidden="true">
-                            →
-                        </span>
-
+                        <span id="registerButtonText">Креирај профил</span>
+                        <span aria-hidden="true">→</span>
                     </button>
 
-
                     <div class="register-login-link">
-
-                        <span>
-                            Веќе имаш профил?
-                        </span>
-
-                        @Html.ActionLink(
-                            "Најави се",
-                            "Login",
-                            "Account")
-
+                        <span>Веќе имаш профил?</span>
+                        @Html.ActionLink("Најави се", "Login", "Account")
                     </div>
                 }
 
-
                 <div class="register-security-note">
-
-                    <span aria-hidden="true">
-                        ✓
-                    </span>
-
+                    <span class="register-security-icon" aria-hidden="true">✓</span>
                     <p>
-                        Лозинката мора да има најмалку 8 карактери
-                        и комбинација од голема буква, мала буква,
-                        број и специјален карактер.
+                        Избери уникатна лозинка со голема и мала буква,
+                        број и специјален знак. Не користи лозинка од друг профил.
                     </p>
-
                 </div>
-
             </div>
-
         </div>
-
     </section>
-
 </main>
-
-
-@section scripts
-{
-    @Scripts.Render("~/bundles/jqueryval")
-
-    <script>
-        (function () {
-            var form =
-                document.getElementById(
-                    "registerForm");
-
-            var password =
-                document.getElementById(
-                    "Password");
-
-            var confirmPassword =
-                document.getElementById(
-                    "ConfirmPassword");
-
-            var registerButton =
-                document.getElementById(
-                    "registerButton");
-
-            var registerButtonText =
-                document.getElementById(
-                    "registerButtonText");
-
-            var strengthBar =
-                document.getElementById(
-                    "passwordStrengthBar");
-
-            var strengthText =
-                document.getElementById(
-                    "passwordStrengthText");
-
-            var matchIndicator =
-                document.getElementById(
-                    "passwordMatchIndicator");
-
-            var requirements =
-                {
-                    length:
-                        document.getElementById(
-                            "requirementLength"),
-
-                    upper:
-                        document.getElementById(
-                            "requirementUpper"),
-
-                    lower:
-                        document.getElementById(
-                            "requirementLower"),
-
-                    number:
-                        document.getElementById(
-                            "requirementNumber"),
-
-                    special:
-                        document.getElementById(
-                            "requirementSpecial")
-                };
-
-
-            function setRequirement(
-                element,
-                valid) {
-
-                if (!element) {
-                    return;
-                }
-
-                element.classList.toggle(
-                    "valid",
-                    valid);
-            }
-
-
-            function evaluatePassword() {
-                if (!password) {
-                    return;
-                }
-
-                var value =
-                    password.value || "";
-
-                var checks =
-                    {
-                        length:
-                            value.length >= 8,
-
-                        upper:
-                            /[A-Z]/.test(value),
-
-                        lower:
-                            /[a-z]/.test(value),
-
-                        number:
-                            /\d/.test(value),
-
-                        special:
-                            /[^A-Za-z0-9]/.test(value)
-                    };
-
-                setRequirement(
-                    requirements.length,
-                    checks.length);
-
-                setRequirement(
-                    requirements.upper,
-                    checks.upper);
-
-                setRequirement(
-                    requirements.lower,
-                    checks.lower);
-
-                setRequirement(
-                    requirements.number,
-                    checks.number);
-
-                setRequirement(
-                    requirements.special,
-                    checks.special);
-
-                var score =
-                    Object.keys(checks)
-                        .filter(function (key) {
-                            return checks[key];
-                        })
-                        .length;
-
-                strengthBar.className =
-                    "";
-
-                if (!value) {
-                    strengthBar.style.width =
-                        "0%";
-
-                    strengthText.textContent =
-                        "—";
-                }
-                else if (score <= 2) {
-                    strengthBar.style.width =
-                        "35%";
-
-                    strengthBar.classList.add(
-                        "weak");
-
-                    strengthText.textContent =
-                        "Слаба";
-                }
-                else if (score <= 4) {
-                    strengthBar.style.width =
-                        "68%";
-
-                    strengthBar.classList.add(
-                        "medium");
-
-                    strengthText.textContent =
-                        "Добра";
-                }
-                else {
-                    strengthBar.style.width =
-                        "100%";
-
-                    strengthBar.classList.add(
-                        "strong");
-
-                    strengthText.textContent =
-                        "Силна";
-                }
-
-                evaluatePasswordMatch();
-            }
-
-
-            function evaluatePasswordMatch() {
-                if (
-                    !password ||
-                    !confirmPassword ||
-                    !matchIndicator
-                ) {
-                    return;
-                }
-
-                var confirmation =
-                    confirmPassword.value || "";
-
-                matchIndicator.classList.remove(
-                    "valid",
-                    "invalid");
-
-                if (!confirmation) {
-                    matchIndicator.textContent =
-                        "";
-
-                    return;
-                }
-
-                if (
-                    password.value ===
-                    confirmation
-                ) {
-                    matchIndicator.classList.add(
-                        "valid");
-
-                    matchIndicator.textContent =
-                        "Лозинките се совпаѓаат.";
-                }
-                else {
-                    matchIndicator.classList.add(
-                        "invalid");
-
-                    matchIndicator.textContent =
-                        "Лозинките не се совпаѓаат.";
-                }
-            }
-
-
-            var toggleButtons =
-                document.querySelectorAll(
-                    ".register-password-toggle");
-
-            Array.prototype.forEach.call(
-                toggleButtons,
-                function (button) {
-
-                    button.addEventListener(
-                        "click",
-                        function () {
-
-                            var targetId =
-                                button.getAttribute(
-                                    "data-password-target");
-
-                            var input =
-                                document.getElementById(
-                                    targetId);
-
-                            if (!input) {
-                                return;
-                            }
-
-                            var hidden =
-                                input.type ===
-                                "password";
-
-                            input.type =
-                                hidden
-                                    ? "text"
-                                    : "password";
-
-                            button.textContent =
-                                hidden
-                                    ? "HIDE"
-                                    : "SHOW";
-
-                            button.setAttribute(
-                                "aria-pressed",
-                                hidden
-                                    ? "true"
-                                    : "false");
-
-                            button.setAttribute(
-                                "aria-label",
-                                hidden
-                                    ? "Сокриј лозинка"
-                                    : "Прикажи лозинка");
-                        });
-                });
-
-
-            if (password) {
-                password.addEventListener(
-                    "input",
-                    evaluatePassword);
-            }
-
-            if (confirmPassword) {
-                confirmPassword.addEventListener(
-                    "input",
-                    evaluatePasswordMatch);
-            }
-
-
-            if (
-                form &&
-                registerButton &&
-                registerButtonText
-            ) {
-                form.addEventListener(
-                    "submit",
-                    function () {
-
-                        if (
-                            typeof $ !== "undefined" &&
-                            $.validator &&
-                            !$(form).valid()
-                        ) {
-                            return;
-                        }
-
-                        registerButton.disabled =
-                            true;
-
-                        registerButtonText.textContent =
-                            "Се креира профил...";
-                    });
-            }
-
-
-            evaluatePassword();
-            evaluatePasswordMatch();
-        })();
-    </script>
-}
-
 
 <style>
     .register-page {
         width: 100%;
+        min-width: 0;
     }
 
-    .register-shell {
-        display: grid;
-        grid-template-columns: minmax(0, 1.05fr) minmax(430px, 0.95fr);
-        min-height: 790px;
-        overflow: hidden;
-        border: 1px solid var(--cinema-border);
-        border-radius: var(--cinema-radius-xl);
-        background: #090d13;
-        box-shadow: var(--cinema-shadow-lg);
-    }
-
-
-    /* SHOWCASE */
+        .register-page .register-shell {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(410px, .95fr);
+            min-height: 760px;
+            overflow: hidden;
+            border: 1px solid var(--cinema-border);
+            border-radius: var(--cinema-radius-xl);
+            background: #090d13;
+            box-shadow: var(--cinema-shadow-lg);
+        }
 
     .register-showcase {
         position: relative;
         min-width: 0;
-        padding: clamp(2rem, 5vw, 4rem);
         overflow: hidden;
-        background: radial-gradient( circle at 15% 18%, rgba(214, 168, 75, 0.13), transparent 30% ), radial-gradient( circle at 90% 85%, rgba(59, 101, 169, 0.17), transparent 32% ), linear-gradient( 145deg, #151e2b, #0b1018 55%, #06090e );
+        padding: clamp(2rem, 4.3vw, 4rem);
         isolation: isolate;
+        background: radial-gradient( circle at 16% 20%, rgba(214, 168, 75, .13), transparent 32% ), radial-gradient( circle at 88% 90%, rgba(63, 103, 166, .18), transparent 35% ), linear-gradient( 145deg, #141c29, #090e16 57%, #070a10 );
     }
 
         .register-showcase::before {
             position: absolute;
-            z-index: -2;
+            z-index: -1;
             inset: 0;
             content: "";
-            opacity: 0.3;
-            background-image: linear-gradient( rgba(255, 255, 255, 0.022) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px );
+            opacity: .2;
+            pointer-events: none;
+            background-image: linear-gradient( rgba(255, 255, 255, .035) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, .035) 1px, transparent 1px );
             background-size: 48px 48px;
-            mask-image: linear-gradient( 135deg, #000, transparent 80% );
+            -webkit-mask-image: linear-gradient(140deg, #000, transparent 80%);
+            mask-image: linear-gradient(140deg, #000, transparent 80%);
         }
-
-    .register-showcase-content {
-        position: relative;
-        z-index: 3;
-        display: flex;
-        height: 100%;
-        flex-direction: column;
-    }
-
-    .register-brand {
-        display: inline-flex;
-        align-self: flex-start;
-        align-items: center;
-        gap: 0.65rem;
-        color: var(--cinema-text);
-        font-size: 0.72rem;
-        font-weight: 900;
-        letter-spacing: 0.18em;
-    }
-
-        .register-brand:hover {
-            color: var(--cinema-gold-light);
-        }
-
-        .register-brand > span,
-        .register-mobile-brand a > span {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: var(--cinema-gold);
-            box-shadow: 0 0 0 5px rgba(214, 168, 75, 0.10), 0 0 22px rgba(214, 168, 75, 0.6);
-        }
-
-    .register-showcase-copy {
-        max-width: 640px;
-        margin-top: auto;
-        padding-top: 5rem;
-    }
-
-        .register-showcase-copy h1 {
-            margin-bottom: 1.4rem;
-            font-size: clamp( 3rem, 5.5vw, 5.2rem );
-            line-height: 0.96;
-            letter-spacing: -0.06em;
-        }
-
-        .register-showcase-copy p {
-            max-width: 580px;
-            margin: 0;
-            color: var(--cinema-text-soft);
-            font-size: 1.02rem;
-            line-height: 1.8;
-        }
-
-
-    /* BENEFITS */
-
-    .register-benefits {
-        display: grid;
-        grid-template-columns: repeat( 3, minmax(0, 1fr) );
-        gap: 0.8rem;
-        margin-top: 3rem;
-    }
-
-    .register-benefit {
-        min-width: 0;
-        padding: 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.025);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-
-    .register-benefit-icon {
-        display: grid;
-        width: 35px;
-        height: 35px;
-        margin-bottom: 0.8rem;
-        place-items: center;
-        color: var(--cinema-gold-light);
-        border: 1px solid rgba(214, 168, 75, 0.19);
-        border-radius: 10px;
-        background: rgba(214, 168, 75, 0.06);
-        font-size: 0.55rem;
-        font-weight: 900;
-    }
-
-    .register-benefit strong {
-        display: block;
-        color: var(--cinema-text);
-        font-size: 0.77rem;
-    }
-
-    .register-benefit p {
-        margin: 0.25rem 0 0;
-        color: var(--cinema-text-muted);
-        font-size: 0.65rem;
-        line-height: 1.5;
-    }
-
-
-    /* ORBITS */
-
-    .register-orbit {
-        position: absolute;
-        z-index: 0;
-        border: 1px solid rgba(214, 168, 75, 0.08);
-        border-radius: 50%;
-        animation: register-orbit-spin 28s linear infinite;
-    }
-
-        .register-orbit::after {
-            position: absolute;
-            top: -5px;
-            left: 50%;
-            width: 9px;
-            height: 9px;
-            content: "";
-            border-radius: 50%;
-            background: var(--cinema-gold);
-            box-shadow: 0 0 20px rgba(214, 168, 75, 0.7);
-        }
-
-    .register-orbit-large {
-        top: 110px;
-        right: -175px;
-        width: 440px;
-        height: 440px;
-    }
-
-    .register-orbit-small {
-        top: 175px;
-        right: -110px;
-        width: 310px;
-        height: 310px;
-        animation-direction: reverse;
-        animation-duration: 20s;
-    }
 
     .register-showcase-glow {
         position: absolute;
         z-index: -1;
         border-radius: 50%;
-        filter: blur(20px);
+        filter: blur(24px);
         pointer-events: none;
     }
 
-    .register-showcase-glow-one {
-        top: -150px;
-        left: -130px;
-        width: 380px;
-        height: 380px;
-        background: rgba(214, 168, 75, 0.08);
+    .register-showcase-glow-gold {
+        top: -130px;
+        left: -140px;
+        width: 340px;
+        height: 340px;
+        background: rgba(214, 168, 75, .075);
     }
 
-    .register-showcase-glow-two {
-        right: -150px;
+    .register-showcase-glow-blue {
+        right: -130px;
         bottom: -180px;
-        width: 450px;
-        height: 450px;
-        background: rgba(62, 103, 170, 0.12);
+        width: 420px;
+        height: 420px;
+        background: rgba(63, 103, 166, .11);
     }
 
+    .register-showcase-content {
+        position: relative;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-width: 0;
+    }
 
-    /* FORM SIDE */
+    .register-brand {
+        display: inline-flex;
+        align-items: center;
+        align-self: flex-start;
+        border-radius: 8px;
+        text-decoration: none;
+    }
+
+        .register-brand img {
+            display: block;
+            width: 174px;
+            max-width: 100%;
+            height: 48px;
+            object-fit: contain;
+            object-position: left center;
+        }
+
+    .register-showcase-copy {
+        position: relative;
+        z-index: 2;
+        max-width: 600px;
+        margin-top: auto;
+        padding-top: 6rem;
+    }
+
+        .register-showcase-copy h2 {
+            margin-bottom: 1.25rem;
+            font-size: clamp(2.7rem, 5vw, 4.85rem);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -.055em;
+            overflow-wrap: break-word;
+        }
+
+        .register-showcase-copy p {
+            max-width: 520px;
+            margin-bottom: 0;
+            color: #c9d0da;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+    .register-ticket-art {
+        position: absolute;
+        z-index: 1;
+        top: 12%;
+        right: 30px;
+        width: 220px;
+        padding: 1.15rem;
+        border: 1px solid rgba(255, 255, 255, .14);
+        border-radius: 20px;
+        background: linear-gradient(145deg, #1a2331, #0b101a);
+        box-shadow: 0 32px 70px rgba(0, 0, 0, .4);
+        opacity: .77;
+        transform: rotate(5deg);
+        animation: register-ticket-float 7s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    .register-ticket-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+    }
+
+        .register-ticket-top img {
+            display: block;
+            width: 96px;
+            min-width: 0;
+            height: 30px;
+            object-fit: contain;
+        }
+
+        .register-ticket-top > span {
+            color: #f0cb76;
+            padding: .27rem .34rem;
+            border: 1px solid rgba(214, 168, 75, .26);
+            border-radius: 999px;
+            white-space: nowrap;
+            font-size: .49rem;
+            font-weight: 800;
+        }
+
+    .register-ticket-title {
+        padding: 2.8rem 0 2.1rem;
+    }
+
+        .register-ticket-title small {
+            display: block;
+            margin-bottom: .55rem;
+            color: #e6b956;
+            font-size: .55rem;
+            font-weight: 850;
+            letter-spacing: .06em;
+        }
+
+        .register-ticket-title strong {
+            display: block;
+            color: #f5f7fb;
+            font-size: 1.52rem;
+            line-height: 1.15;
+            letter-spacing: -.035em;
+        }
+
+    .register-ticket-divider {
+        height: 1px;
+        background: repeating-linear-gradient( 90deg, rgba(255, 255, 255, .19) 0 7px, transparent 7px 14px );
+    }
+
+    .register-ticket-lines {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        height: 35px;
+        margin-top: 1.3rem;
+        opacity: .74;
+    }
+
+        .register-ticket-lines span {
+            display: block;
+            width: 3px;
+            height: 100%;
+            background: #c1cad6;
+        }
+
+            .register-ticket-lines span:nth-child(2n) {
+                width: 1px;
+            }
+
+            .register-ticket-lines span:nth-child(3n) {
+                width: 5px;
+            }
 
     .register-form-side {
         display: grid;
-        min-width: 0;
         place-items: center;
-        padding: clamp(2rem, 5vw, 4rem);
-        background: linear-gradient( 180deg, rgba(13, 18, 27, 0.99), rgba(8, 11, 17, 0.99) );
+        min-width: 0;
+        padding: clamp(2rem, 4.4vw, 4rem);
+        background: linear-gradient( 180deg, rgba(13, 18, 27, .99), rgba(8, 11, 17, .99) );
     }
 
     .register-form-wrapper {
         width: min(100%, 450px);
+        min-width: 0;
     }
-
-    .register-mobile-brand {
-        display: none;
-        margin-bottom: 2.5rem;
-    }
-
-        .register-mobile-brand a {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.65rem;
-            color: var(--cinema-text);
-            font-size: 0.72rem;
-            font-weight: 900;
-            letter-spacing: 0.16em;
-        }
 
     .register-heading {
-        margin-bottom: 1.8rem;
+        margin-bottom: 1.7rem;
     }
 
     .register-heading-label {
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: .6rem;
         color: var(--cinema-gold-light);
-        font-size: 0.58rem;
-        font-weight: 900;
-        letter-spacing: 0.16em;
+        font-size: .7rem;
+        font-weight: 800;
+        letter-spacing: .09em;
     }
 
-    .register-heading h2 {
-        margin-bottom: 0.6rem;
-        font-size: clamp( 2rem, 4vw, 2.7rem );
+    .register-heading h1 {
+        margin: 0 0 .7rem;
+        font-size: clamp(2.05rem, 4vw, 2.75rem);
+        line-height: 1.2;
     }
 
     .register-heading p {
         margin: 0;
-        color: var(--cinema-text-muted);
-        font-size: 0.84rem;
-        line-height: 1.65;
+        max-width: 400px;
+        color: #adb8c8;
+        font-size: .91rem;
+        line-height: 1.7;
     }
 
-
-    /* FORM */
-
-    .register-validation {
-        margin-bottom: 1.2rem;
+    .register-form {
+        width: 100%;
     }
 
-        .register-validation:empty {
-            display: none;
+        .register-form .register-field {
+            margin-bottom: 1.25rem;
         }
 
-    .register-input-wrapper {
+        .register-form .form-label {
+            display: inline-block;
+            margin-bottom: .55rem;
+            color: #dfe4ed;
+            font-size: .86rem;
+            font-weight: 650;
+        }
+
+    .register-page .register-input-wrapper {
         position: relative;
+        width: 100%;
     }
 
-    .register-input {
+    .register-page .register-form .register-input-wrapper .register-input {
+        display: block;
+        width: 100%;
         min-height: 52px;
-        padding-left: 3rem;
+        padding: .82rem 1rem;
+        border: 1px solid rgba(255, 255, 255, .16);
+        border-radius: 12px;
+        background: #121925;
+        color: #f5f7fb;
+        font-size: .91rem;
+        line-height: 1.5;
+        transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
     }
 
-    .register-password-field {
-        padding-right: 4.7rem;
+    .register-page .register-form .register-input-wrapper .register-password-input {
+        padding-right: 6.7rem;
     }
 
-    .register-input-icon {
+    .register-page .register-input::placeholder {
+        color: #97a2b3;
+        opacity: 1;
+    }
+
+    .register-page .register-input:-webkit-autofill,
+    .register-page .register-input:-webkit-autofill:hover,
+    .register-page .register-input:-webkit-autofill:focus {
+        -webkit-text-fill-color: #f5f7fb;
+        -webkit-box-shadow: 0 0 0 1000px #121925 inset;
+        caret-color: #f5f7fb;
+    }
+
+    .register-page .register-password-toggle {
         position: absolute;
         z-index: 2;
         top: 50%;
-        left: 1rem;
-        display: grid;
-        width: 20px;
-        height: 20px;
-        place-items: center;
-        color: var(--cinema-text-muted);
-        font-size: 0.72rem;
-        font-weight: 800;
-        pointer-events: none;
-        transform: translateY(-50%);
-    }
-
-    .register-password-icon {
-        font-size: 1.15rem;
-    }
-
-    .register-password-toggle {
-        position: absolute;
-        z-index: 3;
-        top: 50%;
-        right: 0.85rem;
-        padding: 0.25rem 0.4rem;
-        color: var(--cinema-text-muted);
+        right: .7rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: .35rem .65rem;
+        color: #cbd3df;
         border: 0;
-        border-radius: 6px;
-        outline: 0;
+        border-radius: 7px;
         background: transparent;
-        font-size: 0.55rem;
-        font-weight: 900;
-        letter-spacing: 0.08em;
+        font-size: .76rem;
+        font-weight: 700;
+        cursor: pointer;
         transform: translateY(-50%);
-        transition: color var(--cinema-transition), background-color var(--cinema-transition);
     }
 
-        .register-password-toggle:hover {
+        .register-page .register-password-toggle:hover {
             color: var(--cinema-gold-light);
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, .055);
         }
 
-        .register-password-toggle:focus-visible {
-            box-shadow: 0 0 0 3px rgba(214, 168, 75, 0.12);
+    .register-page .register-form .register-input-wrapper .register-input:focus {
+        border-color: var(--cinema-gold);
+        background: #141d2b;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(214, 168, 75, .13);
+    }
+
+    .register-page .register-form .register-input-wrapper .input-validation-error,
+    .register-page .register-form .register-input-wrapper .register-input[aria-invalid="true"] {
+        border-color: rgba(239, 102, 115, .8);
+    }
+
+    .register-page .register-validation,
+    .register-page .register-client-error {
+        margin-bottom: 1.25rem;
+        padding: .85rem 1rem;
+        border: 1px solid rgba(239, 102, 115, .35);
+        border-radius: 12px;
+        background: rgba(239, 102, 115, .085);
+        color: #ffc1c7;
+        font-size: .82rem;
+        line-height: 1.6;
+    }
+
+        .register-page .register-validation ul {
+            margin: 0;
+            padding-left: 1.1rem;
         }
 
+        .register-page .validation-summary-valid.register-validation,
+        .register-page .register-client-error[hidden],
+        .register-page .register-validation:empty {
+            display: none;
+        }
 
-    /* PASSWORD STRENGTH */
+    .register-page .register-field-error {
+        display: block;
+        margin-top: .4rem;
+        color: #ffacb4;
+        font-size: .75rem;
+        line-height: 1.45;
+    }
+
+        .register-page .register-field-error:empty {
+            display: none;
+        }
 
     .register-password-strength {
-        margin-top: 0.8rem;
+        margin-top: .8rem;
     }
 
     .register-strength-header {
@@ -1144,21 +633,23 @@
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
-        margin-bottom: 0.45rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.65rem;
+        margin-bottom: .48rem;
+        color: #aab5c4;
+        font-size: .73rem;
     }
 
         .register-strength-header strong {
-            color: var(--cinema-text-soft);
-            font-size: 0.65rem;
+            color: #d2d9e4;
+            font-size: .73rem;
+            font-weight: 750;
+            text-align: right;
         }
 
     .register-strength-track {
-        height: 4px;
+        height: 5px;
         overflow: hidden;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.07);
+        background: rgba(255, 255, 255, .09);
     }
 
     #passwordStrengthBar {
@@ -1181,178 +672,166 @@
             background: var(--cinema-success);
         }
 
-
-    /* REQUIREMENTS */
-
     .register-requirements {
         display: grid;
-        grid-template-columns: repeat( 2, minmax(0, 1fr) );
-        gap: 0.35rem 0.8rem;
-        margin-top: 0.8rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .45rem .75rem;
+        margin-top: .85rem;
     }
 
     .register-requirement {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.64rem;
-        transition: color var(--cinema-transition);
+        min-width: 0;
+        gap: .45rem;
+        color: #9ca8b9;
+        font-size: .74rem;
+        line-height: 1.4;
+        transition: color 180ms ease;
     }
 
         .register-requirement > span {
             display: grid;
+            flex: 0 0 17px;
+            place-items: center;
             width: 17px;
             height: 17px;
-            place-items: center;
-            color: #626c7a;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #828d9b;
+            border: 1px solid rgba(255, 255, 255, .14);
             border-radius: 50%;
-            font-size: 0.48rem;
-            transition: color var(--cinema-transition), border-color var(--cinema-transition), background-color var(--cinema-transition);
+            font-size: .59rem;
         }
 
         .register-requirement.valid {
-            color: #9eddb8;
+            color: #a1e5bd;
         }
 
             .register-requirement.valid > span {
                 color: #9ae8bd;
-                border-color: rgba(66, 199, 131, 0.20);
-                background: rgba(66, 199, 131, 0.07);
+                border-color: rgba(66, 199, 131, .35);
+                background: rgba(66, 199, 131, .09);
             }
 
-
-    /* MATCH */
+    .register-confirm-field {
+        margin-top: .25rem;
+    }
 
     .register-match-indicator {
-        min-height: 20px;
-        margin-top: 0.45rem;
-        font-size: 0.66rem;
+        margin-top: .45rem;
+        color: #aab5c4;
+        font-size: .76rem;
+        line-height: 1.4;
     }
+
+        .register-match-indicator:empty {
+            display: none;
+        }
 
         .register-match-indicator.valid {
             color: #9ae8bd;
         }
 
         .register-match-indicator.invalid {
-            color: #ff929c;
+            color: #ffacb4;
         }
-
-
-    /* SUBMIT */
 
     .register-submit {
         display: flex;
-        width: 100%;
-        min-height: 52px;
         align-items: center;
         justify-content: space-between;
-        margin-top: 0.5rem;
-        padding-right: 1.1rem;
-        padding-left: 1.1rem;
+        width: 100%;
+        min-height: 52px;
+        padding: .75rem 1.1rem;
+        font-size: .89rem;
+        font-weight: 800;
     }
 
-        .register-submit > span:last-child {
-            transition: transform var(--cinema-transition);
-        }
-
-        .register-submit:hover > span:last-child {
-            transform: translateX(5px);
+        .register-submit:disabled {
+            opacity: .8;
+            cursor: progress;
         }
 
     .register-login-link {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.4rem;
-        margin-top: 1.4rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.78rem;
+        flex-wrap: wrap;
+        gap: .4rem;
+        margin-top: 1.3rem;
+        color: #a5afbe;
+        font-size: .84rem;
+        text-align: center;
     }
 
         .register-login-link a {
             color: var(--cinema-gold-light);
-            font-weight: 700;
+            font-weight: 750;
         }
 
             .register-login-link a:hover {
                 color: #ffe0a0;
             }
 
-
-    /* SECURITY */
-
     .register-security-note {
         display: flex;
         align-items: flex-start;
-        gap: 0.55rem;
-        margin-top: 1.8rem;
-        padding-top: 1.2rem;
+        gap: .7rem;
+        margin-top: 1.75rem;
+        padding-top: 1.1rem;
         border-top: 1px solid var(--cinema-border);
     }
 
-        .register-security-note > span {
-            display: grid;
-            flex: 0 0 24px;
-            width: 24px;
-            height: 24px;
-            place-items: center;
-            color: #9ae8bd;
-            border: 1px solid rgba(66, 199, 131, 0.18);
-            border-radius: 50%;
-            background: rgba(66, 199, 131, 0.06);
-            font-size: 0.58rem;
-            font-weight: 900;
+    .register-security-icon {
+        display: grid;
+        flex: 0 0 24px;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        border: 1px solid rgba(66, 199, 131, .25);
+        border-radius: 50%;
+        background: rgba(66, 199, 131, .07);
+        color: #95e8b5;
+        font-size: .74rem;
+        font-weight: 800;
+    }
+
+    .register-security-note p {
+        margin: 0;
+        color: #a7b1c0;
+        font-size: .76rem;
+        line-height: 1.65;
+    }
+
+    .register-page a:focus-visible,
+    .register-page button:focus-visible,
+    .register-page input:focus-visible {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 3px;
+    }
+
+    @@keyframes register-ticket-float {
+        0%, 100% {
+            transform: rotate(5deg) translateY(0);
         }
 
-        .register-security-note p {
-            margin: 0;
-            color: var(--cinema-text-muted);
-            font-size: 0.65rem;
-            line-height: 1.55;
-        }
-
-
-    /* ANIMATION */
-
-    @@keyframes register-orbit-spin {
-        from {
-            transform: rotate(0deg);
-        }
-
-        to {
-            transform: rotate(360deg);
+        50% {
+            transform: rotate(3deg) translateY(-10px);
         }
     }
 
-
-    /* RESPONSIVE */
-
-    @@media (max-width: 1050px) {
-        .register-shell {
-            grid-template-columns: minmax(0, 1fr) minmax(410px, 0.95fr);
+    @@media (max-width: 1150px) {
+        .register-ticket-art {
+            display: none;
         }
 
-        .register-benefits {
-            grid-template-columns: 1fr;
-        }
-
-        .register-benefit {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.8rem;
-        }
-
-        .register-benefit-icon {
-            flex: 0 0 35px;
-            margin-bottom: 0;
+        .register-showcase-copy {
+            padding-top: 3rem;
         }
     }
 
-    @@media (max-width: 850px) {
-        .register-shell {
-            grid-template-columns: 1fr;
+    @@media (max-width: 900px) {
+        .register-page .register-shell {
+            grid-template-columns: minmax(0, 1fr);
             min-height: 0;
         }
 
@@ -1361,44 +840,344 @@
         }
 
         .register-form-side {
-            min-height: 720px;
-        }
-
-        .register-mobile-brand {
-            display: block;
+            padding: clamp(2rem, 6vw, 3.5rem);
         }
     }
 
     @@media (max-width: 575.98px) {
-        .register-shell {
+        .register-page .register-shell {
             border-radius: var(--cinema-radius-lg);
         }
 
         .register-form-side {
-            min-height: 0;
-            padding: 2rem 1.2rem;
+            padding: 2rem 1.15rem;
         }
 
-        .register-heading h2 {
+        .register-heading h1 {
             font-size: 2rem;
         }
 
         .register-requirements {
-            grid-template-columns: 1fr;
+            grid-template-columns: minmax(0, 1fr);
         }
 
-        .register-login-link {
-            flex-direction: column;
+        .register-page .register-form .register-input-wrapper .register-input {
+            min-height: 50px;
         }
     }
 
     @@media (prefers-reduced-motion: reduce) {
-        .register-orbit {
+        .register-ticket-art {
             animation: none;
         }
 
-        #passwordStrengthBar {
+        #passwordStrengthBar,
+        .register-page .register-input,
+        .register-requirement {
             transition: none;
         }
     }
+
+
+    .register-page .register-validation.validation-summary-errors {
+        position: relative;
+        display: block;
+        margin-bottom: 0.7rem;
+        padding: 1rem 1.1rem 1rem 3.5rem;
+        border: 1px solid rgba(214, 168, 75, 0.28);
+        border-radius: 13px;
+        background: rgba(214, 168, 75, 0.055);
+        color: #d9dfe8;
+        font-size: 0.83rem;
+        line-height: 1.65;
+    }
+
+        .register-page .register-validation.validation-summary-errors::before {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            display: grid;
+            place-items: center;
+            width: 25px;
+            height: 25px;
+            content: "!";
+            border: 1px solid rgba(214, 168, 75, 0.3);
+            border-radius: 50%;
+            background: rgba(214, 168, 75, 0.12);
+            color: #f0cb76;
+            font-weight: 800;
+        }
+
+    .register-page .register-validation > span {
+        display: block;
+        margin-bottom: 0.3rem;
+        color: #f0cb76;
+        font-size: 0.9rem;
+        font-weight: 800;
+    }
+
+    .register-page .register-validation ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .register-page .register-validation li {
+        margin: 0;
+        padding: 0;
+        color: #d9dfe8;
+    }
+
+        .register-page .register-validation li + li {
+            margin-top: 0.4rem;
+        }
+
+    .register-page .register-error-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.7rem 1.4rem;
+        margin-bottom: 1.25rem;
+        padding-left: 0.25rem;
+    }
+
+        .register-page .register-error-actions a {
+            color: #f0cb76;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+            .register-page .register-error-actions a:hover {
+                color: #ffe0a0;
+                text-decoration: underline;
+            }
 </style>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        (function () {
+            "use strict";
+
+            var form = document.getElementById("registerForm");
+            var password = document.getElementById("Password");
+            var confirmation = document.getElementById("ConfirmPassword");
+            var button = document.getElementById("registerButton");
+            var buttonText = document.getElementById("registerButtonText");
+            var strengthBar = document.getElementById("passwordStrengthBar");
+            var strengthText = document.getElementById("passwordStrengthText");
+            var matchIndicator = document.getElementById("passwordMatchIndicator");
+            var clientError = document.getElementById("registerClientError");
+
+            var requirements = {
+                length: document.getElementById("requirementLength"),
+                upper: document.getElementById("requirementUpper"),
+                lower: document.getElementById("requirementLower"),
+                number: document.getElementById("requirementNumber"),
+                special: document.getElementById("requirementSpecial")
+            };
+
+            var submitting = false;
+
+            if (!form || !password || !confirmation || !button) {
+                return;
+            }
+
+            function unicodeTest(property, value, fallback) {
+                try {
+                    return new RegExp("\\p{" + property + "}", "u").test(value);
+                } catch (error) {
+                    return fallback.test(value);
+                }
+            }
+
+            function hasSpecialCharacter(value) {
+                try {
+                    return new RegExp("[^\\p{L}\\p{Nd}]", "u").test(value);
+                } catch (error) {
+                    return /[^A-Za-z0-9\u0400-\u052F]/.test(value);
+                }
+            }
+
+            function getChecks(value) {
+                return {
+                    length: value.length >= 8 && value.length <= 100,
+                    upper: unicodeTest("Lu", value, /[A-Z\u0400-\u042F]/),
+                    lower: unicodeTest("Ll", value, /[a-z\u0430-\u045F]/),
+                    number: unicodeTest("Nd", value, /[0-9]/),
+                    special: hasSpecialCharacter(value)
+                };
+            }
+
+            function setClientError(message) {
+                if (!clientError) {
+                    return;
+                }
+
+                clientError.textContent = message || "";
+                clientError.hidden = !message;
+            }
+
+            function updateMatch() {
+                if (!matchIndicator) {
+                    return;
+                }
+
+                matchIndicator.classList.remove("valid", "invalid");
+
+                if (!confirmation.value) {
+                    matchIndicator.textContent = "";
+                    confirmation.removeAttribute("aria-invalid");
+                } else if (password.value === confirmation.value) {
+                    matchIndicator.classList.add("valid");
+                    matchIndicator.textContent = "Лозинките се совпаѓаат.";
+                    confirmation.setAttribute("aria-invalid", "false");
+                } else {
+                    matchIndicator.classList.add("invalid");
+                    matchIndicator.textContent = "Лозинките не се совпаѓаат.";
+                    confirmation.setAttribute("aria-invalid", "true");
+                }
+            }
+
+            function updatePassword() {
+                var value = password.value || "";
+                var checks = getChecks(value);
+                var score = 0;
+
+                Object.keys(checks).forEach(function (key) {
+                    if (checks[key]) {
+                        score++;
+                    }
+
+                    if (requirements[key]) {
+                        requirements[key].classList.toggle("valid", checks[key]);
+                    }
+                });
+
+                if (strengthBar && strengthText) {
+                    strengthBar.className = "";
+                    strengthBar.style.width = value ? (score * 20) + "%" : "0%";
+
+                    if (!value) {
+                        strengthText.textContent = "—";
+                    } else if (score <= 2) {
+                        strengthBar.classList.add("weak");
+                        strengthText.textContent = score + " од 5 услови";
+                    } else if (score <= 4) {
+                        strengthBar.classList.add("medium");
+                        strengthText.textContent = score + " од 5 услови";
+                    } else {
+                        strengthBar.classList.add("strong");
+                        strengthText.textContent = "Сите услови се исполнети";
+                    }
+                }
+
+                updateMatch();
+                return score === 5;
+            }
+
+            Array.prototype.forEach.call(
+                document.querySelectorAll(".register-password-toggle"),
+                function (toggle) {
+                    toggle.addEventListener("click", function () {
+                        var target = document.getElementById(
+                            toggle.getAttribute("data-password-target")
+                        );
+
+                        if (!target) {
+                            return;
+                        }
+
+                        var show = target.type === "password";
+
+                        target.type = show ? "text" : "password";
+                        toggle.textContent = show ? "Сокриј" : "Прикажи";
+
+                        toggle.setAttribute(
+                            "aria-pressed",
+                            show ? "true" : "false"
+                        );
+
+                        toggle.setAttribute(
+                            "aria-label",
+                            show ? "Сокриј лозинка" : "Прикажи лозинка"
+                        );
+                    });
+                }
+            );
+
+            password.addEventListener("input", function () {
+                updatePassword();
+                setClientError("");
+            });
+
+            confirmation.addEventListener("input", function () {
+                updateMatch();
+                setClientError("");
+            });
+
+            form.addEventListener("submit", function (event) {
+                if (submitting) {
+                    event.preventDefault();
+                    return;
+                }
+
+                if (!form.checkValidity()) {
+                    return;
+                }
+
+                if (
+                    window.jQuery &&
+                    window.jQuery.fn &&
+                    typeof window.jQuery.fn.valid === "function" &&
+                    !window.jQuery(form).valid()
+                ) {
+                    return;
+                }
+
+                if (!updatePassword()) {
+                    event.preventDefault();
+                    setClientError(
+                        "Лозинката мора да ги исполнува сите наведени услови."
+                    );
+                    password.focus();
+                    return;
+                }
+
+                if (confirmation.value !== password.value) {
+                    event.preventDefault();
+                    setClientError(
+                        "Потврдата мора да биде идентична со лозинката."
+                    );
+                    confirmation.focus();
+                    return;
+                }
+
+                submitting = true;
+                form.setAttribute("aria-busy", "true");
+                button.disabled = true;
+                setClientError("");
+
+                if (buttonText) {
+                    buttonText.textContent = "Се креира профил...";
+                }
+            });
+
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted || submitting) {
+                    submitting = false;
+                    button.disabled = false;
+                    form.removeAttribute("aria-busy");
+
+                    if (buttonText) {
+                        buttonText.textContent = "Креирај профил";
+                    }
+                }
+            });
+
+            updatePassword();
+        })();
+    </script>
+}

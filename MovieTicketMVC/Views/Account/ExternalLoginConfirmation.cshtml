@@ -10,7 +10,7 @@
     if (string.IsNullOrWhiteSpace(providerName))
     {
         providerName =
-            "External provider";
+            "Надворешна услуга";
     }
 }
 
@@ -68,13 +68,13 @@
                 </span>
 
                 <strong>
-                    Успешно поврзување
+                    Успешна автентикација
                 </strong>
 
                 <p>
-                    External authentication е завршена.
-                    Потребен е уште само e-mail за
-                    MovieTicket профилот.
+                    Најавата преку надворешната услуга е потврдена.
+                    Внеси e-mail адреса за да создадеш
+                    нов MovieTicket профил.
                 </p>
 
             </div>
@@ -105,7 +105,7 @@
                     <div>
 
                         <strong>
-                            Authentication
+                            Надворешна најава
                         </strong>
 
                         <small>
@@ -134,7 +134,7 @@
                         </strong>
 
                         <small>
-                            Заврши профил
+                            Создај профил
                         </small>
 
                     </div>
@@ -158,9 +158,9 @@
                 </h1>
 
                 <p>
-                    Потврди ја e-mail адресата што сакаш
-                    да биде поврзана со твојот
-                    MovieTicket профил.
+                    Внеси ја e-mail адресата за новиот
+                    MovieTicket профил. Избраната услуга
+                    ќе биде додадена како начин за најава.
                 </p>
 
             </div>
@@ -176,7 +176,7 @@
                 <div>
 
                     <span>
-                        AUTHENTICATED WITH
+                        НАДВОРЕШНА НАЈАВА
                     </span>
 
                     <strong>
@@ -184,8 +184,9 @@
                     </strong>
 
                     <p>
-                        Надворешната автентикација
-                        е успешно завршена.
+                        Надворешната автентикација е успешна.
+                        Регистрацијата на MovieTicket профилот
+                        сè уште не е завршена.
                     </p>
 
                 </div>
@@ -213,25 +214,25 @@
 
 
                 @Html.ValidationSummary(
-                    true,
-                    "",
-                    new
-                    {
-                        @class =
-                            "validation-summary-errors external-confirm-validation"
-                    })
+                         true,
+                         "",
+                         new
+                         {
+                             @class =
+                                 "validation-summary-errors external-confirm-validation"
+                         })
 
 
                 <div class="form-group">
 
                     @Html.LabelFor(
-                        m => m.Email,
-                        "E-mail адреса",
-                        new
-                        {
-                            @class =
-                                "form-label"
-                        })
+                             m => m.Email,
+                             "E-mail адреса",
+                             new
+                             {
+                                 @class =
+                                     "form-label"
+                             })
 
 
                     <div class="external-confirm-input-wrapper">
@@ -242,38 +243,43 @@
                         </span>
 
                         @Html.TextBoxFor(
-                            m => m.Email,
-                            new
-                            {
-                                @class =
-                                    "form-control external-confirm-input",
-                                type =
-                                    "email",
-                                autocomplete =
-                                    "email",
-                                placeholder =
-                                    "name@example.com",
-                                autofocus =
-                                    "autofocus"
-                            })
+                                 m => m.Email,
+                                 new
+                                 {
+                                     @class =
+                                         "form-control external-confirm-input",
+                                     type =
+                                         "email",
+                                     autocomplete =
+                                         "email",
+                                     placeholder =
+                                         "name@example.com",
+                                     autofocus =
+                                         "autofocus",
+                                     inputmode = "email",
+                                     autocapitalize = "none",
+                                     spellcheck = "false",
+                                     aria_describedby = "externalConfirmEmailHelp",
+                                     required = "required"
+                                 })
 
                     </div>
 
 
                     @Html.ValidationMessageFor(
-                        m => m.Email,
-                        "",
-                        new
-                        {
-                            @class =
-                                "text-danger"
-                        })
+                             m => m.Email,
+                             "",
+                             new
+                             {
+                                 @class =
+                                     "text-danger"
+                             })
 
 
-                    <small class="external-confirm-email-help">
-                        Оваа адреса ќе биде користена за
-                        твојот MovieTicket профил и
-                        известувањата за билетите.
+                    <small id="externalConfirmEmailHelp" class="external-confirm-email-help">
+                        Оваа адреса ќе се користи за
+                        твојот нов MovieTicket профил
+                        и известувањата за билетите.
                     </small>
 
                 </div>
@@ -302,9 +308,11 @@
                 </span>
 
                 <p>
-                    Со продолжување, external account-от
-                    ќе биде поврзан со MovieTicket профилот
-                    креиран со оваа e-mail адреса.
+                    Со продолжување ќе создадеш нов
+                    MovieTicket профил и ќе го поврзеш
+                    со избраниот начин за најава.
+                    Ако веќе имаш профил, најави се
+                    и поврзи ја услугата во поставките.
                 </p>
 
             </div>
@@ -317,9 +325,9 @@
                 </span>
 
                 @Html.ActionLink(
-                    "Назад кон најава",
-                    "Login",
-                    "Account")
+                         "Имаш профил? Најави се",
+                         "Login",
+                         "Account")
 
             </div>
 
@@ -330,52 +338,68 @@
 </main>
 
 
-@section Scripts
+@section scripts
 {
     @Scripts.Render("~/bundles/jqueryval")
 
     <script>
         (function () {
-            var form =
-                document.getElementById(
-                    "externalConfirmationForm");
+            "use strict";
 
-            var button =
-                document.getElementById(
-                    "externalConfirmButton");
+            var form = document.getElementById("externalConfirmationForm");
+            var button = document.getElementById("externalConfirmButton");
+            var buttonText = document.getElementById("externalConfirmButtonText");
+            var email = document.getElementById("Email");
 
-            var buttonText =
-                document.getElementById(
-                    "externalConfirmButtonText");
-
-
-            if (
-                !form ||
-                !button ||
-                !buttonText
-            ) {
+            if (!form || !button || !buttonText) {
                 return;
             }
 
+            var originalLabel = buttonText.textContent;
+            var isSubmitting = false;
 
-            form.addEventListener(
-                "submit",
-                function () {
+            form.addEventListener("submit", function (event) {
+                if (isSubmitting) {
+                    event.preventDefault();
+                    return;
+                }
 
-                    if (
-                        typeof $ !== "undefined" &&
-                        $.validator &&
-                        !$(form).valid()
-                    ) {
-                        return;
-                    }
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    form.reportValidity();
+                    return;
+                }
 
-                    button.disabled =
-                        true;
+                if (typeof window.jQuery !== "undefined" &&
+                    window.jQuery.fn &&
+                    typeof window.jQuery.fn.valid === "function" &&
+                    !window.jQuery(form).valid()) {
+                    event.preventDefault();
+                    return;
+                }
 
-                    buttonText.textContent =
-                        "Се креира профил...";
-                });
+                if (email && !email.value.trim()) {
+                    event.preventDefault();
+                    email.focus();
+                    return;
+                }
+
+                isSubmitting = true;
+                button.disabled = true;
+                button.setAttribute("aria-busy", "true");
+                buttonText.textContent = "Се креира профил...";
+            });
+
+            window.addEventListener("pageshow", function (event) {
+                if (!event.persisted) {
+                    return;
+                }
+
+                isSubmitting = false;
+                button.disabled = false;
+                button.removeAttribute("aria-busy");
+                buttonText.textContent = originalLabel;
+            });
         })();
     </script>
 }
@@ -401,10 +425,6 @@
     }
 
 
-    /* =====================================================
-       VISUAL
-       ===================================================== */
-
     .external-confirm-visual {
         position: relative;
         display: grid;
@@ -425,10 +445,6 @@
         background-size: 44px 44px;
     }
 
-
-    /* =====================================================
-       CONNECTION ART
-       ===================================================== */
 
     .external-confirm-link-art {
         position: absolute;
@@ -510,10 +526,6 @@
             }
 
 
-    /* =====================================================
-       VISUAL COPY
-       ===================================================== */
-
     .external-confirm-visual-copy {
         position: absolute;
         right: 2rem;
@@ -546,10 +558,6 @@
             line-height: 1.6;
         }
 
-
-    /* =====================================================
-       ORBITS
-       ===================================================== */
 
     .external-confirm-orbit {
         position: absolute;
@@ -589,10 +597,6 @@
     }
 
 
-    /* =====================================================
-       CONTENT
-       ===================================================== */
-
     .external-confirm-content {
         display: flex;
         min-width: 0;
@@ -602,10 +606,6 @@
         background: linear-gradient( 180deg, rgba(14, 19, 28, 0.99), rgba(8, 11, 17, 0.99) );
     }
 
-
-    /* =====================================================
-       BRAND
-       ===================================================== */
 
     .external-confirm-brand {
         display: inline-flex;
@@ -632,18 +632,16 @@
         }
 
 
-    /* =====================================================
-       PROGRESS
-       ===================================================== */
-
     .external-confirm-progress {
         display: flex;
         align-items: center;
+        min-width: 0;
         margin-bottom: 2rem;
     }
 
     .external-confirm-step {
         display: flex;
+        min-width: 0;
         align-items: center;
         gap: 0.55rem;
         opacity: 0.35;
@@ -701,10 +699,6 @@
     }
 
 
-    /* =====================================================
-       HEADING
-       ===================================================== */
-
     .external-confirm-heading {
         margin-bottom: 1.4rem;
     }
@@ -724,10 +718,6 @@
             line-height: 1.7;
         }
 
-
-    /* =====================================================
-       PROVIDER SUCCESS
-       ===================================================== */
 
     .external-provider-success {
         display: flex;
@@ -777,10 +767,6 @@
         line-height: 1.5;
     }
 
-
-    /* =====================================================
-       FORM
-       ===================================================== */
 
     .external-confirm-validation {
         margin-bottom: 1rem;
@@ -843,10 +829,6 @@
         }
 
 
-    /* =====================================================
-       SECURITY
-       ===================================================== */
-
     .external-confirm-security {
         display: flex;
         align-items: flex-start;
@@ -880,10 +862,6 @@
         }
 
 
-    /* =====================================================
-       BACK
-       ===================================================== */
-
     .external-confirm-back {
         display: flex;
         align-items: center;
@@ -912,10 +890,6 @@
         }
 
 
-    /* =====================================================
-       ANIMATIONS
-       ===================================================== */
-
     @@keyframes external-confirm-orbit-spin {
         from {
             transform: translateX(-50%) rotate(0deg);
@@ -939,10 +913,6 @@
         }
     }
 
-
-    /* =====================================================
-       RESPONSIVE
-       ===================================================== */
 
     @@media (max-width: 820px) {
         .external-confirm-shell {
@@ -969,8 +939,12 @@
             padding: 2rem 1.2rem;
         }
 
-        .external-confirm-step div {
-            display: none;
+        .external-confirm-step strong {
+            font-size: 0.58rem;
+        }
+
+        .external-confirm-step small {
+            font-size: 0.5rem;
         }
 
         .external-confirm-progress-line {
@@ -988,6 +962,38 @@
         .external-confirm-orbit,
         .external-confirm-link-line > span {
             animation: none;
+        }
+    }
+
+    .external-confirm-page a:focus-visible,
+    .external-confirm-submit:focus-visible {
+        outline: 2px solid var(--cinema-gold-light, #f0cb76);
+        outline-offset: 3px;
+    }
+
+    .external-confirm-input:focus-visible {
+        border-color: var(--cinema-gold, #d6a84b);
+        box-shadow: 0 0 0 3px rgba(214, 168, 75, 0.16);
+    }
+
+    .external-confirm-submit:disabled {
+        cursor: wait;
+        opacity: 0.72;
+        transform: none;
+    }
+
+    .external-provider-success > div:last-child,
+    .external-confirm-security > p {
+        min-width: 0;
+    }
+
+    @@media (max-width: 375px) {
+        .external-confirm-step > div {
+            display: none;
+        }
+
+        .external-confirm-progress-line {
+            max-width: 72px;
         }
     }
 </style>

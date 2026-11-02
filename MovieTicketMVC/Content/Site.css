@@ -26,11 +26,6 @@
     --cinema-transition: 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-
-/* =========================================================
-   GLOBAL
-   ========================================================= */
-
 html {
     min-height: 100%;
     scroll-behavior: smooth;
@@ -89,11 +84,6 @@ hr {
     opacity: 1;
 }
 
-
-/* =========================================================
-   TYPOGRAPHY
-   ========================================================= */
-
 h1,
 h2,
 h3,
@@ -141,11 +131,6 @@ small,
     color: var(--cinema-text-muted);
 }
 
-
-/* =========================================================
-   PAGE LAYOUT
-   ========================================================= */
-
 .body-content {
     position: relative;
     width: min(100% - 2rem, 1320px);
@@ -170,11 +155,6 @@ main {
     }
 }
 
-
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
 .navbar {
     position: sticky;
     z-index: 1030;
@@ -189,33 +169,46 @@ main {
 }
 
     .navbar .container {
-        gap: 1.5rem;
+        gap: 1.25rem;
     }
 
-.navbar-brand {
+.navbar-brand.movie-brand {
     position: relative;
     display: inline-flex;
+    flex: 0 0 auto;
     align-items: center;
-    gap: 0.7rem;
+    justify-content: flex-start;
+    margin-right: 1rem;
+    padding: 0;
     color: var(--cinema-text) !important;
-    font-size: 1rem;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    text-decoration: none;
 }
 
-    .navbar-brand::before {
-        width: 10px;
-        height: 10px;
-        content: "";
-        border-radius: 50%;
-        background: var(--cinema-gold);
-        box-shadow: 0 0 0 5px rgba(214, 168, 75, 0.12), 0 0 26px rgba(214, 168, 75, 0.7);
+    .navbar-brand.movie-brand::before {
+        display: none;
+        content: none;
     }
 
-    .navbar-brand:hover {
-        color: var(--cinema-gold-light) !important;
-    }
+.movie-brand-logo {
+    display: block;
+    width: 215px;
+    max-width: 100%;
+    height: 60px;
+    object-fit: contain;
+    object-position: left center;
+    transition: opacity var(--cinema-transition), transform var(--cinema-transition);
+}
+
+.movie-brand:hover .movie-brand-logo {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.movie-brand:focus-visible {
+    outline: 2px solid var(--cinema-gold-light);
+    outline-offset: 4px;
+    border-radius: 8px;
+}
 
 .navbar-nav {
     align-items: center;
@@ -260,11 +253,6 @@ main {
     border-radius: var(--cinema-radius-sm);
     box-shadow: none !important;
 }
-
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
 
 .btn {
     position: relative;
@@ -380,11 +368,6 @@ main {
     transform: none !important;
     box-shadow: none !important;
 }
-
-
-/* =========================================================
-   FORMS
-   ========================================================= */
 
 .form-group {
     margin-bottom: 1.35rem;
@@ -509,11 +492,6 @@ select.form-control,
         padding-left: 1.2rem;
     }
 
-
-/* =========================================================
-   PANELS / CARDS
-   ========================================================= */
-
 .card {
     overflow: hidden;
     color: var(--cinema-text);
@@ -539,11 +517,6 @@ select.form-control,
 .card-body {
     padding: 1.5rem;
 }
-
-
-/* =========================================================
-   TABLES
-   ========================================================= */
 
 .table-responsive {
     overflow: hidden;
@@ -606,11 +579,6 @@ select.form-control,
     font-weight: 700;
 }
 
-
-/* =========================================================
-   ALERTS
-   ========================================================= */
-
 .alert {
     padding: 1rem 1.15rem;
     border-width: 1px;
@@ -648,11 +616,6 @@ select.form-control,
     border-color: var(--cinema-border);
     background: rgba(255, 255, 255, 0.035);
 }
-
-
-/* =========================================================
-   CINEMA PAGE COMPONENTS
-   ========================================================= */
 
 .cinema-eyebrow {
     display: inline-flex;
@@ -717,11 +680,6 @@ select.form-control,
     border-radius: 999px;
     background: linear-gradient( 90deg, var(--cinema-gold), transparent );
 }
-
-
-/* =========================================================
-   MOVIE GRID / CARDS
-   ========================================================= */
 
 .movie-grid {
     display: grid;
@@ -811,11 +769,6 @@ select.form-control,
     font-weight: 700;
 }
 
-
-/* =========================================================
-   AUTHENTICATION
-   ========================================================= */
-
 .auth-shell {
     display: grid;
     place-items: center;
@@ -858,10 +811,6 @@ select.form-control,
         margin-top: 0.5rem;
     }
 
-
-/* =========================================================
-   TICKET / BOOKING
-   ========================================================= */
 
 .ticket-card {
     position: relative;
@@ -912,11 +861,6 @@ select.form-control,
     font-size: 1rem;
     font-weight: 700;
 }
-
-
-/* =========================================================
-   SEAT MAP FOUNDATION
-   ========================================================= */
 
 .seat-area {
     position: relative;
@@ -991,11 +935,6 @@ select.form-control,
     font-weight: 800;
 }
 
-
-/* =========================================================
-   FILTER / SEARCH BAR
-   ========================================================= */
-
 .cinema-filter-bar {
     display: flex;
     flex-wrap: wrap;
@@ -1013,11 +952,6 @@ select.form-control,
     .cinema-filter-bar .form-select {
         min-width: 180px;
     }
-
-
-/* =========================================================
-   EMPTY STATES
-   ========================================================= */
 
 .cinema-empty-state {
     padding: 4rem 1.5rem;
@@ -1037,11 +971,6 @@ select.form-control,
         color: var(--cinema-text-muted);
     }
 
-
-/* =========================================================
-   VIDEO
-   ========================================================= */
-
 video {
     display: block;
     overflow: hidden;
@@ -1051,11 +980,6 @@ video {
     background: #000;
     box-shadow: var(--cinema-shadow-lg);
 }
-
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
 
 footer {
     padding: 0.4rem 0 0.8rem;
@@ -1068,11 +992,6 @@ footer {
         font-size: 0.83rem;
         letter-spacing: 0.02em;
     }
-
-
-/* =========================================================
-   UTILITIES
-   ========================================================= */
 
 .dl-horizontal dt {
     white-space: normal;
@@ -1093,11 +1012,6 @@ footer {
 .cinema-rounded {
     border-radius: var(--cinema-radius-lg);
 }
-
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
 
 @media (max-width: 991.98px) {
     .navbar {
@@ -1168,11 +1082,6 @@ footer {
         width: min(100% - 1rem, 1320px);
     }
 
-    .navbar-brand {
-        font-size: 0.9rem;
-        letter-spacing: 0.1em;
-    }
-
     .btn {
         min-height: 42px;
     }
@@ -1193,11 +1102,6 @@ footer {
     }
 }
 
-
-/* =========================================================
-   ACCESSIBILITY / REDUCED MOTION
-   ========================================================= */
-
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -1208,3 +1112,333 @@ footer {
         transition-duration: 0.01ms !important;
     }
 }
+
+.navbar-brand.movie-brand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-shrink: 0;
+    padding: 0;
+    margin-right: 1.5rem;
+    text-decoration: none;
+}
+
+    .navbar-brand.movie-brand::before {
+        display: none;
+        content: none;
+    }
+
+.movie-brand-logo {
+    display: block;
+    width: 230px;
+    max-width: 100%;
+    height: 54px;
+    object-fit: contain;
+    object-position: left center;
+    transition: opacity var(--cinema-transition), transform var(--cinema-transition);
+}
+
+.movie-brand:hover .movie-brand-logo {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 575.98px) {
+    .cinema-account {
+        position: relative;
+        flex: 0 0 auto;
+    }
+
+    .cinema-account-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        min-height: 42px;
+        padding: 0.55rem 0.9rem;
+        color: var(--cinema-text-soft);
+        border: 1px solid var(--cinema-border-strong);
+        border-radius: 11px;
+        background: rgba(255, 255, 255, 0.035);
+        font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.25;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: color var(--cinema-transition), border-color var(--cinema-transition), background-color var(--cinema-transition);
+    }
+
+        .cinema-account-toggle:hover,
+        .cinema-account-toggle[aria-expanded="true"] {
+            color: var(--cinema-gold-light);
+            border-color: rgba(214, 168, 75, 0.4);
+            background: rgba(214, 168, 75, 0.08);
+        }
+
+        .cinema-account-toggle:focus-visible {
+            outline: 2px solid var(--cinema-gold-light);
+            outline-offset: 3px;
+        }
+
+        .cinema-account-toggle::after {
+            margin-left: 0.15rem;
+            opacity: 0.65;
+        }
+
+    .cinema-account-menu {
+        --bs-dropdown-color: var(--cinema-text-soft);
+        --bs-dropdown-bg: #141a24;
+        --bs-dropdown-border-color: rgba(214, 168, 75, 0.19);
+        --bs-dropdown-link-color: var(--cinema-text-soft);
+        --bs-dropdown-link-hover-color: var(--cinema-gold-light);
+        --bs-dropdown-link-hover-bg: rgba(214, 168, 75, 0.09);
+        --bs-dropdown-link-active-color: var(--cinema-gold-light);
+        --bs-dropdown-link-active-bg: rgba(214, 168, 75, 0.12);
+        z-index: 1050;
+        min-width: 215px;
+        margin-top: 0.6rem !important;
+        padding: 0.45rem;
+        color: var(--cinema-text-soft);
+        border: 1px solid rgba(214, 168, 75, 0.19);
+        border-radius: 15px;
+        background: #141a24;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+    }
+
+        .cinema-account-menu .cinema-account-item {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 0.85rem;
+            color: var(--cinema-text-soft);
+            border: 0;
+            border-radius: 9px;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-align: left;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+            .cinema-account-menu .cinema-account-item:hover,
+            .cinema-account-menu .cinema-account-item:focus,
+            .cinema-account-menu .cinema-account-item:active {
+                color: var(--cinema-gold-light);
+                background: rgba(214, 168, 75, 0.09);
+            }
+
+            .cinema-account-menu .cinema-account-item:focus-visible {
+                outline: 2px solid var(--cinema-gold-light);
+                outline-offset: -2px;
+            }
+
+        .cinema-account-menu .cinema-account-register {
+            color: var(--cinema-gold-light);
+        }
+
+        .cinema-account-menu .dropdown-divider {
+            margin: 0.35rem 0.4rem;
+            border-color: var(--cinema-border);
+            opacity: 1;
+        }
+
+    .cinema-account-user {
+        padding: 0.7rem 0.85rem 0.45rem;
+    }
+
+        .cinema-account-user small {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: var(--cinema-text-muted);
+            font-size: 0.7rem;
+        }
+
+        .cinema-account-user strong {
+            display: block;
+            max-width: 220px;
+            overflow: hidden;
+            color: var(--cinema-text);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+    .cinema-account-logout {
+        font-family: inherit;
+    }
+
+    @media (max-width: 1199.98px) and (min-width: 992px) {
+        .navbar-brand.movie-brand {
+            margin-right: 0.5rem;
+        }
+
+        .movie-brand-logo {
+            width: 175px;
+            height: 52px;
+        }
+
+        .navbar .container {
+            gap: 0.75rem;
+        }
+
+        .navbar-dark .navbar-nav .nav-link {
+            padding-right: 0.65rem;
+            padding-left: 0.65rem;
+            font-size: 0.86rem;
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .navbar-brand.movie-brand {
+            margin-right: auto;
+        }
+
+        .movie-brand-logo {
+            width: 205px;
+            height: 55px;
+        }
+
+        .cinema-account,
+        .cinema-account-toggle {
+            width: 100%;
+        }
+
+        .cinema-account-toggle {
+            justify-content: center;
+        }
+
+        .cinema-account-menu {
+            width: 100%;
+            min-width: 0;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .movie-brand-logo {
+            width: 175px;
+            height: 48px;
+        }
+    }
+
+    @media (max-width: 359.98px) {
+        .movie-brand-logo {
+            width: 145px;
+            height: 42px;
+        }
+    }
+
+
+    .navbar .cinema-account .cinema-account-toggle {
+        appearance: none;
+        -webkit-appearance: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        min-height: 42px;
+        padding: 0.55rem 0.95rem;
+        color: #e7e9ee;
+        border: 1px solid rgba(214, 168, 75, 0.24);
+        border-radius: 11px;
+        background: #171b23;
+        font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+        cursor: pointer;
+        box-shadow: none;
+        transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
+    }
+
+        .navbar .cinema-account .cinema-account-toggle:hover,
+        .navbar .cinema-account .cinema-account-toggle[aria-expanded="true"] {
+            color: #f0cb76;
+            border-color: rgba(214, 168, 75, 0.48);
+            background: #20232b;
+        }
+
+        .navbar .cinema-account .cinema-account-toggle:focus-visible {
+            outline: 2px solid #f0cb76;
+            outline-offset: 3px;
+        }
+
+        .navbar .cinema-account .cinema-account-toggle svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            color: #d6a84b;
+        }
+
+        .navbar .cinema-account .cinema-account-toggle::after {
+            margin-left: 0.15rem;
+            opacity: 0.65;
+        }
+
+    .navbar .cinema-account-menu {
+        z-index: 1050;
+        color: #c4cad4;
+        border: 1px solid rgba(214, 168, 75, 0.2);
+        border-radius: 14px;
+        background: #141a24;
+    }
+
+    @media (max-width: 991.98px) {
+        .navbar .cinema-account,
+        .navbar .cinema-account .cinema-account-toggle {
+            width: 100%;
+        }
+    }
+
+
+    .cinema-footer .cinema-footer-brand {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        padding: 0;
+        text-decoration: none;
+    }
+
+    .cinema-footer .cinema-footer-logo {
+        display: block;
+        width: 160px;
+        max-width: 100%;
+        height: 42px;
+        object-fit: contain;
+        object-position: center;
+        transition: opacity 220ms ease, transform 220ms ease;
+    }
+
+    .cinema-footer .cinema-footer-brand:hover .cinema-footer-logo {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+
+    .cinema-footer .cinema-footer-brand:focus-visible {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 4px;
+        border-radius: 6px;
+    }
+
+    .cinema-footer .cinema-footer-tagline {
+        color: #9da7b7;
+        font-size: 0.78rem;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 767.98px) {
+        .cinema-footer .cinema-footer-logo {
+            width: 145px;
+            height: 38px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .cinema-footer .cinema-footer-logo {
+            transition: none;
+        }
+    }

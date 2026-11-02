@@ -1,174 +1,115 @@
-﻿@model System.Web.Mvc.HandleErrorInfo
+﻿@using System
+@using System.Globalization
+@model System.Web.Mvc.HandleErrorInfo
 
 @{
     ViewBag.Title = "Настана грешка";
+
+    var responseStatus = Response != null
+        ? Response.StatusCode
+        : 200;
+
+    var isServerError = Model != null || responseStatus == 500;
+
+    var errorCode = isServerError
+        ? "500"
+        : responseStatus >= 400 && responseStatus <= 599
+            ? responseStatus.ToString(CultureInfo.InvariantCulture)
+            : "ERR";
+
+    var errorLabel = isServerError
+        ? "Серверска грешка"
+        : responseStatus == 404
+            ? "Страницата не е пронајдена"
+            : "Барањето не можеше да се обработи";
+
+    var errorDescription = responseStatus == 404 && !isServerError
+        ? "Страницата што ја бараш не е достапна или нејзината адреса е променета. Продолжи кон почетната страница или разгледај ги актуелните филмови."
+        : "Настана проблем при обработката на барањето. Можеш да се вратиш на почетната страница или да продолжиш со разгледување на филмовите.";
 }
 
-<main class="error-page"
-      aria-labelledby="error-title">
-
-    <section class="error-shell">
-
-        <div class="error-grid"
-             aria-hidden="true">
-        </div>
-
-        <div class="error-glow error-glow-one"
-             aria-hidden="true">
-        </div>
-
-        <div class="error-glow error-glow-two"
-             aria-hidden="true">
-        </div>
-
+<main class="error-page" aria-labelledby="error-title">
+    <section class="error-shell" aria-describedby="error-description">
+        <div class="error-grid" aria-hidden="true"></div>
+        <div class="error-glow error-glow-one" aria-hidden="true"></div>
+        <div class="error-glow error-glow-two" aria-hidden="true"></div>
 
         <a class="error-brand"
-           href="@Url.Action("Index", "Home")">
-
-            <span></span>
-
+           href="@Url.Action("Index", "Home")"
+           aria-label="MovieTicket — кон почетната страница">
+            <span aria-hidden="true"></span>
             MOVIETICKET
         </a>
 
-
-        <div class="error-visual"
-             aria-hidden="true">
-
-            <div class="error-orbit error-orbit-large">
-            </div>
-
-            <div class="error-orbit error-orbit-small">
-            </div>
-
+        <div class="error-visual" aria-hidden="true">
+            <div class="error-orbit error-orbit-large"></div>
+            <div class="error-orbit error-orbit-small"></div>
 
             <div class="error-ticket">
-
                 <div class="error-ticket-top">
-
-                    <span>
-                        MOVIETICKET
-                    </span>
-
-                    <strong>
-                        ERROR
-                    </strong>
-
+                    <span>MOVIETICKET</span>
+                    <strong>ERROR</strong>
                 </div>
 
-
-                <div class="error-ticket-code">
-                    500
-                </div>
-
-
-                <div class="error-ticket-divider">
-                </div>
-
+                <div class="error-ticket-code">@errorCode</div>
+                <div class="error-ticket-divider"></div>
 
                 <div class="error-ticket-status">
-
                     <span></span>
-
                     REQUEST INTERRUPTED
-
                 </div>
-
             </div>
-
         </div>
 
-
         <div class="error-content">
-
             <div class="cinema-eyebrow error-eyebrow">
                 SOMETHING WENT WRONG
             </div>
 
             <h1 id="error-title">
                 Нешто не помина
-                <span class="error-title-accent">
-                    според планот.
-                </span>
+                <span class="error-title-accent">според планот.</span>
             </h1>
 
-            <p class="error-description">
-                Настана неочекувана грешка при обработката
-                на барањето. Обиди се повторно или продолжи
-                кон друга страница на MovieTicket.
+            <p id="error-description" class="error-description">
+                @errorDescription
             </p>
 
+            <div class="error-status-card" role="status">
+                <div class="error-status-icon" aria-hidden="true">!</div>
 
-            <div class="error-status-card">
-
-                <div class="error-status-icon"
-                     aria-hidden="true">
-                    !
-                </div>
-
-                <div>
-
-                    <span>
-                        REQUEST STATUS
-                    </span>
-
-                    <strong>
-                        Барањето не можеше да се заврши
-                    </strong>
-
+                <div class="error-status-copy">
+                    <span>REQUEST STATUS</span>
+                    <strong>@errorLabel</strong>
                     <p>
-                        Ако проблемот се повторува, врати се
-                        на почетната страница и обиди се
-                        повторно.
+                        Ако проблемот се повторува, можеш да ни пишеш преку
+                        страницата за контакт. Не е потребно да споделуваш лозинки
+                        или други доверливи податоци.
                     </p>
-
                 </div>
-
             </div>
 
-
             <div class="error-actions">
-
                 <a class="btn btn-primary error-primary-action"
                    href="@Url.Action("Index", "Home")">
-
-                    <span>
-                        Назад кон почетна
-                    </span>
-
-                    <span aria-hidden="true">
-                        →
-                    </span>
-
+                    <span>Назад кон почетна</span>
+                    <span aria-hidden="true">→</span>
                 </a>
-
 
                 <a class="btn btn-outline-secondary"
                    href="@Url.Action("Current", "Movies")">
-
                     Актуелни филмови
-
                 </a>
-
             </div>
-
 
             <a class="error-support-link"
                href="@Url.Action("Contact", "Home")">
-
-                <span aria-hidden="true">
-                    ?
-                </span>
-
+                <span aria-hidden="true">?</span>
                 Потребна ти е помош? Контактирај нè.
-
             </a>
-
         </div>
-
     </section>
-
 </main>
-
 
 <style>
     .error-page {
@@ -179,31 +120,27 @@
 
     .error-shell {
         position: relative;
+        isolation: isolate;
         width: min(100%, 860px);
-        min-height: 680px;
+        min-height: 660px;
         padding: clamp(2rem, 6vw, 4.5rem);
         overflow: hidden;
         text-align: center;
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-xl);
-        background: radial-gradient( circle at 50% 20%, rgba(215, 76, 88, 0.10), transparent 30% ), radial-gradient( circle at 0% 100%, rgba(59, 101, 169, 0.11), transparent 32% ), linear-gradient( 145deg, #151d29, #090e16 58%, #06090e );
+        background: radial-gradient(circle at 50% 20%, rgba(215, 76, 88, 0.10), transparent 30%), radial-gradient(circle at 0% 100%, rgba(59, 101, 169, 0.11), transparent 32%), linear-gradient(145deg, #151d29, #090e16 58%, #06090e);
         box-shadow: var(--cinema-shadow-lg);
-        isolation: isolate;
     }
-
-
-    /* =====================================================
-       BACKGROUND
-       ===================================================== */
 
     .error-grid {
         position: absolute;
         z-index: -3;
         inset: 0;
         opacity: 0.24;
-        background-image: linear-gradient( rgba(255, 255, 255, 0.021) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.021) 1px, transparent 1px );
+        background-image: linear-gradient(rgba(255, 255, 255, 0.021) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.021) 1px, transparent 1px);
         background-size: 48px 48px;
-        mask-image: linear-gradient( 180deg, #000, transparent 80% );
+        mask-image: linear-gradient(180deg, #000, transparent 80%);
+        pointer-events: none;
     }
 
     .error-glow {
@@ -230,25 +167,22 @@
         background: rgba(59, 101, 169, 0.07);
     }
 
-
-    /* =====================================================
-       BRAND
-       ===================================================== */
-
     .error-brand {
         position: relative;
         z-index: 5;
         display: inline-flex;
         align-items: center;
         gap: 0.65rem;
-        margin-bottom: 2.2rem;
+        margin-bottom: 2rem;
         color: var(--cinema-text);
         font-size: 0.68rem;
         font-weight: 900;
         letter-spacing: 0.17em;
+        text-decoration: none;
     }
 
-        .error-brand:hover {
+        .error-brand:hover,
+        .error-brand:focus-visible {
             color: var(--cinema-gold-light);
         }
 
@@ -260,18 +194,14 @@
             box-shadow: 0 0 0 5px rgba(214, 168, 75, 0.09), 0 0 18px rgba(214, 168, 75, 0.55);
         }
 
-
-    /* =====================================================
-       VISUAL
-       ===================================================== */
-
     .error-visual {
         position: relative;
         display: grid;
-        width: 280px;
-        height: 210px;
-        margin: 0 auto 1.8rem;
         place-items: center;
+        width: 280px;
+        height: 205px;
+        max-width: 100%;
+        margin: 0 auto 1.75rem;
     }
 
     .error-ticket {
@@ -283,9 +213,8 @@
         text-align: left;
         border: 1px solid rgba(215, 76, 88, 0.25);
         border-radius: 18px;
-        background: linear-gradient( 145deg, rgba(36, 28, 34, 0.90), rgba(10, 14, 21, 0.95) );
+        background: linear-gradient(145deg, rgba(36, 28, 34, 0.90), rgba(10, 14, 21, 0.95));
         box-shadow: 0 25px 60px rgba(0, 0, 0, 0.38), 0 0 40px rgba(215, 76, 88, 0.07);
-        transform: rotate(-3deg);
         animation: error-ticket-float 6s ease-in-out infinite;
     }
 
@@ -310,8 +239,8 @@
 
     .error-ticket-top {
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
         gap: 1rem;
     }
 
@@ -329,9 +258,9 @@
         }
 
     .error-ticket-code {
-        padding: 1.7rem 0 1.5rem;
+        padding: 1.65rem 0 1.45rem;
         color: #ff969f;
-        font-size: 3.4rem;
+        font-size: 3.25rem;
         font-weight: 900;
         line-height: 1;
         letter-spacing: -0.07em;
@@ -342,7 +271,7 @@
     .error-ticket-divider {
         height: 1px;
         margin-bottom: 1rem;
-        background: repeating-linear-gradient( 90deg, rgba(255, 255, 255, 0.15) 0, rgba(255, 255, 255, 0.15) 6px, transparent 6px, transparent 12px );
+        background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0, rgba(255, 255, 255, 0.15) 6px, transparent 6px, transparent 12px);
     }
 
     .error-ticket-status {
@@ -353,26 +282,24 @@
         font-size: 0.43rem;
         font-weight: 900;
         letter-spacing: 0.08em;
+        white-space: nowrap;
     }
 
         .error-ticket-status > span {
             width: 6px;
             height: 6px;
+            flex: 0 0 6px;
             border-radius: 50%;
             background: var(--cinema-danger);
             box-shadow: 0 0 10px rgba(215, 76, 88, 0.65);
         }
-
-
-    /* =====================================================
-       ORBITS
-       ===================================================== */
 
     .error-orbit {
         position: absolute;
         border: 1px solid rgba(215, 76, 88, 0.09);
         border-radius: 50%;
         animation: error-orbit-spin 24s linear infinite;
+        pointer-events: none;
     }
 
         .error-orbit::after {
@@ -399,47 +326,40 @@
         animation-duration: 17s;
     }
 
-
-    /* =====================================================
-       CONTENT
-       ===================================================== */
-
     .error-content {
         position: relative;
         z-index: 5;
     }
 
     .error-eyebrow {
+        justify-content: center;
         color: #ff969f;
     }
 
     .error-content h1 {
         max-width: 700px;
         margin: 0 auto 1rem;
-        font-size: clamp( 2.6rem, 6vw, 4.2rem );
-        line-height: 0.98;
+        font-size: clamp(2.4rem, 6vw, 4.2rem);
+        line-height: 1.04;
         letter-spacing: -0.055em;
+        overflow-wrap: break-word;
     }
 
     .error-title-accent {
-        background: linear-gradient( 135deg, #ffc0c5, #e96873 );
-        -webkit-background-clip: text;
+        display: inline;
+        background: linear-gradient(135deg, #ffc0c5, #e96873);
         background-clip: text;
+        -webkit-background-clip: text;
         color: transparent;
     }
 
     .error-description {
         max-width: 590px;
-        margin: 0 auto 1.8rem;
+        margin: 0 auto 1.7rem;
         color: var(--cinema-text-muted);
         font-size: 0.88rem;
         line-height: 1.75;
     }
-
-
-    /* =====================================================
-       STATUS CARD
-       ===================================================== */
 
     .error-status-card {
         display: flex;
@@ -456,9 +376,9 @@
 
     .error-status-icon {
         display: grid;
-        flex: 0 0 42px;
         width: 42px;
         height: 42px;
+        flex: 0 0 42px;
         place-items: center;
         color: #ff9ca5;
         border: 1px solid rgba(215, 76, 88, 0.23);
@@ -468,45 +388,47 @@
         font-weight: 900;
     }
 
-    .error-status-card
-    div:last-child > span {
-        display: block;
-        margin-bottom: 0.15rem;
-        color: #ef8a93;
-        font-size: 0.5rem;
-        font-weight: 900;
-        letter-spacing: 0.11em;
+    .error-status-copy {
+        min-width: 0;
     }
 
-    .error-status-card strong {
-        display: block;
-        color: var(--cinema-text);
-        font-size: 0.8rem;
-    }
+        .error-status-copy > span {
+            display: block;
+            margin-bottom: 0.15rem;
+            color: #ef8a93;
+            font-size: 0.5rem;
+            font-weight: 900;
+            letter-spacing: 0.11em;
+        }
 
-    .error-status-card p {
-        margin: 0.25rem 0 0;
-        color: var(--cinema-text-muted);
-        font-size: 0.67rem;
-        line-height: 1.55;
-    }
+        .error-status-copy strong {
+            display: block;
+            color: var(--cinema-text);
+            font-size: 0.8rem;
+        }
 
-
-    /* =====================================================
-       ACTIONS
-       ===================================================== */
+        .error-status-copy p {
+            margin: 0.25rem 0 0;
+            color: var(--cinema-text-muted);
+            font-size: 0.7rem;
+            line-height: 1.6;
+        }
 
     .error-actions {
         display: flex;
+        flex-wrap: wrap;
         justify-content: center;
         gap: 0.7rem;
     }
 
+        .error-actions .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
     .error-primary-action {
-        display: inline-flex;
         min-width: 210px;
-        align-items: center;
-        justify-content: space-between;
         gap: 1rem;
     }
 
@@ -518,18 +440,14 @@
             transform: translateX(5px);
         }
 
-
-    /* =====================================================
-       SUPPORT
-       ===================================================== */
-
     .error-support-link {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
-        margin-top: 1.7rem;
+        margin-top: 1.6rem;
         color: var(--cinema-text-muted);
-        font-size: 0.7rem;
+        font-size: 0.73rem;
         font-weight: 600;
     }
 
@@ -537,6 +455,7 @@
             display: grid;
             width: 23px;
             height: 23px;
+            flex: 0 0 23px;
             place-items: center;
             color: var(--cinema-gold-light);
             border: 1px solid rgba(214, 168, 75, 0.17);
@@ -546,14 +465,15 @@
             font-weight: 900;
         }
 
-        .error-support-link:hover {
+        .error-support-link:hover,
+        .error-support-link:focus-visible {
             color: var(--cinema-gold-light);
         }
 
-
-    /* =====================================================
-       ANIMATIONS
-       ===================================================== */
+    .error-page a:focus-visible {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 4px;
+    }
 
     @@keyframes error-orbit-spin {
         from {
@@ -566,8 +486,7 @@
     }
 
     @@keyframes error-ticket-float {
-        0%,
-        100% {
+        0%, 100% {
             transform: rotate(-3deg) translateY(0);
         }
 
@@ -576,11 +495,6 @@
         }
     }
 
-
-    /* =====================================================
-       RESPONSIVE
-       ===================================================== */
-
     @@media (max-width: 575.98px) {
         .error-shell {
             min-height: 0;
@@ -588,9 +502,14 @@
             border-radius: var(--cinema-radius-lg);
         }
 
+        .error-brand {
+            margin-bottom: 1.5rem;
+        }
+
         .error-visual {
             width: 220px;
             height: 180px;
+            margin-bottom: 1.5rem;
         }
 
         .error-orbit-large {
@@ -605,6 +524,7 @@
 
         .error-ticket {
             width: 160px;
+            padding: 1rem;
         }
 
         .error-ticket-code {
@@ -612,7 +532,11 @@
         }
 
         .error-content h1 {
-            font-size: 2.4rem;
+            font-size: clamp(2.05rem, 9vw, 2.5rem);
+        }
+
+        .error-description {
+            font-size: 0.82rem;
         }
 
         .error-actions {
@@ -633,6 +557,10 @@
         .error-orbit,
         .error-ticket {
             animation: none;
+        }
+
+        .error-primary-action > span:last-child {
+            transition: none;
         }
     }
 </style>

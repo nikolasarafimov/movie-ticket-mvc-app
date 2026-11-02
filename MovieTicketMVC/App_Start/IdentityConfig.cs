@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -28,78 +29,77 @@ namespace MovieTicketMVC
                     nameof(message));
             }
 
-            var smtpHost =
-                Environment.GetEnvironmentVariable(
-                    "MOVIETICKET_SMTP_HOST")
-                ?? "smtp.gmail.com";
+            var smtpHost = Environment.GetEnvironmentVariable(
+                "MOVIETICKET_SMTP_HOST");
 
-            var smtpPortValue =
-                Environment.GetEnvironmentVariable(
-                    "MOVIETICKET_SMTP_PORT");
+            if (string.IsNullOrWhiteSpace(smtpHost))
+            {
+                smtpHost = "smtp.gmail.com";
+            }
+            else
+            {
+                smtpHost = smtpHost.Trim();
+            }
+
+            var smtpPortValue = Environment.GetEnvironmentVariable(
+                "MOVIETICKET_SMTP_PORT");
 
             var smtpPort = 587;
 
-            if (!string.IsNullOrWhiteSpace(smtpPortValue) &&
-                !int.TryParse(smtpPortValue, out smtpPort))
+            if (!string.IsNullOrWhiteSpace(smtpPortValue))
             {
-                throw new InvalidOperationException(
-                    "MOVIETICKET_SMTP_PORT must contain a valid integer.");
+                if (!int.TryParse(smtpPortValue, out smtpPort) ||
+                    smtpPort < 1 ||
+                    smtpPort > 65535)
+                {
+                    throw new InvalidOperationException(
+                        "MOVIETICKET_SMTP_PORT must contain a valid port number between 1 and 65535.");
+                }
             }
 
-            var smtpUsername =
-                GetRequiredEnvironmentVariable(
-                    "MOVIETICKET_SMTP_USERNAME");
+            var smtpUsername = GetRequiredEnvironmentVariable(
+                "MOVIETICKET_SMTP_USERNAME").Trim();
 
-            var smtpPassword =
-                GetRequiredEnvironmentVariable(
-                    "MOVIETICKET_SMTP_PASSWORD");
+            var smtpPassword = GetRequiredEnvironmentVariable(
+                "MOVIETICKET_SMTP_PASSWORD");
 
-            var fromAddress =
-                Environment.GetEnvironmentVariable(
-                    "MOVIETICKET_SMTP_FROM");
+            var fromAddress = Environment.GetEnvironmentVariable(
+                "MOVIETICKET_SMTP_FROM");
 
             if (string.IsNullOrWhiteSpace(fromAddress))
             {
                 fromAddress = smtpUsername;
             }
+            else
+            {
+                fromAddress = fromAddress.Trim();
+            }
 
             using (var mailMessage = new MailMessage())
             {
-                mailMessage.From =
-                    new MailAddress(
-                        fromAddress,
-                        "MovieTicket App");
+                mailMessage.From = new MailAddress(
+                    fromAddress,
+                    "MovieTicket App");
 
                 mailMessage.To.Add(
-                    message.Destination);
+                    new MailAddress(message.Destination.Trim()));
 
-                mailMessage.Subject =
-                    message.Subject ?? string.Empty;
+                mailMessage.Subject = message.Subject ?? string.Empty;
+                mailMessage.Body = message.Body ?? string.Empty;
+                mailMessage.IsBodyHtml = true;
+                mailMessage.SubjectEncoding = Encoding.UTF8;
+                mailMessage.BodyEncoding = Encoding.UTF8;
 
-                mailMessage.Body =
-                    message.Body ?? string.Empty;
-
-                mailMessage.IsBodyHtml =
-                    true;
-
-                using (var client =
-                    new SmtpClient(
-                        smtpHost,
-                        smtpPort))
+                using (var client = new SmtpClient(smtpHost, smtpPort))
                 {
-                    client.EnableSsl =
-                        true;
+                    client.EnableSsl = true;
+                    client.UseDefaultCredentials = false;
 
-                    client.UseDefaultCredentials =
-                        false;
+                    client.Credentials = new NetworkCredential(
+                        smtpUsername,
+                        smtpPassword);
 
-                    client.Credentials =
-                        new NetworkCredential(
-                            smtpUsername,
-                            smtpPassword);
-
-                    await client.SendMailAsync(
-                        mailMessage);
+                    await client.SendMailAsync(mailMessage);
                 }
             }
         }
@@ -107,26 +107,44 @@ namespace MovieTicketMVC
         private static string GetRequiredEnvironmentVariable(
             string name)
         {
-            var value =
-                Environment.GetEnvironmentVariable(
-                    name);
+            var value = Environment.GetEnvironmentVariable(name);
 
             if (string.IsNullOrWhiteSpace(value))
             {
                 throw new InvalidOperationException(
-                    name
-                    + " environment variable is not configured.");
+                    name + " environment variable is not configured.");
             }
 
             return value;
         }
     }
 
-    public class ApplicationUserManager
-        : UserManager<ApplicationUser>
+    public sealed class UnicodePasswordValidator : PasswordValidator
     {
-        public ApplicationUserManager(
-            IUserStore<ApplicationUser> store)
+        public override bool IsUpper(char character)
+        {
+            return char.IsUpper(character);
+        }
+
+        public override bool IsLower(char character)
+        {
+            return char.IsLower(character);
+        }
+
+        public override bool IsDigit(char character)
+        {
+            return char.IsDigit(character);
+        }
+
+        public override bool IsLetterOrDigit(char character)
+        {
+            return char.IsLetterOrDigit(character);
+        }
+    }
+
+    public class ApplicationUserManager : UserManager<ApplicationUser>
+    {
+        public ApplicationUserManager(IUserStore<ApplicationUser> store)
             : base(store)
         {
         }
@@ -135,37 +153,32 @@ namespace MovieTicketMVC
             IdentityFactoryOptions<ApplicationUserManager> options,
             IOwinContext context)
         {
-            var manager =
-                new ApplicationUserManager(
-                    new UserStore<ApplicationUser>(
-                        context.Get<ApplicationDbContext>()));
+            var manager = new ApplicationUserManager(
+                new UserStore<ApplicationUser>(
+                    context.Get<ApplicationDbContext>()));
 
-            manager.UserValidator =
-                new UserValidator<ApplicationUser>(
-                    manager)
-                {
-                    AllowOnlyAlphanumericUserNames = false,
-                    RequireUniqueEmail = true
-                };
+            manager.UserValidator = new UserValidator<ApplicationUser>(
+                manager)
+            {
+                AllowOnlyAlphanumericUserNames = false,
+                RequireUniqueEmail = true
+            };
 
-            manager.PasswordValidator =
-                new PasswordValidator
-                {
-                    RequiredLength = 8,
-                    RequireNonLetterOrDigit = true,
-                    RequireDigit = true,
-                    RequireLowercase = true,
-                    RequireUppercase = true
-                };
+            manager.PasswordValidator = new UnicodePasswordValidator
+            {
+                RequiredLength = 8,
+                RequireNonLetterOrDigit = true,
+                RequireDigit = true,
+                RequireLowercase = true,
+                RequireUppercase = true
+            };
 
-            manager.UserLockoutEnabledByDefault =
-                true;
+            manager.UserLockoutEnabledByDefault = true;
 
             manager.DefaultAccountLockoutTimeSpan =
                 TimeSpan.FromMinutes(5);
 
-            manager.MaxFailedAccessAttemptsBeforeLockout =
-                5;
+            manager.MaxFailedAccessAttemptsBeforeLockout = 5;
 
             manager.RegisterTwoFactorProvider(
                 "Email Code",
@@ -176,8 +189,7 @@ namespace MovieTicketMVC
                         "Your MovieTicket security code is {0}."
                 });
 
-            manager.EmailService =
-                new EmailService();
+            manager.EmailService = new EmailService();
 
             var dataProtectionProvider =
                 options.DataProtectionProvider;
@@ -200,15 +212,12 @@ namespace MovieTicketMVC
         public ApplicationSignInManager(
             ApplicationUserManager userManager,
             IAuthenticationManager authenticationManager)
-            : base(
-                userManager,
-                authenticationManager)
+            : base(userManager, authenticationManager)
         {
         }
 
-        public override Task<ClaimsIdentity>
-            CreateUserIdentityAsync(
-                ApplicationUser user)
+        public override Task<ClaimsIdentity> CreateUserIdentityAsync(
+            ApplicationUser user)
         {
             return user.GenerateUserIdentityAsync(
                 (ApplicationUserManager)UserManager);

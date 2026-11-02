@@ -1,476 +1,383 @@
-﻿@model MovieTicketMVC.Models.IndexViewModel
+﻿
+@using System
+@using System.Collections.Generic
+@model MovieTicketMVC.Models.IndexViewModel
 
 @{
-    ViewBag.Title = "Управување со профил";
+    ViewBag.Title = "Твојот профил";
 
-    var externalLoginCount =
-        Model.Logins != null
-            ? Model.Logins.Count
-            : 0;
+    var externalLoginCount = Model != null && Model.Logins != null
+        ? Model.Logins.Count
+        : 0;
+
+    var hasPassword = Model != null && Model.HasPassword;
+    var twoFactorEnabled = Model != null && Model.TwoFactor;
+    var browserRemembered = Model != null && Model.BrowserRemembered;
+
+    var statusMessage = Convert.ToString(ViewBag.StatusMessage);
+    var statusTranslations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+{
+        { "Your password has been changed.", "Лозинката е успешно променета." },
+        { "Your password has been set.", "Лозинката е успешно поставена." },
+        { "Two-factor authentication has been enabled.", "Двофакторската автентикација е активирана." },
+        { "Two-factor authentication has been disabled.", "Двофакторската автентикација е исклучена." },
+        { "The external login was removed.", "Надворешниот начин на најава е отстранет." },
+        { "Your phone number was removed.", "Телефонскиот број е отстранет." },
+        { "Phone verification is not configured for this application.", "Потврдувањето телефонски број не е конфигурирано во апликацијата." },
+        { "Two-factor authentication cannot be enabled because no verified provider is available.", "Двофакторската автентикација не може да се активира бидејќи нема достапен потврден метод за верификација." },
+        { "You cannot remove your only sign-in method.", "Не можеш да го отстраниш единствениот начин за најава." },
+        { "An error has occurred.", "Настана грешка. Обиди се повторно." }
+    };
+
+    string translatedStatus = string.Empty;
+
+    if (!string.IsNullOrWhiteSpace(statusMessage) &&
+    statusTranslations.TryGetValue(statusMessage, out translatedStatus))
+    {
+        statusMessage = translatedStatus;
+    }
+
+    var isWarning =
+        statusMessage == "Настана грешка. Обиди се повторно." ||
+        statusMessage == "Потврдувањето телефонски број не е конфигурирано во апликацијата." ||
+        statusMessage == "Двофакторската автентикација не може да се активира бидејќи нема достапен потврден метод за верификација." ||
+        statusMessage == "Не можеш да го отстраниш единствениот начин за најава.";
 }
 
-<main class="account-page"
-      aria-labelledby="account-title">
-
-    <section class="account-hero">
-
-        <div class="account-hero-glow"
-             aria-hidden="true">
-        </div>
-
+<main class="account-page" aria-labelledby="account-title">
+    <section class="account-hero" aria-labelledby="account-title">
         <div class="account-hero-copy">
-
-            <div class="cinema-eyebrow">
-                ACCOUNT & SECURITY
-            </div>
+            <div class="cinema-eyebrow">МОЈ ПРОФИЛ</div>
 
             <h1 id="account-title">
-                Твојот
-                <span class="cinema-text-gradient">
-                    профил
-                </span>
+                Твојот <span class="cinema-text-gradient">профил</span>
             </h1>
 
             <p>
-                Управувај со лозинката, поврзаните начини
-                за најава и безбедносните поставки
-                на MovieTicket профилот.
+                Управувај со лозинката, поврзаните начини за најава
+                и безбедноста на твојот MovieTicket профил.
             </p>
 
-        </div>
+            <div class="account-hero-summary"
+                 aria-label="Моментална состојба на профилот">
 
+                <span class="account-hero-pill">
+                    <span class="account-pill-dot @(hasPassword ? "is-positive" : "is-warning")"
+                          aria-hidden="true"></span>
 
-        <div class="account-hero-security"
-             aria-hidden="true">
-
-            <div class="account-security-ring
-                        account-security-ring-one">
-            </div>
-
-            <div class="account-security-ring
-                        account-security-ring-two">
-            </div>
-
-            <div class="account-security-shield">
-
-                <span>
-                    ✓
+                    @(hasPassword
+                        ? "Лозинката е поставена"
+                        : "Нема поставена лозинка")
                 </span>
 
-            </div>
+                <span class="account-hero-pill">
+                    <span class="account-pill-dot @(twoFactorEnabled ? "is-positive" : "is-neutral")"
+                          aria-hidden="true"></span>
 
+                    @(twoFactorEnabled
+                        ? "2FA е активна"
+                        : "2FA не е активна")
+                </span>
+            </div>
         </div>
 
+        <div class="account-hero-visual" aria-hidden="true">
+            <div class="account-orbit account-orbit-large"></div>
+            <div class="account-orbit account-orbit-small"></div>
+
+            <div class="account-shield">
+                <svg viewBox="0 0 64 74"
+                     width="80"
+                     height="94"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+
+                    <path d="M32 4 58 14v18c0 17-10 29-26 38C16 61 6 49 6 32V14L32 4Z"
+                          fill="#d6a84b"
+                          fill-opacity=".13"
+                          stroke="#d6a84b"
+                          stroke-opacity=".42"
+                          stroke-width="2" />
+
+                    <circle cx="32"
+                            cy="35"
+                            r="16"
+                            fill="#42c783"
+                            fill-opacity=".12"
+                            stroke="#42c783"
+                            stroke-opacity=".4" />
+
+                    <path d="m24 35 6 6 11-13"
+                          stroke="#8de4b2"
+                          stroke-width="3.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" />
+                </svg>
+            </div>
+        </div>
     </section>
 
-
-    @if (!string.IsNullOrWhiteSpace(
-        ViewBag.StatusMessage as string))
+    @if (!string.IsNullOrWhiteSpace(statusMessage))
     {
-        <div class="account-status-message"
-             role="status">
+        <div class="account-feedback @(isWarning ? "account-feedback-warning" : "account-feedback-success")"
+             role="@(isWarning ? "alert" : "status")">
 
-            <div class="account-status-icon"
-                 aria-hidden="true">
-                ✓
-            </div>
+            <span class="account-feedback-symbol"
+                  aria-hidden="true">
+                @(isWarning ? "!" : "✓")
+            </span>
 
             <div>
+                <strong>
+                    @(isWarning
+                        ? "Потребно е внимание"
+                        : "Промената е зачувана")
+                </strong>
 
-                <span>
-                    ACCOUNT UPDATE
-                </span>
-
-                <p>
-                    @ViewBag.StatusMessage
-                </p>
-
+                <p>@statusMessage</p>
             </div>
-
         </div>
     }
 
-
-    <section class="account-overview"
-             aria-label="Преглед на безбедносни поставки">
-
-        <article class="account-overview-card">
-
-            <span class="account-overview-label">
-                PASSWORD
-            </span>
-
-            <strong>
-                @(Model.HasPassword
-                    ? "Поставена"
-                    : "Не е поставена")
-            </strong>
-
-            <span class="account-overview-indicator
-                         @(Model.HasPassword ? "active" : "warning")">
-            </span>
-
-        </article>
-
-
-        <article class="account-overview-card">
-
-            <span class="account-overview-label">
-                EXTERNAL LOGINS
-            </span>
-
-            <strong>
-                @externalLoginCount
-            </strong>
-
-            <small>
-                @(externalLoginCount == 1
-                    ? "поврзан профил"
-                    : "поврзани профили")
-            </small>
-
-        </article>
-
-
-        <article class="account-overview-card">
-
-            <span class="account-overview-label">
-                TWO-FACTOR
-            </span>
-
-            <strong>
-                @(Model.TwoFactor
-                    ? "Активна"
-                    : "Неактивна")
-            </strong>
-
-            <span class="account-overview-indicator
-                         @(Model.TwoFactor ? "active" : "muted")">
-            </span>
-
-        </article>
-
-    </section>
-
-
-    <section class="account-settings">
+    <section class="account-settings"
+             aria-labelledby="account-settings-title">
 
         <div class="account-section-heading">
-
             <div>
-
                 <div class="cinema-eyebrow">
-                    SECURITY SETTINGS
+                    ПОСТАВКИ НА ПРОФИЛОТ
                 </div>
 
-                <h2>
-                    Безбедност на профилот
+                <h2 id="account-settings-title">
+                    Безбедност и најавување
                 </h2>
-
             </div>
 
             <p>
-                Контролирај како се најавуваш и како
-                MovieTicket го штити пристапот до профилот.
+                Избери ја поставката што сакаш да ја промениш
+                или провериш.
             </p>
-
         </div>
 
-
         <div class="account-settings-grid">
-
             <article class="account-setting-card">
+                <div class="account-card-heading">
+                    <span class="account-setting-icon"
+                          aria-hidden="true">
 
-                <div class="account-setting-top">
+                        <svg viewBox="0 0 24 24"
+                             width="24"
+                             height="24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="1.7"
+                             stroke-linecap="round"
+                             stroke-linejoin="round">
 
-                    <div class="account-setting-icon
-                                password"
-                         aria-hidden="true">
+                            <rect x="4"
+                                  y="10"
+                                  width="16"
+                                  height="11"
+                                  rx="2" />
 
-                        <span class="account-lock">
-                        </span>
-
-                    </div>
-
-                    <div class="account-setting-status
-                                @(Model.HasPassword
-                                    ? "success"
-                                    : "warning")">
-
-                        <span></span>
-
-                        @(Model.HasPassword
-                            ? "ACTIVE"
-                            : "SETUP REQUIRED")
-
-                    </div>
-
-                </div>
-
-
-                <div class="account-setting-content">
-
-                    <span class="account-setting-number">
-                        01
+                            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                        </svg>
                     </span>
 
-                    <h3>
-                        Лозинка
-                    </h3>
+                    <span class="account-card-status @(hasPassword ? "is-success" : "is-warning")">
+                        <span class="account-card-status-dot"
+                              aria-hidden="true"></span>
 
-                    @if (Model.HasPassword)
-                    {
-                        <p>
-                            Твојот профил има поставена лозинка.
-                            Промени ја периодично или доколку
-                            сметаш дека повеќе не е безбедна.
-                        </p>
-                    }
-                    else
-                    {
-                        <p>
-                            Профилот моментално нема локална
-                            MovieTicket лозинка. Можеш да
-                            поставиш една за дополнителен
-                            начин на најава.
-                        </p>
-                    }
-
+                        @(hasPassword
+                            ? "Поставена"
+                            : "Не е поставена")
+                    </span>
                 </div>
 
-
-                <div class="account-setting-footer">
-
-                    @if (Model.HasPassword)
-                    {
-                        <a class="btn btn-outline-secondary
-                                  account-setting-action"
-                           href="@Url.Action(
-                               "ChangePassword",
-                               "Manage")">
-
-                            <span>
-                                Промени лозинка
-                            </span>
-
-                            <span aria-hidden="true">
-                                →
-                            </span>
-
-                        </a>
-                    }
-                    else
-                    {
-                        <a class="btn btn-primary
-                                  account-setting-action"
-                           href="@Url.Action(
-                               "SetPassword",
-                               "Manage")">
-
-                            <span>
-                                Постави лозинка
-                            </span>
-
-                            <span aria-hidden="true">
-                                →
-                            </span>
-
-                        </a>
-                    }
-
-                </div>
-
-            </article>
-
-
-            <article class="account-setting-card">
-
-                <div class="account-setting-top">
-
-                    <div class="account-setting-icon
-                                connections"
-                         aria-hidden="true">
-
-                        <span></span>
-                        <span></span>
-
-                    </div>
-
-                    <div class="account-setting-status neutral">
-
-                        @externalLoginCount
-
-                        @(externalLoginCount == 1
-                            ? " CONNECTION"
-                            : " CONNECTIONS")
-
-                    </div>
-
-                </div>
-
-
-                <div class="account-setting-content">
-
-                    <span class="account-setting-number">
-                        02
+                <div class="account-card-content">
+                    <span class="account-card-number">
+                        01 / ЛОЗИНКА
                     </span>
 
-                    <h3>
-                        External logins
-                    </h3>
+                    <h3>Лозинка</h3>
 
                     <p>
-                        Прегледај ги надворешните профили
-                        поврзани со твојот MovieTicket account
-                        и управувај со достапните начини
-                        за најава.
+                        @(hasPassword
+                            ? "Промени ја лозинката за да го заштитиш пристапот до твојот профил."
+                            : "Постави лозинка за да можеш да се најавуваш и со е-пошта.")
                     </p>
-
                 </div>
 
-
-                <div class="account-setting-footer">
-
-                    <a class="btn btn-outline-secondary
-                              account-setting-action"
-                       href="@Url.Action(
-                           "ManageLogins",
-                           "Manage")">
-
-                        <span>
-                            Управувај со поврзувања
-                        </span>
-
-                        <span aria-hidden="true">
-                            →
-                        </span>
-
-                    </a>
-
-                </div>
-
-            </article>
-
-
-            <article class="account-setting-card
-                            account-two-factor-card
-                            @(Model.TwoFactor
-                                ? "enabled"
-                                : "")">
-
-                <div class="account-setting-top">
-
-                    <div class="account-setting-icon
-                                two-factor"
-                         aria-hidden="true">
-
-                        <span>
-                            2
-                        </span>
-
-                    </div>
-
-
-                    <div class="account-setting-status
-                                @(Model.TwoFactor
-                                    ? "success"
-                                    : "muted")">
-
-                        <span></span>
-
-                        @(Model.TwoFactor
-                            ? "ENABLED"
-                            : "DISABLED")
-
-                    </div>
-
-                </div>
-
-
-                <div class="account-setting-content">
-
-                    <span class="account-setting-number">
-                        03
-                    </span>
-
-                    <h3>
-                        Two-factor authentication
-                    </h3>
-
-                    @if (Model.TwoFactor)
+                <div class="account-card-action">
+                    @if (hasPassword)
                     {
-                        <p>
-                            Дополнителната verification проверка
-                            е активна и се користи како втор
-                            безбедносен чекор при најавување.
-                        </p>
+                        <a class="btn btn-outline-secondary account-card-button"
+                           href="@Url.Action("ChangePassword", "Manage")">
+
+                            <span>Промени лозинка</span>
+                            <span aria-hidden="true">→</span>
+                        </a>
                     }
                     else
                     {
-                        <p>
-                            Активирај дополнителна verification
-                            проверка при најавување за уште еден
-                            слој заштита на профилот.
-                        </p>
+                        <a class="btn btn-primary account-card-button"
+                           href="@Url.Action("SetPassword", "Manage")">
+
+                            <span>Постави лозинка</span>
+                            <span aria-hidden="true">→</span>
+                        </a>
                     }
+                </div>
+            </article>
 
+            <article class="account-setting-card">
+                <div class="account-card-heading">
+                    <span class="account-setting-icon"
+                          aria-hidden="true">
 
-                    @if (Model.BrowserRemembered)
-                    {
-                        <div class="account-browser-status">
+                        <svg viewBox="0 0 24 24"
+                             width="24"
+                             height="24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="1.7"
+                             stroke-linecap="round"
+                             stroke-linejoin="round">
 
-                            <span aria-hidden="true">
-                                ✓
-                            </span>
+                            <circle cx="7"
+                                    cy="12"
+                                    r="4" />
 
-                            <div>
+                            <circle cx="17"
+                                    cy="12"
+                                    r="4" />
 
-                                <strong>
-                                    Trusted browser
-                                </strong>
+                            <path d="M11 12h2" />
+                        </svg>
+                    </span>
 
-                                <small>
-                                    Овој прелистувач моментално
-                                    е запомнет за 2FA.
-                                </small>
-
-                            </div>
-
-                        </div>
-                    }
-
+                    <span class="account-card-status is-neutral">
+                        @externalLoginCount
+                        @(externalLoginCount == 1
+                            ? "поврзан профил"
+                            : "поврзани профили")
+                    </span>
                 </div>
 
+                <div class="account-card-content">
+                    <span class="account-card-number">
+                        02 / НАЈАВУВАЊЕ
+                    </span>
 
-                <div class="account-setting-footer">
+                    <h3>Поврзани профили</h3>
 
-                    @if (Model.TwoFactor)
+                    <p>
+                        Прегледај ги надворешните сметки поврзани
+                        со MovieTicket и управувај со достапните
+                        начини за најава.
+                    </p>
+                </div>
+
+                <div class="account-card-action">
+                    <a class="btn btn-outline-secondary account-card-button"
+                       href="@Url.Action("ManageLogins", "Manage")">
+
+                        <span>Управувај со поврзувања</span>
+                        <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </article>
+
+            <article class="account-setting-card @(twoFactorEnabled ? "account-two-factor-on" : "")">
+                <div class="account-card-heading">
+                    <span class="account-setting-icon"
+                          aria-hidden="true">
+
+                        <svg viewBox="0 0 24 24"
+                             width="24"
+                             height="24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="1.7"
+                             stroke-linecap="round"
+                             stroke-linejoin="round">
+
+                            <path d="M12 2 20 6v6c0 5-3 8-8 10-5-2-8-5-8-10V6l8-4Z" />
+
+                            <path d="M9 12l2 2 4-4" />
+                        </svg>
+                    </span>
+
+                    <span class="account-card-status @(twoFactorEnabled ? "is-success" : "is-neutral")">
+                        <span class="account-card-status-dot"
+                              aria-hidden="true"></span>
+
+                        @(twoFactorEnabled
+                            ? "Активна"
+                            : "Неактивна")
+                    </span>
+                </div>
+
+                <div class="account-card-content">
+                    <span class="account-card-number">
+                        03 / ДОПОЛНИТЕЛНА ЗАШТИТА
+                    </span>
+
+                    <h3>Двофакторска автентикација</h3>
+
+                    <p>
+                        @(twoFactorEnabled
+                            ? "Дополнителната проверка при најавување е активна и го заштитува твојот профил."
+                            : "Додај уште еден чекор за проверка при најавување и зголеми ја безбедноста на профилот.")
+                    </p>
+
+                    @if (browserRemembered)
+                    {
+                        <div class="account-browser-note">
+                            <span aria-hidden="true">✓</span>
+
+                            <div>
+                                <strong>Запомнет прелистувач</strong>
+
+                                <small>
+                                    Овој прелистувач е запомнет
+                                    за двофакторска најава.
+                                </small>
+                            </div>
+                        </div>
+                    }
+                    else if (!twoFactorEnabled)
+                    {
+                        <div class="account-browser-note account-browser-note-muted">
+                            <span aria-hidden="true">i</span>
+
+                            <div>
+                                <small>
+                                    За активирање е потребен
+                                    достапен и потврден начин
+                                    за верификација.
+                                </small>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="account-card-action">
+                    @if (twoFactorEnabled)
                     {
                         using (Html.BeginForm(
                             "DisableTwoFactorAuthentication",
                             "Manage",
                             FormMethod.Post,
-                            new
-                            {
-                                role = "form",
-                                @class =
-                                    "account-security-form"
-                            }))
+                            new { @class = "account-security-form" }))
                         {
                             @Html.AntiForgeryToken()
 
                             <button type="submit"
-                                    class="btn btn-outline-danger
-                                           account-setting-action">
+                                    class="btn btn-outline-danger account-card-button">
 
-                                <span>
-                                    Исклучи 2FA
-                                </span>
-
-                                <span aria-hidden="true">
-                                    ×
-                                </span>
-
+                                <span>Исклучи 2FA</span>
+                                <span aria-hidden="true">→</span>
                             </button>
                         }
                     }
@@ -480,357 +387,282 @@
                             "EnableTwoFactorAuthentication",
                             "Manage",
                             FormMethod.Post,
-                            new
-                            {
-                                role = "form",
-                                @class =
-                                    "account-security-form"
-                            }))
+                            new { @class = "account-security-form" }))
                         {
                             @Html.AntiForgeryToken()
 
                             <button type="submit"
-                                    class="btn btn-primary
-                                           account-setting-action">
+                                    class="btn btn-primary account-card-button">
 
-                                <span>
-                                    Активирај 2FA
-                                </span>
-
-                                <span aria-hidden="true">
-                                    →
-                                </span>
-
+                                <span>Активирај 2FA</span>
+                                <span aria-hidden="true">→</span>
                             </button>
                         }
                     }
-
                 </div>
-
             </article>
-
         </div>
-
     </section>
 
+    <aside class="account-security-note"
+           aria-labelledby="account-security-note-title">
 
-    <section class="account-security-note">
+        <span class="account-note-icon"
+              aria-hidden="true">
 
-        <div class="account-security-note-icon"
-             aria-hidden="true">
-            i
-        </div>
+            <svg viewBox="0 0 24 24"
+                 width="21"
+                 height="21"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.8"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <circle cx="12"
+                        cy="12"
+                        r="9" />
+
+                <path d="M12 11v5M12 8h.01" />
+            </svg>
+        </span>
 
         <div>
-
-            <span>
-                SECURITY TIP
+            <span class="account-note-eyebrow">
+                БЕЗБЕДНОСЕН СОВЕТ
             </span>
 
-            <strong>
+            <h2 id="account-security-note-title">
                 Чувај го профилот безбеден
-            </strong>
+            </h2>
 
             <p>
-                Користи уникатна лозинка и активирај
-                two-factor authentication кога е достапна.
-                Не избирај „remember browser“ на јавни
-                или споделени уреди.
+                Користи уникатна лозинка. Доколку е достапна
+                двофакторската автентикација, активирај ја
+                за дополнителна заштита. Не избирај
+                „Запомни го прелистувачот“ на јавен или споделен уред.
             </p>
-
         </div>
-
-    </section>
-
+    </aside>
 </main>
-
 
 <style>
     .account-page {
         width: 100%;
+        min-width: 0;
     }
-
-
-    /* =====================================================
-       HERO
-       ===================================================== */
 
     .account-hero {
         position: relative;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 260px;
-        min-height: 300px;
+        grid-template-columns: minmax(0, 1fr) 245px;
         align-items: center;
-        gap: 2rem;
-        padding: clamp(2rem, 5vw, 4rem);
+        gap: 2.5rem;
+        min-height: 285px;
+        padding: clamp(2rem, 4.5vw, 3.5rem);
         overflow: hidden;
+        isolation: isolate;
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-xl);
-        background: radial-gradient( circle at 80% 30%, rgba(214, 168, 75, 0.11), transparent 26% ), radial-gradient( circle at 0% 100%, rgba(55, 96, 161, 0.13), transparent 32% ), linear-gradient( 145deg, #151e2b, #090e16 58%, #06090e );
-        box-shadow: var(--cinema-shadow);
-        isolation: isolate;
+        background: radial-gradient( circle at 85% 18%, rgba(214, 168, 75, .1), transparent 34% ), radial-gradient( circle at 0% 100%, rgba(68, 104, 158, .11), transparent 38% ), linear-gradient( 145deg, #151e2b, #090e16 60%, #070a10 );
+        box-shadow: var(--cinema-shadow-lg);
     }
 
         .account-hero::before {
             position: absolute;
-            z-index: -2;
             inset: 0;
+            z-index: -1;
             content: "";
-            opacity: 0.24;
-            background-image: linear-gradient( rgba(255, 255, 255, 0.022) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px );
-            background-size: 48px 48px;
-            mask-image: linear-gradient( 90deg, #000, transparent );
+            opacity: .18;
+            background-image: linear-gradient( rgba(255, 255, 255, .025) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, .025) 1px, transparent 1px );
+            background-size: 46px 46px;
+            -webkit-mask-image: linear-gradient(90deg, #000, transparent);
+            mask-image: linear-gradient(90deg, #000, transparent);
+            pointer-events: none;
         }
-
-    .account-hero-glow {
-        position: absolute;
-        z-index: -1;
-        top: -160px;
-        right: -100px;
-        width: 420px;
-        height: 420px;
-        border-radius: 50%;
-        background: rgba(214, 168, 75, 0.06);
-        filter: blur(20px);
-    }
 
     .account-hero-copy {
         position: relative;
-        z-index: 3;
-        max-width: 720px;
+        z-index: 2;
+        max-width: 750px;
+        min-width: 0;
     }
 
-        .account-hero-copy h1 {
-            margin-bottom: 1rem;
-            font-size: clamp( 3rem, 7vw, 5.4rem );
-            line-height: 0.95;
-            letter-spacing: -0.06em;
-        }
-
-        .account-hero-copy p {
-            max-width: 610px;
-            margin: 0;
-            color: var(--cinema-text-soft);
-            font-size: 0.95rem;
-            line-height: 1.75;
-        }
-
-
-    /* =====================================================
-       HERO SECURITY ART
-       ===================================================== */
-
-    .account-hero-security {
-        position: relative;
-        display: grid;
-        width: 230px;
-        height: 230px;
-        place-items: center;
+    .account-hero h1 {
+        margin: .9rem 0 1rem;
+        color: var(--cinema-text);
+        font-size: clamp(2.8rem, 5.2vw, 4.85rem);
+        line-height: 1.04;
+        letter-spacing: -.06em;
+        overflow-wrap: break-word;
     }
 
-    .account-security-ring {
-        position: absolute;
-        border: 1px solid rgba(214, 168, 75, 0.11);
-        border-radius: 50%;
-        animation: account-security-rotate 25s linear infinite;
-    }
-
-        .account-security-ring::after {
-            position: absolute;
-            top: -5px;
-            left: 50%;
-            width: 9px;
-            height: 9px;
-            content: "";
-            border-radius: 50%;
-            background: var(--cinema-gold);
-            box-shadow: 0 0 18px rgba(214, 168, 75, 0.65);
-        }
-
-    .account-security-ring-one {
-        width: 210px;
-        height: 210px;
-    }
-
-    .account-security-ring-two {
-        width: 150px;
-        height: 150px;
-        animation-direction: reverse;
-        animation-duration: 18s;
-    }
-
-    .account-security-shield {
-        position: relative;
-        z-index: 3;
-        display: grid;
-        width: 88px;
-        height: 102px;
-        place-items: center;
-        color: #a5e9c1;
-        border: 1px solid rgba(214, 168, 75, 0.30);
-        background: linear-gradient( 145deg, rgba(214, 168, 75, 0.15), rgba(214, 168, 75, 0.04) );
-        clip-path: polygon( 50% 0, 94% 16%, 88% 68%, 50% 100%, 12% 68%, 6% 16% );
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
-    }
-
-        .account-security-shield span {
-            display: grid;
-            width: 36px;
-            height: 36px;
-            place-items: center;
-            border: 1px solid rgba(66, 199, 131, 0.24);
-            border-radius: 50%;
-            background: rgba(66, 199, 131, 0.07);
-            font-weight: 900;
-        }
-
-
-    /* =====================================================
-       STATUS MESSAGE
-       ===================================================== */
-
-    .account-status-message {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.8rem;
-        margin-top: 1.2rem;
-        padding: 1rem 1.1rem;
-        border: 1px solid rgba(66, 199, 131, 0.17);
-        border-radius: var(--cinema-radius-md);
-        background: rgba(66, 199, 131, 0.045);
-        animation: account-status-enter 450ms ease-out;
-    }
-
-    .account-status-icon {
-        display: grid;
-        flex: 0 0 36px;
-        width: 36px;
-        height: 36px;
-        place-items: center;
-        color: #9ae8bd;
-        border: 1px solid rgba(66, 199, 131, 0.20);
-        border-radius: 10px;
-        background: rgba(66, 199, 131, 0.07);
-        font-size: 0.65rem;
-        font-weight: 900;
-    }
-
-    .account-status-message span {
-        display: block;
-        margin-bottom: 0.15rem;
-        color: #8fd8ad;
-        font-size: 0.51rem;
-        font-weight: 900;
-        letter-spacing: 0.11em;
-    }
-
-    .account-status-message p {
+    .account-hero-copy > p {
+        max-width: 620px;
         margin: 0;
         color: var(--cinema-text-soft);
-        font-size: 0.76rem;
-        line-height: 1.55;
+        font-size: .96rem;
+        line-height: 1.8;
     }
 
-
-    /* =====================================================
-       OVERVIEW
-       ===================================================== */
-
-    .account-overview {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 1rem;
-        margin-top: 1.2rem;
+    .account-hero-summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .6rem;
+        margin-top: 1.4rem;
     }
 
-    .account-overview-card {
-        position: relative;
-        min-width: 0;
-        padding: 1.2rem 1.3rem;
-        overflow: hidden;
-        border: 1px solid var(--cinema-border);
-        border-radius: var(--cinema-radius-lg);
-        background: linear-gradient( 145deg, rgba(20, 27, 39, 0.88), rgba(10, 14, 21, 0.92) );
-        box-shadow: var(--cinema-shadow-sm);
-        transition: transform var(--cinema-transition), border-color var(--cinema-transition);
+    .account-hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        min-height: 34px;
+        padding: .45rem .75rem;
+        color: #d2d9e4;
+        border: 1px solid rgba(255, 255, 255, .1);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .025);
+        font-size: .77rem;
+        font-weight: 650;
     }
 
-        .account-overview-card:hover {
-            border-color: var(--cinema-border-strong);
-            transform: translateY(-3px);
-        }
-
-    .account-overview-label {
+    .account-pill-dot {
         display: block;
-        margin-bottom: 0.55rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.53rem;
-        font-weight: 900;
-        letter-spacing: 0.13em;
-    }
-
-    .account-overview-card > strong {
-        display: inline-block;
-        color: var(--cinema-text);
-        font-size: 1.25rem;
-    }
-
-    .account-overview-card > small {
-        margin-left: 0.3rem;
-        color: var(--cinema-text-muted);
-        font-size: 0.65rem;
-    }
-
-    .account-overview-indicator {
-        position: absolute;
-        top: 1.25rem;
-        right: 1.25rem;
-        width: 8px;
-        height: 8px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
+        background: #76808d;
     }
 
-        .account-overview-indicator.active {
-            background: var(--cinema-success);
-            box-shadow: 0 0 13px rgba(66, 199, 131, 0.55);
+        .account-pill-dot.is-positive {
+            background: #42c783;
+            box-shadow: 0 0 10px rgba(66, 199, 131, .4);
         }
 
-        .account-overview-indicator.warning {
-            background: var(--cinema-warning);
-            box-shadow: 0 0 13px rgba(246, 200, 95, 0.45);
+        .account-pill-dot.is-warning {
+            background: #f6c85f;
         }
 
-        .account-overview-indicator.muted {
-            background: #5d6673;
+    .account-hero-visual {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 230px;
+        height: 230px;
+        pointer-events: none;
+    }
+
+    .account-orbit {
+        position: absolute;
+        border: 1px solid rgba(214, 168, 75, .1);
+        border-radius: 50%;
+        animation: account-orbit-rotate 32s linear infinite;
+    }
+
+        .account-orbit::after {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            content: "";
+            border-radius: 50%;
+            background: #d6a84b;
+            box-shadow: 0 0 18px rgba(214, 168, 75, .55);
         }
 
+    .account-orbit-large {
+        width: 215px;
+        height: 215px;
+    }
 
-    /* =====================================================
-       SETTINGS
-       ===================================================== */
+    .account-orbit-small {
+        width: 151px;
+        height: 151px;
+        animation-direction: reverse;
+        animation-duration: 23s;
+    }
+
+    .account-shield {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        width: 94px;
+        height: 104px;
+        filter: drop-shadow(0 15px 28px rgba(0, 0, 0, .25));
+    }
+
+    .account-feedback {
+        display: flex;
+        align-items: flex-start;
+        gap: .85rem;
+        margin-top: 1.2rem;
+        padding: 1rem 1.15rem;
+        border: 1px solid rgba(66, 199, 131, .24);
+        border-radius: 14px;
+        background: rgba(66, 199, 131, .055);
+    }
+
+    .account-feedback-warning {
+        border-color: rgba(246, 200, 95, .25);
+        background: rgba(246, 200, 95, .06);
+    }
+
+    .account-feedback-symbol {
+        display: grid;
+        flex: 0 0 29px;
+        place-items: center;
+        width: 29px;
+        height: 29px;
+        border: 1px solid rgba(66, 199, 131, .25);
+        border-radius: 50%;
+        color: #9ae8bd;
+        font-weight: 800;
+    }
+
+    .account-feedback-warning .account-feedback-symbol {
+        border-color: rgba(246, 200, 95, .32);
+        color: #f0cb76;
+    }
+
+    .account-feedback strong {
+        display: block;
+        margin-bottom: .15rem;
+        color: var(--cinema-text);
+        font-size: .88rem;
+    }
+
+    .account-feedback p {
+        margin: 0;
+        color: var(--cinema-text-soft);
+        font-size: .82rem;
+        line-height: 1.6;
+    }
 
     .account-settings {
-        margin-top: clamp(3rem, 6vw, 5rem);
+        margin-top: clamp(2.6rem, 4.5vw, 3.8rem);
     }
 
     .account-section-heading {
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
-        gap: 2rem;
-        margin-bottom: 1.5rem;
+        gap: 1.5rem;
+        margin-bottom: 1.35rem;
     }
 
         .account-section-heading h2 {
-            margin: 0;
-            font-size: clamp( 1.8rem, 4vw, 2.5rem );
+            margin: .3rem 0 0;
+            font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+            letter-spacing: -.04em;
         }
 
         .account-section-heading > p {
-            max-width: 460px;
-            margin: 0;
+            max-width: 310px;
+            margin: 0 0 .15rem;
             color: var(--cinema-text-muted);
-            font-size: 0.76rem;
+            font-size: .81rem;
             line-height: 1.65;
             text-align: right;
         }
@@ -838,337 +670,255 @@
     .account-settings-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: stretch;
         gap: 1rem;
     }
 
-
-    /* =====================================================
-       SETTING CARDS
-       ===================================================== */
-
     .account-setting-card {
         display: flex;
-        min-width: 0;
-        min-height: 370px;
         flex-direction: column;
-        padding: 1.4rem;
+        min-width: 0;
+        min-height: 360px;
+        padding: clamp(1.3rem, 2.2vw, 1.7rem);
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-lg);
-        background: linear-gradient( 145deg, rgba(20, 27, 39, 0.86), rgba(9, 13, 20, 0.94) );
+        background: radial-gradient( circle at 100% 0%, rgba(214, 168, 75, .04), transparent 35% ), linear-gradient( 145deg, rgba(21, 29, 41, .96), rgba(9, 13, 20, .98) );
         box-shadow: var(--cinema-shadow-sm);
         transition: transform var(--cinema-transition), border-color var(--cinema-transition), box-shadow var(--cinema-transition);
     }
 
         .account-setting-card:hover {
-            border-color: rgba(214, 168, 75, 0.20);
-            box-shadow: var(--cinema-shadow);
-            transform: translateY(-4px);
+            border-color: rgba(214, 168, 75, .23);
+            transform: translateY(-3px);
+            box-shadow: var(--cinema-shadow-lg);
         }
 
-    .account-two-factor-card.enabled {
-        border-color: rgba(66, 199, 131, 0.15);
-        background: radial-gradient( circle at 100% 0%, rgba(66, 199, 131, 0.055), transparent 36% ), linear-gradient( 145deg, rgba(20, 27, 39, 0.86), rgba(9, 13, 20, 0.94) );
+    .account-two-factor-on {
+        border-color: rgba(66, 199, 131, .22);
     }
 
-    .account-setting-top {
+    .account-card-heading {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        gap: 1rem;
+        gap: .7rem;
     }
 
     .account-setting-icon {
-        position: relative;
         display: grid;
-        width: 48px;
-        height: 48px;
+        flex: 0 0 49px;
         place-items: center;
+        width: 49px;
+        height: 49px;
         color: var(--cinema-gold-light);
-        border: 1px solid rgba(214, 168, 75, 0.18);
+        border: 1px solid rgba(214, 168, 75, .22);
         border-radius: 14px;
-        background: rgba(214, 168, 75, 0.055);
+        background: rgba(214, 168, 75, .055);
     }
 
-
-    /* PASSWORD ICON */
-
-    .account-lock {
-        position: relative;
-        display: block;
-        width: 20px;
-        height: 17px;
-        margin-top: 7px;
-        border: 2px solid currentColor;
-        border-radius: 5px;
-    }
-
-        .account-lock::before {
-            position: absolute;
-            top: -12px;
-            left: 4px;
-            width: 9px;
-            height: 11px;
-            content: "";
-            border: 2px solid currentColor;
-            border-bottom: 0;
-            border-radius: 7px 7px 0 0;
-        }
-
-
-    /* CONNECTION ICON */
-
-    .account-setting-icon.connections {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-    }
-
-        .account-setting-icon.connections > span {
-            position: relative;
-            display: block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid currentColor;
-            border-radius: 50%;
-        }
-
-            .account-setting-icon.connections > span:first-child::after {
-                position: absolute;
-                top: 4px;
-                left: 10px;
-                width: 9px;
-                height: 2px;
-                content: "";
-                background: currentColor;
-            }
-
-
-    /* 2FA ICON */
-
-    .account-setting-icon.two-factor > span {
-        display: grid;
-        width: 27px;
-        height: 27px;
-        place-items: center;
-        border: 1px solid rgba(214, 168, 75, 0.24);
-        border-radius: 9px;
-        font-size: 0.75rem;
-        font-weight: 900;
-    }
-
-
-    /* STATUS */
-
-    .account-setting-status {
+    .account-card-status {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        padding: 0.4rem 0.55rem;
+        gap: .4rem;
+        max-width: 62%;
+        padding: .38rem .6rem;
         border-radius: 999px;
-        color: var(--cinema-text-muted);
-        background: rgba(255, 255, 255, 0.03);
-        font-size: 0.49rem;
-        font-weight: 900;
-        letter-spacing: 0.07em;
+        color: #b9c3d0;
+        background: rgba(255, 255, 255, .045);
+        font-size: .67rem;
+        font-weight: 750;
+        line-height: 1.35;
+        text-align: right;
     }
 
-        .account-setting-status > span {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-        }
-
-        .account-setting-status.success {
-            color: #91dcb0;
-            background: rgba(66, 199, 131, 0.055);
-        }
-
-            .account-setting-status.success > span {
-                background: var(--cinema-success);
-                box-shadow: 0 0 10px rgba(66, 199, 131, 0.55);
-            }
-
-        .account-setting-status.warning {
-            color: #e6c67d;
-            background: rgba(246, 200, 95, 0.05);
-        }
-
-            .account-setting-status.warning > span {
-                background: var(--cinema-warning);
-            }
-
-        .account-setting-status.muted {
-            color: var(--cinema-text-muted);
-        }
-
-            .account-setting-status.muted > span {
-                background: #646d79;
-            }
-
-
-    /* CARD CONTENT */
-
-    .account-setting-content {
-        padding: 2rem 0 1.5rem;
+    .account-card-status-dot {
+        flex: 0 0 6px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #6c7888;
     }
 
-    .account-setting-number {
+    .account-card-status.is-success {
+        color: #a2eac0;
+        background: rgba(66, 199, 131, .09);
+    }
+
+        .account-card-status.is-success .account-card-status-dot {
+            background: #42c783;
+        }
+
+    .account-card-status.is-warning {
+        color: #f4d28e;
+        background: rgba(246, 200, 95, .08);
+    }
+
+        .account-card-status.is-warning .account-card-status-dot {
+            background: #f6c85f;
+        }
+
+    .account-card-content {
+        flex: 1;
+        padding: 1.75rem 0 1.5rem;
+    }
+
+    .account-card-number {
         display: block;
-        margin-bottom: 0.45rem;
+        margin-bottom: .5rem;
         color: var(--cinema-gold-light);
-        font-size: 0.52rem;
-        font-weight: 900;
-        letter-spacing: 0.1em;
+        font-size: .67rem;
+        font-weight: 800;
+        letter-spacing: .085em;
     }
 
-    .account-setting-content h3 {
-        margin-bottom: 0.8rem;
+    .account-card-content h3 {
+        margin: 0 0 .8rem;
         color: var(--cinema-text);
-        font-size: 1.25rem;
+        font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+        line-height: 1.3;
+        overflow-wrap: break-word;
     }
 
-    .account-setting-content > p {
+    .account-card-content > p {
         margin: 0;
-        color: var(--cinema-text-muted);
-        font-size: 0.74rem;
-        line-height: 1.7;
+        color: var(--cinema-text-soft);
+        font-size: .84rem;
+        line-height: 1.75;
     }
 
-
-    /* TRUSTED BROWSER */
-
-    .account-browser-status {
+    .account-browser-note {
         display: flex;
         align-items: flex-start;
-        gap: 0.6rem;
-        margin-top: 1rem;
-        padding: 0.75rem;
-        border: 1px solid rgba(66, 199, 131, 0.13);
-        border-radius: 10px;
-        background: rgba(66, 199, 131, 0.035);
+        gap: .6rem;
+        margin-top: 1.1rem;
+        padding: .75rem;
+        border: 1px solid rgba(66, 199, 131, .17);
+        border-radius: 11px;
+        background: rgba(66, 199, 131, .045);
     }
 
-        .account-browser-status > span {
+        .account-browser-note > span {
             display: grid;
             flex: 0 0 23px;
+            place-items: center;
             width: 23px;
             height: 23px;
-            place-items: center;
-            color: #9ae8bd;
-            border: 1px solid rgba(66, 199, 131, 0.18);
+            border: 1px solid rgba(66, 199, 131, .28);
             border-radius: 50%;
-            font-size: 0.5rem;
+            color: #a1e9c0;
+            font-size: .68rem;
+            font-weight: 800;
         }
 
-        .account-browser-status strong {
+        .account-browser-note strong {
             display: block;
+            margin-bottom: .1rem;
             color: var(--cinema-text-soft);
-            font-size: 0.68rem;
+            font-size: .74rem;
         }
 
-        .account-browser-status small {
+        .account-browser-note small {
             display: block;
-            margin-top: 0.1rem;
             color: var(--cinema-text-muted);
-            font-size: 0.6rem;
-            line-height: 1.45;
+            font-size: .72rem;
+            line-height: 1.5;
         }
 
+    .account-browser-note-muted {
+        border-color: rgba(214, 168, 75, .15);
+        background: rgba(214, 168, 75, .03);
+    }
 
-    /* CARD FOOTER */
+        .account-browser-note-muted > span {
+            border-color: rgba(214, 168, 75, .2);
+            color: #e2bc68;
+        }
 
-    .account-setting-footer {
-        margin-top: auto;
+    .account-card-action {
         padding-top: 1rem;
         border-top: 1px solid var(--cinema-border);
     }
-
-    .account-setting-action {
-        display: flex;
-        width: 100%;
-        min-height: 46px;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding-right: 0.95rem;
-        padding-left: 0.95rem;
-        font-size: 0.72rem;
-    }
-
-        .account-setting-action > span:last-child {
-            transition: transform var(--cinema-transition);
-        }
-
-        .account-setting-action:hover > span:last-child {
-            transform: translateX(4px);
-        }
 
     .account-security-form {
         width: 100%;
         margin: 0;
     }
 
+    .account-card-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .85rem;
+        width: 100%;
+        min-height: 47px;
+        padding: .75rem .95rem;
+        font-size: .82rem;
+        font-weight: 750;
+        text-align: left;
+    }
 
-    /* =====================================================
-       SECURITY NOTE
-       ===================================================== */
+        .account-card-button > span:last-child {
+            flex: 0 0 auto;
+            transition: transform var(--cinema-transition);
+        }
+
+        .account-card-button:hover > span:last-child {
+            transform: translateX(3px);
+        }
 
     .account-security-note {
         display: flex;
         align-items: flex-start;
         gap: 1rem;
-        margin-top: 1.2rem;
-        padding: 1.2rem;
+        margin-top: 1.15rem;
+        padding: 1.15rem 1.4rem;
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-lg);
-        background: rgba(255, 255, 255, 0.018);
+        background: rgba(255, 255, 255, .019);
     }
 
-    .account-security-note-icon {
+    .account-note-icon {
         display: grid;
-        flex: 0 0 40px;
-        width: 40px;
-        height: 40px;
+        flex: 0 0 43px;
         place-items: center;
+        width: 43px;
+        height: 43px;
         color: var(--cinema-gold-light);
-        border: 1px solid rgba(214, 168, 75, 0.17);
+        border: 1px solid rgba(214, 168, 75, .2);
         border-radius: 12px;
-        background: rgba(214, 168, 75, 0.05);
-        font-family: Georgia, serif;
-        font-size: 0.78rem;
-        font-weight: bold;
+        background: rgba(214, 168, 75, .06);
     }
 
-    .account-security-note span {
+    .account-note-eyebrow {
         display: block;
-        margin-bottom: 0.15rem;
+        margin-bottom: .2rem;
         color: var(--cinema-gold-light);
-        font-size: 0.51rem;
-        font-weight: 900;
-        letter-spacing: 0.11em;
+        font-size: .65rem;
+        font-weight: 800;
+        letter-spacing: .09em;
     }
 
-    .account-security-note strong {
-        display: block;
+    .account-security-note h2 {
+        margin: 0 0 .3rem;
         color: var(--cinema-text);
-        font-size: 0.8rem;
+        font-size: .96rem;
     }
 
     .account-security-note p {
-        max-width: 760px;
-        margin: 0.25rem 0 0;
+        max-width: 900px;
+        margin: 0;
         color: var(--cinema-text-muted);
-        font-size: 0.68rem;
-        line-height: 1.6;
+        font-size: .79rem;
+        line-height: 1.7;
     }
 
+    .account-page a:focus-visible,
+    .account-page button:focus-visible {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 3px;
+    }
 
-    /* =====================================================
-       ANIMATIONS
-       ===================================================== */
-
-    @@keyframes account-security-rotate {
+    @@keyframes account-orbit-rotate {
         from {
             transform: rotate(0deg);
         }
@@ -1178,99 +928,87 @@
         }
     }
 
-    @@keyframes account-status-enter {
-        from {
-            opacity: 0;
-            transform: translateY(-8px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-
-    /* =====================================================
-       RESPONSIVE
-       ===================================================== */
-
-    @@media (max-width: 1050px) {
+    @@media (max-width: 1060px) {
         .account-settings-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .account-two-factor-card {
-            grid-column: 1 / -1;
-        }
+            .account-settings-grid > article:last-child {
+                grid-column: 1 / -1;
+            }
     }
 
-    @@media (max-width: 800px) {
+    @@media (max-width: 790px) {
         .account-hero {
-            grid-template-columns: 1fr;
+            grid-template-columns: minmax(0, 1fr);
             min-height: 0;
         }
 
-        .account-hero-security {
+        .account-hero-visual {
             display: none;
-        }
-
-        .account-overview {
-            grid-template-columns: 1fr;
         }
 
         .account-section-heading {
             align-items: flex-start;
             flex-direction: column;
-            gap: 0.7rem;
+            gap: .65rem;
         }
 
             .account-section-heading > p {
-                max-width: 600px;
+                max-width: 100%;
                 text-align: left;
             }
 
         .account-settings-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: minmax(0, 1fr);
         }
 
-        .account-two-factor-card {
-            grid-column: auto;
-        }
+            .account-settings-grid > article:last-child {
+                grid-column: auto;
+            }
 
         .account-setting-card {
-            min-height: 330px;
+            min-height: 0;
         }
     }
 
     @@media (max-width: 575.98px) {
         .account-hero {
-            padding: 2rem 1.2rem;
+            padding: 2rem 1.25rem;
             border-radius: var(--cinema-radius-lg);
         }
 
-        .account-hero-copy h1 {
-            font-size: 3rem;
-        }
+            .account-hero h1 {
+                font-size: clamp(2.35rem, 9vw, 3.2rem);
+            }
 
         .account-setting-card {
-            min-height: 0;
+            padding: 1.35rem 1.2rem;
+        }
+
+        .account-card-status {
+            max-width: 66%;
+            font-size: .64rem;
         }
 
         .account-security-note {
-            align-items: flex-start;
+            padding: 1rem;
+            gap: .8rem;
         }
     }
 
     @@media (prefers-reduced-motion: reduce) {
-        .account-security-ring,
-        .account-status-message {
+        .account-orbit {
             animation: none;
         }
 
         .account-setting-card,
-        .account-overview-card {
+        .account-card-button > span:last-child {
             transition: none;
         }
+
+            .account-setting-card:hover {
+                transform: none;
+            }
     }
 </style>

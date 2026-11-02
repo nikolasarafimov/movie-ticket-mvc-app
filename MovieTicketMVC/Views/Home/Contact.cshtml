@@ -1,352 +1,198 @@
 ﻿@{
     ViewBag.Title = "Контакт";
+
+    var isAuthenticated =
+        User != null &&
+        User.Identity != null &&
+        User.Identity.IsAuthenticated;
+
+    var isAdmin = isAuthenticated && User.IsInRole("Admin");
+
+    var contactEmail = "info@movieticketapp.com";
+    var contactPhone = "+389 70 123 456";
+    var contactEmailUrl = "mailto:" + contactEmail;
+    var contactPhoneUrl = "tel:+38970123456";
+
+    var currentMoviesUrl = Url.Action("Current", "Movies");
+    var ticketsUrl = Url.Action("Index", "Tickets");
+    var loginUrl = Url.Action("Login", "Account", new { returnUrl = ticketsUrl });
 }
 
-<main class="contact-page"
-      aria-labelledby="contact-title">
+<div class="contact-page" aria-labelledby="contact-title">
 
-    <section class="contact-hero">
-
-        <div class="contact-hero-glow contact-hero-glow-one"
-             aria-hidden="true">
-        </div>
-
-        <div class="contact-hero-glow contact-hero-glow-two"
-             aria-hidden="true">
-        </div>
-
+    <section class="contact-hero" aria-labelledby="contact-title">
+        <div class="contact-hero-glow contact-hero-glow-one" aria-hidden="true"></div>
+        <div class="contact-hero-glow contact-hero-glow-two" aria-hidden="true"></div>
 
         <div class="contact-hero-content">
-
-            <div class="cinema-eyebrow">
-                CONTACT & SUPPORT
-            </div>
+            <div class="cinema-eyebrow">КОНТАКТ И ПОДДРШКА</div>
 
             <h1 id="contact-title">
                 Како можеме да
-                <span class="cinema-text-gradient">
-                    помогнеме?
-                </span>
+                <span class="cinema-text-gradient">помогнеме?</span>
             </h1>
 
             <p>
-                Имаш прашање за резервација, билет или
-                користењето на MovieTicket? Контактирај нè
-                преку e-mail или телефон.
+                Имаш прашање за резервација, билет или користењето на MovieTicket?
+                Контактирај нè преку е-пошта или телефон.
             </p>
-
 
             <div class="contact-hero-actions">
-
-                <a class="btn btn-primary"
-                   href="mailto:info@movieticketapp.com">
-
-                    <span>
-                        Испрати e-mail
-                    </span>
-
-                    <span aria-hidden="true">
-                        →
-                    </span>
-
+                <a class="btn btn-primary contact-primary-action"
+                   href="@contactEmailUrl"
+                   aria-label="Испрати е-пошта на @contactEmail">
+                    <span>Испрати порака</span>
+                    <span aria-hidden="true">→</span>
                 </a>
 
-                <a class="btn btn-outline-secondary"
-                   href="@Url.Action("Current", "Movies")">
-
+                <a class="btn btn-outline-secondary" href="@currentMoviesUrl">
                     Прегледај филмови
-
                 </a>
-
             </div>
-
         </div>
 
-
-        <div class="contact-hero-art"
-             aria-hidden="true">
-
-            <div class="contact-orbit
-                        contact-orbit-large">
-            </div>
-
-            <div class="contact-orbit
-                        contact-orbit-small">
-            </div>
-
+        <div class="contact-hero-art" aria-hidden="true">
+            <div class="contact-orbit contact-orbit-large"></div>
+            <div class="contact-orbit contact-orbit-small"></div>
 
             <div class="contact-message-art">
-
-                <div class="contact-message-art-line">
-                </div>
-
-                <div class="contact-message-art-line short">
-                </div>
-
-                <div class="contact-message-art-line medium">
-                </div>
-
-                <span>
-                    &#64;
-                </span>
-
+                <div class="contact-message-art-line"></div>
+                <div class="contact-message-art-line short"></div>
+                <div class="contact-message-art-line medium"></div>
+                <span>&#64;</span>
             </div>
-
         </div>
-
     </section>
 
-
-    <section class="contact-section">
-
+    <section class="contact-section" aria-labelledby="contact-information-title">
         <div class="contact-section-heading">
-
             <div>
-
-                <div class="cinema-eyebrow">
-                    GET IN TOUCH
-                </div>
-
-                <h2>
-                    Контакт информации
-                </h2>
-
+                <div class="cinema-eyebrow">СТАПИ ВО КОНТАКТ</div>
+                <h2 id="contact-information-title">Контакт информации</h2>
             </div>
 
-            <p>
-                Избери го начинот што најмногу ти одговара.
-            </p>
-
+            <p>Избери го начинот што најмногу ти одговара.</p>
         </div>
-
 
         <div class="contact-grid">
-
             <article class="contact-card">
-
                 <div class="contact-card-top">
-
-                    <div class="contact-card-icon"
-                         aria-hidden="true">
-                        &#64;
-                    </div>
-
-                    <span class="contact-card-number">
-                        01
-                    </span>
-
+                    <div class="contact-card-icon" aria-hidden="true">&#64;</div>
+                    <span class="contact-card-number">01</span>
                 </div>
-
 
                 <div class="contact-card-content">
-
-                    <span>
-                        E-MAIL
-                    </span>
-
-                    <h3>
-                        Пиши ни
-                    </h3>
-
+                    <span>Е-ПОШТА</span>
+                    <h3>Пиши ни</h3>
                     <p>
-                        За прашања поврзани со билети,
-                        резервации или MovieTicket профилот.
+                        За прашања поврзани со билети, резервации
+                        или твојот MovieTicket профил.
                     </p>
-
                 </div>
 
-
                 <a class="contact-card-link"
-                   href="mailto:info@movieticketapp.com">
-
-                    <span>
-                        info@movieticketapp.com
-                    </span>
-
-                    <span aria-hidden="true">
-                        →
-                    </span>
-
+                   href="@contactEmailUrl"
+                   aria-label="Испрати е-пошта на @contactEmail">
+                    <span>@contactEmail</span>
+                    <span aria-hidden="true">→</span>
                 </a>
-
             </article>
-
 
             <article class="contact-card">
-
                 <div class="contact-card-top">
-
-                    <div class="contact-card-icon phone"
-                         aria-hidden="true">
-
-                        <span></span>
-
+                    <div class="contact-card-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="22" height="22" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="1.8"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 11.2 18a19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 1.3 3.2 2 2 0 0 1 3.3 1h3a2 2 0 0 1 2 1.7c.12.97.35 1.91.68 2.82a2 2 0 0 1-.45 2.11L7.3 8.9a16 16 0 0 0 7.8 7.8l1.28-1.23a2 2 0 0 1 2.12-.45c.9.33 1.84.56 2.81.68a2 2 0 0 1 1.69 2Z" transform="translate(0 0) scale(.95)" />
+                        </svg>
                     </div>
-
-                    <span class="contact-card-number">
-                        02
-                    </span>
-
+                    <span class="contact-card-number">02</span>
                 </div>
-
 
                 <div class="contact-card-content">
-
-                    <span>
-                        PHONE
-                    </span>
-
-                    <h3>
-                        Јави ни се
-                    </h3>
-
+                    <span>ТЕЛЕФОН</span>
+                    <h3>Јави ни се</h3>
                     <p>
-                        Директен контакт доколку ти е потребна
-                        помош со користењето на платформата.
+                        Контактирај нè директно доколку ти е потребна
+                        помош при користењето на платформата.
                     </p>
-
                 </div>
 
-
                 <a class="contact-card-link"
-                   href="tel:+38970123456">
-
-                    <span>
-                        +389 70 123 456
-                    </span>
-
-                    <span aria-hidden="true">
-                        →
-                    </span>
-
+                   href="@contactPhoneUrl"
+                   aria-label="Јави се на @contactPhone">
+                    <span>@contactPhone</span>
+                    <span aria-hidden="true">→</span>
                 </a>
-
             </article>
-
         </div>
-
     </section>
 
-
-    <section class="contact-support-panel">
-
+    <section class="contact-support-panel" aria-labelledby="contact-support-title">
         <div class="contact-support-copy">
-
-            <div class="contact-support-icon"
-                 aria-hidden="true">
-
-                <span>
-                    ?
-                </span>
-
+            <div class="contact-support-icon" aria-hidden="true">
+                <span>?</span>
             </div>
-
 
             <div>
-
-                <span class="contact-support-label">
-                    BEFORE CONTACTING US
-                </span>
-
-                <h2>
-                    Провери ги деталите за билетот
-                </h2>
-
+                <span class="contact-support-label">ПРЕД ДА НÈ КОНТАКТИРАШ</span>
+                <h2 id="contact-support-title">Провери ги деталите за билетот</h2>
                 <p>
-                    За прашања поврзани со конкретна
-                    резервација, деталите за филмот,
-                    датумот, терминот и седиштата можеш
-                    да ги најдеш во делот со твоите билети.
+                    Ако прашањето се однесува на резервација, деталите за филмот,
+                    датумот, терминот и седиштата можеш да ги најдеш во делот со билети.
                 </p>
-
             </div>
-
         </div>
 
-
-        @if (Request.IsAuthenticated)
+        @if (isAuthenticated)
         {
-            <a class="btn btn-outline-secondary"
-               href="@Url.Action("Index", "Tickets")">
-
-                Мои билети
-
+            <a class="btn btn-outline-secondary" href="@ticketsUrl">
+                @(isAdmin ? "Сите билети" : "Мои билети")
             </a>
         }
         else
         {
-            <a class="btn btn-outline-secondary"
-               href="@Url.Action("Login", "Account")">
-
+            <a class="btn btn-outline-secondary" href="@loginUrl">
                 Најави се
-
             </a>
         }
-
     </section>
 
-
-    <section class="contact-bottom">
-
+    <section class="contact-bottom" aria-labelledby="contact-bottom-title">
         <div>
-
-            <div class="cinema-eyebrow">
-                READY FOR THE NEXT MOVIE?
-            </div>
-
-            <h2>
-                Назад кон големото платно.
-            </h2>
-
-            <p>
-                Прегледај ги актуелните филмови и
-                избери го следниот термин.
-            </p>
-
+            <div class="cinema-eyebrow">ПОДГОТВЕН ЗА СЛЕДНИОТ ФИЛМ?</div>
+            <h2 id="contact-bottom-title">Назад кон големото платно.</h2>
+            <p>Прегледај ги актуелните филмови и избери го следниот термин.</p>
         </div>
 
-
-        <a class="btn btn-primary"
-           href="@Url.Action("Current", "Movies")">
-
-            <span>
-                Актуелни филмови
-            </span>
-
-            <span aria-hidden="true">
-                →
-            </span>
-
+        <a class="btn btn-primary" href="@currentMoviesUrl">
+            <span>Актуелни филмови</span>
+            <span aria-hidden="true">→</span>
         </a>
-
     </section>
-
-</main>
-
+</div>
 
 <style>
     .contact-page {
         width: 100%;
+        min-width: 0;
     }
-
-
-    /* =====================================================
-       HERO
-       ===================================================== */
 
     .contact-hero {
         position: relative;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 310px;
-        min-height: 430px;
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 310px);
         align-items: center;
         gap: 2rem;
+        min-height: 440px;
         padding: clamp(2rem, 6vw, 4.5rem);
         overflow: hidden;
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-xl);
-        background: radial-gradient( circle at 82% 25%, rgba(214, 168, 75, 0.12), transparent 28% ), radial-gradient( circle at 0% 100%, rgba(58, 101, 169, 0.14), transparent 32% ), linear-gradient( 145deg, #151e2b, #090e16 58%, #06090e );
-        box-shadow: var(--cinema-shadow);
+        background: radial-gradient(circle at 82% 25%, rgba(214, 168, 75, 0.12), transparent 28%), radial-gradient(circle at 0% 100%, rgba(58, 101, 169, 0.14), transparent 32%), linear-gradient(145deg, #151e2b, #090e16 58%, #06090e);
+        box-shadow: var(--cinema-shadow-lg);
         isolation: isolate;
     }
 
@@ -356,9 +202,11 @@
             inset: 0;
             content: "";
             opacity: 0.24;
-            background-image: linear-gradient( rgba(255, 255, 255, 0.022) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px );
+            background-image: linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
             background-size: 48px 48px;
-            mask-image: linear-gradient( 90deg, #000, transparent );
+            mask-image: linear-gradient(90deg, #000, transparent);
+            -webkit-mask-image: linear-gradient(90deg, #000, transparent);
+            pointer-events: none;
         }
 
     .contact-hero-glow {
@@ -388,22 +236,24 @@
     .contact-hero-content {
         position: relative;
         z-index: 3;
+        min-width: 0;
         max-width: 760px;
     }
 
     .contact-hero h1 {
         max-width: 720px;
         margin-bottom: 1.3rem;
-        font-size: clamp( 3.2rem, 7vw, 5.8rem );
-        line-height: 0.94;
-        letter-spacing: -0.065em;
+        font-size: clamp(2.8rem, 6vw, 5.4rem);
+        line-height: 1.04;
+        letter-spacing: -0.055em;
+        overflow-wrap: break-word;
     }
 
     .contact-hero-content > p {
         max-width: 600px;
         margin: 0;
-        color: var(--cinema-text-soft);
-        font-size: 0.98rem;
+        color: #c9d0dc;
+        font-size: 1rem;
         line-height: 1.8;
     }
 
@@ -415,39 +265,38 @@
     }
 
         .contact-hero-actions .btn {
-            min-height: 48px;
-        }
-
-        .contact-hero-actions
-        .btn-primary {
             display: inline-flex;
-            min-width: 190px;
             align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
+            justify-content: center;
+            min-height: 46px;
         }
 
-            .contact-hero-actions
-            .btn-primary > span:last-child {
-                transition: transform var(--cinema-transition);
-            }
+    .contact-primary-action {
+        justify-content: space-between !important;
+        gap: 1rem;
+        min-width: 190px;
+    }
 
-            .contact-hero-actions
-            .btn-primary:hover > span:last-child {
-                transform: translateX(5px);
-            }
+        .contact-primary-action > span:last-child,
+        .contact-bottom > .btn > span:last-child,
+        .contact-card-link > span:last-child {
+            transition: transform var(--cinema-transition);
+        }
 
-
-    /* =====================================================
-       HERO ART
-       ===================================================== */
+        .contact-primary-action:hover > span:last-child,
+        .contact-bottom > .btn:hover > span:last-child,
+        .contact-card-link:hover > span:last-child {
+            transform: translateX(4px);
+        }
 
     .contact-hero-art {
         position: relative;
         display: grid;
-        width: 280px;
-        height: 280px;
         place-items: center;
+        width: min(100%, 280px);
+        height: 280px;
+        margin-inline: auto;
+        pointer-events: none;
     }
 
     .contact-orbit {
@@ -489,12 +338,10 @@
         padding: 1.5rem 1.25rem;
         border: 1px solid rgba(214, 168, 75, 0.27);
         border-radius: 22px 22px 22px 7px;
-        background: linear-gradient( 145deg, rgba(31, 41, 56, 0.85), rgba(10, 14, 21, 0.94) );
+        background: linear-gradient(145deg, rgba(31, 41, 56, 0.88), rgba(10, 14, 21, 0.97));
         box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), 0 0 45px rgba(214, 168, 75, 0.06);
         transform: rotate(-3deg);
         animation: contact-message-float 6s ease-in-out infinite;
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
     }
 
         .contact-message-art > span {
@@ -511,7 +358,7 @@
         height: 5px;
         margin-bottom: 9px;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.13);
+        background: rgba(255, 255, 255, 0.17);
     }
 
         .contact-message-art-line.short {
@@ -522,38 +369,28 @@
             width: 78%;
         }
 
-
-    /* =====================================================
-       SECTION
-       ===================================================== */
-
     .contact-section {
-        margin-top: clamp(3rem, 6vw, 5rem);
+        margin-top: clamp(3.5rem, 6vw, 5rem);
     }
 
     .contact-section-heading {
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
-        gap: 2rem;
+        gap: 1.5rem;
         margin-bottom: 1.5rem;
     }
 
         .contact-section-heading h2 {
             margin: 0;
-            font-size: clamp( 1.9rem, 4vw, 2.6rem );
+            font-size: clamp(1.9rem, 4vw, 2.6rem);
         }
 
         .contact-section-heading > p {
-            margin: 0;
-            color: var(--cinema-text-muted);
-            font-size: 0.76rem;
+            margin: 0 0 0.25rem;
+            color: #9da7b8;
+            font-size: 0.86rem;
         }
-
-
-    /* =====================================================
-       CONTACT CARDS
-       ===================================================== */
 
     .contact-grid {
         display: grid;
@@ -563,20 +400,21 @@
 
     .contact-card {
         display: flex;
-        min-height: 330px;
         flex-direction: column;
-        padding: clamp(1.4rem, 3vw, 2rem);
+        min-width: 0;
+        min-height: 310px;
+        padding: clamp(1.5rem, 3vw, 2rem);
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-lg);
-        background: radial-gradient( circle at 100% 0%, rgba(214, 168, 75, 0.045), transparent 34% ), linear-gradient( 145deg, rgba(20, 27, 39, 0.88), rgba(9, 13, 20, 0.95) );
+        background: radial-gradient(circle at 100% 0%, rgba(214, 168, 75, 0.045), transparent 34%), linear-gradient(145deg, rgba(20, 27, 39, 0.9), rgba(9, 13, 20, 0.96));
         box-shadow: var(--cinema-shadow-sm);
         transition: transform var(--cinema-transition), border-color var(--cinema-transition), box-shadow var(--cinema-transition);
     }
 
         .contact-card:hover {
-            border-color: rgba(214, 168, 75, 0.22);
-            box-shadow: var(--cinema-shadow);
-            transform: translateY(-5px);
+            border-color: rgba(214, 168, 75, 0.28);
+            box-shadow: var(--cinema-shadow-lg);
+            transform: translateY(-4px);
         }
 
     .contact-card-top {
@@ -588,82 +426,48 @@
 
     .contact-card-icon {
         display: grid;
+        place-items: center;
         width: 52px;
         height: 52px;
-        place-items: center;
         color: var(--cinema-gold-light);
-        border: 1px solid rgba(214, 168, 75, 0.19);
+        border: 1px solid rgba(214, 168, 75, 0.2);
         border-radius: 15px;
         background: rgba(214, 168, 75, 0.055);
-        font-size: 0.85rem;
-        font-weight: 900;
+        font-size: 1.1rem;
+        font-weight: 800;
     }
 
-        .contact-card-icon.phone {
-            position: relative;
-        }
-
-            .contact-card-icon.phone > span {
-                position: relative;
-                display: block;
-                width: 14px;
-                height: 25px;
-                border: 2px solid currentColor;
-                border-radius: 7px 7px 9px 9px;
-                transform: rotate(-30deg);
-            }
-
-                .contact-card-icon.phone > span::before,
-                .contact-card-icon.phone > span::after {
-                    position: absolute;
-                    left: 50%;
-                    width: 7px;
-                    height: 4px;
-                    content: "";
-                    border-radius: 4px;
-                    background: currentColor;
-                    transform: translateX(-50%);
-                }
-
-                .contact-card-icon.phone > span::before {
-                    top: -3px;
-                }
-
-                .contact-card-icon.phone > span::after {
-                    bottom: -3px;
-                }
-
     .contact-card-number {
-        color: var(--cinema-text-muted);
-        font-size: 0.56rem;
-        font-weight: 900;
-        letter-spacing: 0.12em;
+        color: #9da7b8;
+        font-size: 0.67rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
     }
 
     .contact-card-content {
-        padding: 2.2rem 0 1.5rem;
+        padding: 2rem 0 1.6rem;
     }
 
         .contact-card-content > span {
             display: block;
-            margin-bottom: 0.45rem;
+            margin-bottom: 0.55rem;
             color: var(--cinema-gold-light);
-            font-size: 0.52rem;
-            font-weight: 900;
-            letter-spacing: 0.13em;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
         }
 
         .contact-card-content h3 {
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.7rem;
             color: var(--cinema-text);
-            font-size: 1.45rem;
+            font-size: 1.5rem;
         }
 
         .contact-card-content p {
-            max-width: 480px;
+            max-width: 490px;
             margin: 0;
-            color: var(--cinema-text-muted);
-            font-size: 0.76rem;
+            color: #aeb7c5;
+            font-size: 0.88rem;
             line-height: 1.7;
         }
 
@@ -673,30 +477,28 @@
         justify-content: space-between;
         gap: 1rem;
         margin-top: auto;
-        padding-top: 1.1rem;
-        color: var(--cinema-text-soft);
+        padding-top: 1.15rem;
+        color: #dde2eb;
         border-top: 1px solid var(--cinema-border);
-        font-size: 0.78rem;
+        font-size: 0.9rem;
         font-weight: 700;
+        text-decoration: none;
+        overflow-wrap: anywhere;
     }
 
+        .contact-card-link > span:first-child {
+            min-width: 0;
+        }
+
         .contact-card-link > span:last-child {
-            color: var(--cinema-gold-light);
-            transition: transform var(--cinema-transition);
-        }
-
-        .contact-card-link:hover {
+            flex: 0 0 auto;
             color: var(--cinema-gold-light);
         }
 
-            .contact-card-link:hover > span:last-child {
-                transform: translateX(5px);
-            }
-
-
-    /* =====================================================
-       SUPPORT PANEL
-       ===================================================== */
+        .contact-card-link:hover,
+        .contact-card-link:focus-visible {
+            color: var(--cinema-gold-light);
+        }
 
     .contact-support-panel {
         display: flex;
@@ -707,21 +509,22 @@
         padding: 1.4rem 1.5rem;
         border: 1px solid var(--cinema-border);
         border-radius: var(--cinema-radius-lg);
-        background: rgba(255, 255, 255, 0.018);
+        background: rgba(255, 255, 255, 0.02);
     }
 
     .contact-support-copy {
         display: flex;
         align-items: flex-start;
         gap: 1rem;
+        min-width: 0;
     }
 
     .contact-support-icon {
         display: grid;
         flex: 0 0 44px;
+        place-items: center;
         width: 44px;
         height: 44px;
-        place-items: center;
         color: var(--cinema-gold-light);
         border: 1px solid rgba(214, 168, 75, 0.18);
         border-radius: 13px;
@@ -730,93 +533,80 @@
 
         .contact-support-icon > span {
             display: grid;
+            place-items: center;
             width: 23px;
             height: 23px;
-            place-items: center;
             border: 1px solid rgba(214, 168, 75, 0.23);
             border-radius: 50%;
-            font-size: 0.65rem;
+            font-size: 0.78rem;
             font-weight: 900;
         }
 
     .contact-support-label {
         display: block;
-        margin-bottom: 0.18rem;
+        margin-bottom: 0.3rem;
         color: var(--cinema-gold-light);
-        font-size: 0.5rem;
-        font-weight: 900;
-        letter-spacing: 0.11em;
+        font-size: 0.67rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
     }
 
     .contact-support-copy h2 {
-        margin: 0 0 0.35rem;
+        margin: 0 0 0.4rem;
         color: var(--cinema-text);
-        font-size: 1rem;
+        font-size: 1.07rem;
     }
 
     .contact-support-copy p {
-        max-width: 720px;
+        max-width: 740px;
         margin: 0;
-        color: var(--cinema-text-muted);
-        font-size: 0.68rem;
-        line-height: 1.6;
+        color: #aeb7c5;
+        font-size: 0.82rem;
+        line-height: 1.7;
     }
 
     .contact-support-panel > .btn {
         flex: 0 0 auto;
     }
 
-
-    /* =====================================================
-       BOTTOM CTA
-       ===================================================== */
-
     .contact-bottom {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 2rem;
-        margin-top: clamp(3rem, 6vw, 5rem);
+        margin-top: clamp(3.5rem, 6vw, 5rem);
         padding: clamp(2rem, 5vw, 3.5rem);
         border: 1px solid rgba(214, 168, 75, 0.14);
         border-radius: var(--cinema-radius-xl);
-        background: radial-gradient( circle at 100% 50%, rgba(214, 168, 75, 0.07), transparent 30% ), linear-gradient( 145deg, rgba(20, 27, 39, 0.86), rgba(9, 13, 20, 0.95) );
+        background: radial-gradient(circle at 100% 50%, rgba(214, 168, 75, 0.07), transparent 30%), linear-gradient(145deg, rgba(20, 27, 39, 0.9), rgba(9, 13, 20, 0.96));
     }
 
         .contact-bottom h2 {
-            margin-bottom: 0.5rem;
-            font-size: clamp( 1.8rem, 4vw, 2.6rem );
+            margin-bottom: 0.7rem;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
         }
 
         .contact-bottom p {
             max-width: 560px;
             margin: 0;
-            color: var(--cinema-text-muted);
-            font-size: 0.76rem;
-            line-height: 1.65;
+            color: #aeb7c5;
+            font-size: 0.86rem;
+            line-height: 1.7;
         }
 
         .contact-bottom > .btn {
-            display: flex;
+            display: inline-flex;
             flex: 0 0 auto;
-            min-width: 205px;
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
+            min-width: 205px;
         }
 
-            .contact-bottom > .btn > span:last-child {
-                transition: transform var(--cinema-transition);
-            }
-
-            .contact-bottom > .btn:hover > span:last-child {
-                transform: translateX(5px);
-            }
-
-
-    /* =====================================================
-       ANIMATIONS
-       ===================================================== */
+    .contact-page a:focus-visible {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 4px;
+    }
 
     @@keyframes contact-orbit-spin {
         from {
@@ -829,8 +619,7 @@
     }
 
     @@keyframes contact-message-float {
-        0%,
-        100% {
+        0%, 100% {
             transform: rotate(-3deg) translateY(0);
         }
 
@@ -839,14 +628,9 @@
         }
     }
 
-
-    /* =====================================================
-       RESPONSIVE
-       ===================================================== */
-
-    @@media (max-width: 900px) {
+    @@media (max-width: 991.98px) {
         .contact-hero {
-            grid-template-columns: 1fr;
+            grid-template-columns: minmax(0, 1fr);
             min-height: 0;
         }
 
@@ -855,9 +639,9 @@
         }
     }
 
-    @@media (max-width: 700px) {
+    @@media (max-width: 767.98px) {
         .contact-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: minmax(0, 1fr);
         }
 
         .contact-section-heading {
@@ -880,17 +664,22 @@
 
     @@media (max-width: 575.98px) {
         .contact-hero {
-            padding: 2.2rem 1.2rem;
+            padding: 2.15rem 1.2rem;
             border-radius: var(--cinema-radius-lg);
         }
 
             .contact-hero h1 {
-                font-size: 3rem;
+                font-size: clamp(2.3rem, 9vw, 3.1rem);
+                letter-spacing: -0.045em;
             }
 
+        .contact-hero-content > p {
+            font-size: 0.93rem;
+        }
+
         .contact-hero-actions {
-            align-items: stretch;
             flex-direction: column;
+            align-items: stretch;
         }
 
             .contact-hero-actions .btn {
@@ -898,7 +687,11 @@
             }
 
         .contact-card {
-            min-height: 300px;
+            min-height: 290px;
+        }
+
+        .contact-card-content {
+            padding: 1.65rem 0 1.5rem;
         }
 
         .contact-support-copy {
@@ -917,8 +710,18 @@
             animation: none;
         }
 
-        .contact-card {
+        .contact-card,
+        .contact-primary-action > span:last-child,
+        .contact-bottom > .btn > span:last-child,
+        .contact-card-link > span:last-child {
             transition: none;
         }
+
+            .contact-card:hover,
+            .contact-primary-action:hover > span:last-child,
+            .contact-bottom > .btn:hover > span:last-child,
+            .contact-card-link:hover > span:last-child {
+                transform: none;
+            }
     }
 </style>

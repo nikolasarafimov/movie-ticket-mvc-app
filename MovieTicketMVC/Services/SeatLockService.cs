@@ -17,12 +17,17 @@ namespace MovieTicketMVC.Services
         public string SeatId { get; set; }
 
         public string ConnectionId { get; set; }
+
+        public DateTime ExpiresAtUtc { get; set; }
     }
 
     public static class SeatLockService
     {
         private static readonly object SyncRoot =
             new object();
+
+        private static readonly TimeSpan LockLifetime =
+            TimeSpan.FromMinutes(15);
 
         private static readonly Dictionary<string, SeatLockInfo> Locks =
             new Dictionary<string, SeatLockInfo>(
@@ -32,7 +37,8 @@ namespace MovieTicketMVC.Services
             new Regex(
                 @"^R([1-9]|10)C([1-9]|10)$",
                 RegexOptions.Compiled |
-                RegexOptions.IgnoreCase);
+                RegexOptions.IgnoreCase |
+                RegexOptions.CultureInvariant);
 
         private static readonly HashSet<string> AllowedProjectionTimes =
             new HashSet<string>(
@@ -67,25 +73,36 @@ namespace MovieTicketMVC.Services
                 return false;
             }
 
-            var key =
-                BuildKey(
-                    movieId,
-                    day,
-                    normalizedTime,
-                    normalizedSeatId);
+            var key = BuildKey(
+                movieId,
+                day,
+                normalizedTime,
+                normalizedSeatId);
 
             lock (SyncRoot)
             {
+                var now = DateTime.UtcNow;
+
+                RemoveExpiredLocks(now);
+
                 SeatLockInfo existingLock;
 
                 if (Locks.TryGetValue(
                         key,
                         out existingLock))
                 {
-                    return string.Equals(
-                        existingLock.ConnectionId,
-                        connectionId,
-                        StringComparison.Ordinal);
+                    if (!string.Equals(
+                            existingLock.ConnectionId,
+                            connectionId,
+                            StringComparison.Ordinal))
+                    {
+                        return false;
+                    }
+
+                    existingLock.ExpiresAtUtc =
+                        now.Add(LockLifetime);
+
+                    return true;
                 }
 
                 Locks.Add(
@@ -96,7 +113,8 @@ namespace MovieTicketMVC.Services
                         Day = day.Date,
                         Time = normalizedTime,
                         SeatId = normalizedSeatId,
-                        ConnectionId = connectionId
+                        ConnectionId = connectionId,
+                        ExpiresAtUtc = now.Add(LockLifetime)
                     });
 
                 return true;
@@ -125,21 +143,26 @@ namespace MovieTicketMVC.Services
                 return false;
             }
 
-            var key =
-                BuildKey(
-                    movieId,
-                    day,
-                    normalizedTime,
-                    normalizedSeatId);
+            var key = BuildKey(
+                movieId,
+                day,
+                normalizedTime,
+                normalizedSeatId);
 
             lock (SyncRoot)
             {
+                RemoveExpiredLocks(DateTime.UtcNow);
+
                 SeatLockInfo existingLock;
 
                 if (!Locks.TryGetValue(
                         key,
-                        out existingLock) ||
-                    !string.Equals(
+                        out existingLock))
+                {
+                    return false;
+                }
+
+                if (!string.Equals(
                         existingLock.ConnectionId,
                         connectionId,
                         StringComparison.Ordinal))
@@ -147,46 +170,75 @@ namespace MovieTicketMVC.Services
                     return false;
                 }
 
-                Locks.Remove(key);
-
-                return true;
+                return Locks.Remove(key);
             }
         }
 
         public static IReadOnlyCollection<SeatLockInfo> ReleaseAll(
             string connectionId)
         {
-            if (string.IsNullOrWhiteSpace(
-                    connectionId))
+            if (string.IsNullOrWhiteSpace(connectionId))
             {
                 return new List<SeatLockInfo>();
             }
 
             lock (SyncRoot)
             {
-                var locksToRelease =
-                    Locks
-                        .Where(pair =>
-                            string.Equals(
-                                pair.Value.ConnectionId,
-                                connectionId,
-                                StringComparison.Ordinal))
-                        .Select(pair =>
-                            new
-                            {
-                                Key = pair.Key,
-                                Lock = pair.Value
-                            })
-                        .ToList();
+                RemoveExpiredLocks(DateTime.UtcNow);
 
-                foreach (var item in locksToRelease)
+                var locksToRelease = Locks
+                    .Where(pair =>
+                        string.Equals(
+                            pair.Value.ConnectionId,
+                            connectionId,
+                            StringComparison.Ordinal))
+                    .ToList();
+
+                var releasedLocks = new List<SeatLockInfo>();
+
+                foreach (var pair in locksToRelease)
                 {
-                    Locks.Remove(
-                        item.Key);
+                    releasedLocks.Add(
+                        CopyLockInfo(pair.Value));
+
+                    Locks.Remove(pair.Key);
                 }
 
-                return locksToRelease
-                    .Select(item => item.Lock)
+                return releasedLocks;
+            }
+        }
+
+        public static IReadOnlyCollection<SeatLockInfo> GetActiveLocks(
+            int movieId,
+            DateTime day,
+            string time)
+        {
+            string normalizedTime;
+
+            if (!TryNormalizeProjection(
+                    movieId,
+                    day,
+                    time,
+                    out normalizedTime))
+            {
+                return new List<SeatLockInfo>();
+            }
+
+            lock (SyncRoot)
+            {
+                RemoveExpiredLocks(DateTime.UtcNow);
+
+                return Locks.Values
+                    .Where(seatLock =>
+                        seatLock.MovieId == movieId &&
+                        seatLock.Day == day.Date &&
+                        string.Equals(
+                            seatLock.Time,
+                            normalizedTime,
+                            StringComparison.Ordinal))
+                    .Select(CopyLockInfo)
+                    .OrderBy(seatLock =>
+                        GetSeatSortValue(seatLock.SeatId))
                     .ToList();
             }
         }
@@ -200,41 +252,106 @@ namespace MovieTicketMVC.Services
             out string normalizedTime,
             out string normalizedSeatId)
         {
-            normalizedTime =
-                null;
+            normalizedTime = null;
+            normalizedSeatId = null;
 
-            normalizedSeatId =
-                null;
+            if (string.IsNullOrWhiteSpace(connectionId) ||
+                string.IsNullOrWhiteSpace(seatId))
+            {
+                return false;
+            }
+
+            if (!TryNormalizeProjection(
+                    movieId,
+                    day,
+                    time,
+                    out normalizedTime))
+            {
+                return false;
+            }
+
+            normalizedSeatId = seatId
+                .Trim()
+                .ToUpperInvariant();
+
+            return SeatIdRegex.IsMatch(normalizedSeatId);
+        }
+
+        private static bool TryNormalizeProjection(
+            int movieId,
+            DateTime day,
+            string time,
+            out string normalizedTime)
+        {
+            normalizedTime = null;
 
             if (movieId <= 0 ||
                 day == default(DateTime) ||
-                string.IsNullOrWhiteSpace(time) ||
-                string.IsNullOrWhiteSpace(seatId) ||
-                string.IsNullOrWhiteSpace(connectionId))
+                day.Date >= DateTime.MaxValue.Date ||
+                string.IsNullOrWhiteSpace(time))
             {
                 return false;
             }
 
-            normalizedTime =
-                time.Trim();
+            var value = time.Trim();
 
-            if (!AllowedProjectionTimes.Contains(
-                    normalizedTime))
+            if (!AllowedProjectionTimes.Contains(value))
             {
                 return false;
             }
 
-            normalizedSeatId =
-                seatId.Trim()
-                    .ToUpperInvariant();
-
-            if (!SeatIdRegex.IsMatch(
-                    normalizedSeatId))
-            {
-                return false;
-            }
+            normalizedTime = value;
 
             return true;
+        }
+
+        private static void RemoveExpiredLocks(DateTime nowUtc)
+        {
+            var expiredKeys = Locks
+                .Where(pair =>
+                    pair.Value.ExpiresAtUtc <= nowUtc)
+                .Select(pair => pair.Key)
+                .ToList();
+
+            foreach (var key in expiredKeys)
+            {
+                Locks.Remove(key);
+            }
+        }
+
+        private static SeatLockInfo CopyLockInfo(
+            SeatLockInfo source)
+        {
+            return new SeatLockInfo
+            {
+                MovieId = source.MovieId,
+                Day = source.Day,
+                Time = source.Time,
+                SeatId = source.SeatId,
+                ConnectionId = source.ConnectionId,
+                ExpiresAtUtc = source.ExpiresAtUtc
+            };
+        }
+
+        private static int GetSeatSortValue(string seatId)
+        {
+            var match = SeatIdRegex.Match(
+                seatId ?? string.Empty);
+
+            if (!match.Success)
+            {
+                return int.MaxValue;
+            }
+
+            var row = int.Parse(
+                match.Groups[1].Value,
+                CultureInfo.InvariantCulture);
+
+            var column = int.Parse(
+                match.Groups[2].Value,
+                CultureInfo.InvariantCulture);
+
+            return row * 100 + column;
         }
 
         private static string BuildKey(

@@ -79,6 +79,11 @@ namespace MovieTicketMVC.Controllers
         {
             ViewBag.ReturnUrl = returnUrl;
 
+            if (model == null)
+            {
+                return View("Error");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -166,6 +171,11 @@ namespace MovieTicketMVC.Controllers
         public async Task<ActionResult> VerifyCode(
             VerifyCodeViewModel model)
         {
+            if (model == null)
+            {
+                return View("Error");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -219,6 +229,11 @@ namespace MovieTicketMVC.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Manage");
+            }
+
             return View();
         }
 
@@ -228,6 +243,16 @@ namespace MovieTicketMVC.Controllers
         public async Task<ActionResult> Register(
             RegisterViewModel model)
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Manage");
+            }
+
+            if (model == null)
+            {
+                return View("Error");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -248,12 +273,36 @@ namespace MovieTicketMVC.Controllers
                     user,
                     model.Password);
 
+
             if (!result.Succeeded)
             {
-                AddErrors(result);
+                var existingUser =
+                    await UserManager.FindByEmailAsync(email);
+
+                if (existingUser == null)
+                {
+                    existingUser =
+                        await UserManager.FindByNameAsync(email);
+                }
+
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError(
+                        "",
+                        "Веќе постои профил со оваа е-пошта. " +
+                        "Можеш да се најавиш или да ја обновиш лозинката.");
+
+                    ViewBag.EmailAlreadyRegistered = true;
+                }
+                else
+                {
+                    AddErrors(result);
+                }
 
                 return View(model);
             }
+
+            await TrySendEmailConfirmationAsync(user);
 
             await SignInManager.SignInAsync(
                 user,
@@ -277,15 +326,18 @@ namespace MovieTicketMVC.Controllers
                 return View("Error");
             }
 
-            var result =
-                await UserManager.ConfirmEmailAsync(
-                    userId,
-                    code);
+            var user = await UserManager.FindByIdAsync(userId);
 
-            return View(
-                result.Succeeded
-                    ? "ConfirmEmail"
-                    : "Error");
+            if (user == null)
+            {
+                return View("Error");
+            }
+
+            var result = await UserManager.ConfirmEmailAsync(
+                userId,
+                code);
+
+            return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
         [HttpGet]
@@ -301,6 +353,11 @@ namespace MovieTicketMVC.Controllers
         public async Task<ActionResult> ForgotPassword(
             ForgotPasswordViewModel model)
         {
+            if (model == null)
+            {
+                return View("Error");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -326,24 +383,9 @@ namespace MovieTicketMVC.Controllers
                         .GeneratePasswordResetTokenAsync(
                             user.Id);
 
-                var callbackUrl =
-                    Url.Action(
-                        "ResetPassword",
-                        "Account",
-                        new
-                        {
-                            code = code
-                        },
-                        protocol:
-                            Request.Url != null
-                                ? Request.Url.Scheme
-                                : "https");
-
-                if (string.IsNullOrWhiteSpace(callbackUrl))
-                {
-                    throw new InvalidOperationException(
-                        "Password reset URL could not be generated.");
-                }
+                var callbackUrl = CreateAbsoluteCallbackUrl(
+                    "ResetPassword",
+                    new { code = code });
 
                 var encodedCallbackUrl =
                     HttpUtility.HtmlAttributeEncode(
@@ -351,11 +393,11 @@ namespace MovieTicketMVC.Controllers
 
                 await UserManager.SendEmailAsync(
                     user.Id,
-                    "Reset your MovieTicket password",
-                    "To reset your password, click "
+                    "Ресетирање на лозинка – MovieTicket",
+                    "За да ја ресетираш лозинката, отвори го "
                     + "<a href=\""
                     + encodedCallbackUrl
-                    + "\">this link</a>.");
+                    + "\">овој безбеден линк</a>.");
             }
             catch (Exception ex)
             {
@@ -398,6 +440,11 @@ namespace MovieTicketMVC.Controllers
         public async Task<ActionResult> ResetPassword(
             ResetPasswordViewModel model)
         {
+            if (model == null)
+            {
+                return View("Error");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -444,7 +491,13 @@ namespace MovieTicketMVC.Controllers
             string provider,
             string returnUrl)
         {
-            if (string.IsNullOrWhiteSpace(provider))
+            if (string.IsNullOrWhiteSpace(provider) ||
+                !AuthenticationManager.GetExternalAuthenticationTypes()
+                    .Any(authenticationType =>
+                        string.Equals(
+                            authenticationType.AuthenticationType,
+                            provider,
+                            StringComparison.Ordinal)))
             {
                 return RedirectToAction("Login");
             }
@@ -487,6 +540,11 @@ namespace MovieTicketMVC.Controllers
         public async Task<ActionResult> SendCode(
             SendCodeViewModel model)
         {
+            if (model == null)
+            {
+                return View("Error");
+            }
+
             var userId =
                 await SignInManager
                     .GetVerifiedUserIdAsync();
@@ -682,6 +740,11 @@ namespace MovieTicketMVC.Controllers
             ViewBag.LoginProvider =
                 info.Login.LoginProvider;
 
+            if (model == null)
+            {
+                return View("Error");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -731,6 +794,8 @@ namespace MovieTicketMVC.Controllers
 
                 return View(model);
             }
+
+            await TrySendEmailConfirmationAsync(user);
 
             await SignInManager.SignInAsync(
                 user,
@@ -819,6 +884,115 @@ namespace MovieTicketMVC.Controllers
                 RememberMe =
                     rememberMe
             };
+        }
+
+        private async Task TrySendEmailConfirmationAsync(
+            ApplicationUser user)
+        {
+            if (user == null || user.EmailConfirmed)
+            {
+                return;
+            }
+
+            try
+            {
+                var code = await UserManager
+                    .GenerateEmailConfirmationTokenAsync(user.Id);
+
+                var callbackUrl = CreateAbsoluteCallbackUrl(
+                    "ConfirmEmail",
+                    new { userId = user.Id, code = code });
+
+                var encodedUrl = HttpUtility.HtmlAttributeEncode(
+                    callbackUrl);
+
+                await UserManager.SendEmailAsync(
+                    user.Id,
+                    "Потврда на e-mail адреса – MovieTicket",
+                    "За да ја потврдиш твојата e-mail адреса, " +
+                    "отвори го <a href=\"" + encodedUrl +
+                    "\">овој безбеден линк</a>.");
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(
+                    "Email confirmation could not be sent for user {0}: {1}",
+                    user.Id,
+                    ex);
+            }
+        }
+
+        private string CreateAbsoluteCallbackUrl(
+            string action,
+            object routeValues)
+        {
+            var relativeUrl = Url.Action(
+                action,
+                "Account",
+                routeValues);
+
+            if (string.IsNullOrWhiteSpace(relativeUrl))
+            {
+                throw new InvalidOperationException(
+                    "An account callback URL could not be generated.");
+            }
+
+            var publicBaseUrl = Environment.GetEnvironmentVariable(
+                "MOVIETICKET_PUBLIC_BASE_URL");
+
+            if (string.IsNullOrWhiteSpace(publicBaseUrl))
+            {
+                var requestHost = Request.Url == null
+                    ? null
+                    : Request.Url.Host;
+
+                var isLocalHost =
+                    string.Equals(requestHost, "localhost",
+                        StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(requestHost, "127.0.0.1",
+                        StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(requestHost, "::1",
+                        StringComparison.OrdinalIgnoreCase);
+
+                if (!Request.IsLocal || !isLocalHost)
+                {
+                    throw new InvalidOperationException(
+                        "MOVIETICKET_PUBLIC_BASE_URL must be configured " +
+                        "for public deployments.");
+                }
+
+                var fallbackUrl = Url.Action(
+                    action,
+                    "Account",
+                    routeValues,
+                    "https");
+
+                if (string.IsNullOrWhiteSpace(fallbackUrl))
+                {
+                    throw new InvalidOperationException(
+                        "An account callback URL could not be generated.");
+                }
+
+                return fallbackUrl;
+            }
+
+            Uri baseUri;
+            var baseUrl = publicBaseUrl.Trim().TrimEnd('/') + "/";
+
+            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out baseUri) ||
+                baseUri.Scheme != Uri.UriSchemeHttps ||
+                !string.IsNullOrEmpty(baseUri.UserInfo) ||
+                baseUri.AbsolutePath != "/" ||
+                !string.IsNullOrEmpty(baseUri.Query) ||
+                !string.IsNullOrEmpty(baseUri.Fragment))
+            {
+                throw new InvalidOperationException(
+                    "MOVIETICKET_PUBLIC_BASE_URL must be an HTTPS origin without a path, query, or fragment.");
+            }
+
+            return new Uri(
+                baseUri,
+                relativeUrl.TrimStart('/')).AbsoluteUri;
         }
 
         private IAuthenticationManager AuthenticationManager

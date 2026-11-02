@@ -2,6 +2,9 @@
 
 @{
     ViewBag.Title = "Потврда на идентитет";
+
+    var isEmailCode = Model != null &&
+        string.Equals(Model.Provider, "Email Code", System.StringComparison.OrdinalIgnoreCase);
 }
 
 <main class="verify-page"
@@ -46,7 +49,7 @@
 
                     <span></span>
 
-                    ENCRYPTED VERIFICATION
+                    SECURE SIGN-IN
 
                 </div>
 
@@ -64,9 +67,9 @@
                 </strong>
 
                 <p>
-                    Внеси го verification кодот
-                    за безбедно да го завршиш
-                    процесот на најава.
+                    Внеси го еднократниот код за да
+                    го потврдиш пристапот до својот
+                    MovieTicket профил.
                 </p>
 
             </div>
@@ -101,7 +104,7 @@
                         </strong>
 
                         <small>
-                            Избран provider
+                            Метод избран
                         </small>
 
                     </div>
@@ -139,7 +142,7 @@
             <div class="verify-heading">
 
                 <div class="cinema-eyebrow">
-                    ENTER VERIFICATION CODE
+                    SECURITY VERIFICATION
                 </div>
 
                 <h1 id="verify-title">
@@ -150,14 +153,14 @@
                 </h1>
 
                 <p>
-                    Внеси го еднократниот verification код
-                    што го доби преку избраниот метод.
+                    Внеси го еднократниот код што ти е испратен
+                    преку избраниот метод за потврда.
                 </p>
 
             </div>
 
 
-            @if (!string.IsNullOrWhiteSpace(Model.Provider))
+            @if (Model != null && !string.IsNullOrWhiteSpace(Model.Provider))
             {
                 <div class="verify-provider">
 
@@ -169,7 +172,7 @@
                     <div>
 
                         <span>
-                            VERIFICATION METHOD
+                            МЕТОД ЗА ПОТВРДА
                         </span>
 
                         <strong>
@@ -196,35 +199,35 @@
                 @Html.AntiForgeryToken()
 
                 @Html.HiddenFor(
-                    m => m.Provider)
+                         m => m.Provider)
 
                 @Html.HiddenFor(
-                    m => m.ReturnUrl)
+                         m => m.ReturnUrl)
 
                 @Html.HiddenFor(
-                    m => m.RememberMe)
+                         m => m.RememberMe)
 
 
                 @Html.ValidationSummary(
-                    true,
-                    "",
-                    new
-                    {
-                        @class =
-                            "validation-summary-errors verify-validation"
-                    })
+                         true,
+                         "",
+                         new
+                         {
+                             @class =
+                                 "validation-summary-errors verify-validation"
+                         })
 
 
                 <div class="form-group verify-code-group">
 
                     @Html.LabelFor(
-                        m => m.Code,
-                        "Verification код",
-                        new
-                        {
-                            @class =
-                                "form-label"
-                        })
+                             m => m.Code,
+                             "Безбедносен код",
+                             new
+                             {
+                                 @class =
+                                     "form-label"
+                             })
 
 
                     <div class="verify-input-wrapper">
@@ -235,42 +238,50 @@
                         </span>
 
                         @Html.TextBoxFor(
-                            m => m.Code,
-                            new
-                            {
-                                @class =
-                                    "form-control verify-code-input",
-                                autocomplete =
-                                    "one-time-code",
-                                inputmode =
-                                    "numeric",
-                                placeholder =
-                                    "Внеси го кодот",
-                                autofocus =
-                                    "autofocus",
-                                id =
-                                    "Code",
-                                aria_describedby =
-                                    "verificationCodeHelp"
-                            })
+                                 m => m.Code,
+                                 new
+                                 {
+                                     @class =
+                                         "form-control verify-code-input",
+                                     autocomplete =
+                                         "one-time-code",
+                                     inputmode =
+                                         isEmailCode ? "numeric" : "text",
+                                     placeholder =
+                                         "Внеси го добиениот код",
+                                     autofocus =
+                                         "autofocus",
+                                     id =
+                                         "Code",
+                                     aria_describedby =
+                                         "verificationCodeHelp",
+                                     required =
+                                         "required",
+                                     spellcheck =
+                                         "false",
+                                     autocapitalize =
+                                         "off",
+                                     autocorrect =
+                                         "off"
+                                 })
 
                     </div>
 
 
                     @Html.ValidationMessageFor(
-                        m => m.Code,
-                        "",
-                        new
-                        {
-                            @class =
-                                "text-danger"
-                        })
+                             m => m.Code,
+                             "",
+                             new
+                             {
+                                 @class =
+                                     "text-danger"
+                             })
 
 
                     <small id="verificationCodeHelp"
                            class="verify-code-help">
-                        Кодот е еднократен и се користи
-                        само за ова најавување.
+                        Внеси го кодот точно како што е прикажан во пораката.
+                        Не го споделувај со други лица.
                     </small>
 
                 </div>
@@ -280,12 +291,12 @@
                        for="RememberBrowser">
 
                     @Html.CheckBoxFor(
-                        m => m.RememberBrowser,
-                        new
-                        {
-                            @class =
-                                "verify-remember-checkbox"
-                        })
+                             m => m.RememberBrowser,
+                             new
+                             {
+                                 @class =
+                                     "verify-remember-checkbox"
+                             })
 
 
                     <span class="verify-custom-checkbox"
@@ -305,8 +316,8 @@
                         </strong>
 
                         <small>
-                            Намали го бројот на 2FA проверки
-                            на овој уред.
+                            Прескокни ја дополнителната проверка
+                            при идни најавувања на овој прелистувач.
                         </small>
 
                     </span>
@@ -351,8 +362,8 @@
                 </span>
 
                 <p>
-                    Пристапот до профилот ќе биде дозволен
-                    само откако кодот ќе биде успешно потврден.
+                    Кодот го проверува серверот. Ако не е точен,
+                    ќе можеш повторно да се обидеш.
                 </p>
 
             </div>
@@ -364,10 +375,23 @@
                     ←
                 </span>
 
-                @Html.ActionLink(
-                    "Назад кон најава",
-                    "Login",
-                    "Account")
+                <a href="@Url.Action("Login", "Account")">
+                    Назад кон најава
+                </a>
+
+                <span class="verify-back-divider"
+                      aria-hidden="true"></span>
+
+                <a href="@Url.Action(
+                    "SendCode",
+                    "Account",
+                    new
+                    {
+                        ReturnUrl = Model.ReturnUrl,
+                        RememberMe = Model.RememberMe
+                    })">
+                    Избери друг метод
+                </a>
 
             </div>
 
@@ -378,68 +402,87 @@
 </main>
 
 
-@section Scripts
+@section scripts
 {
     @Scripts.Render("~/bundles/jqueryval")
 
     <script>
         (function () {
-            var form =
-                document.getElementById(
-                    "verifyCodeForm");
+            "use strict";
 
-            var button =
-                document.getElementById(
-                    "verifyButton");
+            var form = document.getElementById("verifyCodeForm");
+            var button = document.getElementById("verifyButton");
+            var buttonText = document.getElementById("verifyButtonText");
+            var codeInput = document.getElementById("Code");
+            var submitting = false;
 
-            var buttonText =
-                document.getElementById(
-                    "verifyButtonText");
-
-            var codeInput =
-                document.getElementById(
-                    "Code");
-
-
-            if (codeInput) {
-                codeInput.addEventListener(
-                    "input",
-                    function () {
-
-                        var value =
-                            codeInput.value || "";
-
-                        codeInput.classList.toggle(
-                            "has-value",
-                            value.trim().length > 0);
-                    });
+            if (!form || !button || !codeInput) {
+                return;
             }
 
+            function refreshCodeState() {
+                var hasCode = codeInput.value.trim().length > 0;
+                codeInput.classList.toggle("has-value", hasCode);
 
-            if (
-                form &&
-                button &&
-                buttonText
-            ) {
-                form.addEventListener(
-                    "submit",
-                    function () {
-
-                        if (
-                            typeof $ !== "undefined" &&
-                            $.validator &&
-                            !$(form).valid()
-                        ) {
-                            return;
-                        }
-
-                        button.disabled =
-                            true;
-
-                        buttonText.textContent =
-                            "Се потврдува...";
-                    });
+                if (hasCode) {
+                    codeInput.setCustomValidity("");
+                }
             }
+
+            codeInput.addEventListener("input", refreshCodeState);
+
+            form.addEventListener("submit", function (event) {
+                if (submitting) {
+                    event.preventDefault();
+                    return;
+                }
+
+                codeInput.value = codeInput.value.trim();
+                refreshCodeState();
+
+                if (!codeInput.value) {
+                    event.preventDefault();
+                    codeInput.setCustomValidity("Внеси го безбедносниот код.");
+                    codeInput.reportValidity();
+                    codeInput.focus();
+                    return;
+                }
+
+                if (typeof window.jQuery !== "undefined" &&
+                    window.jQuery.validator &&
+                    !window.jQuery(form).valid()) {
+                    event.preventDefault();
+                    return;
+                }
+
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    form.reportValidity();
+                    return;
+                }
+
+                submitting = true;
+                button.disabled = true;
+                button.setAttribute("aria-busy", "true");
+
+                if (buttonText) {
+                    buttonText.textContent = "Се потврдува...";
+                }
+            });
+
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted) {
+                    submitting = false;
+                    button.disabled = false;
+                    button.removeAttribute("aria-busy");
+
+                    if (buttonText) {
+                        buttonText.textContent = "Потврди и продолжи";
+                    }
+                }
+            });
+
+            refreshCodeState();
         })();
     </script>
 }
@@ -912,17 +955,17 @@
             transition: color var(--cinema-transition);
         }
 
-    .verify-remember-checkbox:checked + .verify-custom-checkbox {
+    .verify-remember-checkbox:checked ~ .verify-custom-checkbox {
         border-color: rgba(66, 199, 131, 0.38);
         background: rgba(66, 199, 131, 0.10);
         box-shadow: 0 0 0 3px rgba(66, 199, 131, 0.05);
     }
 
-        .verify-remember-checkbox:checked + .verify-custom-checkbox > span {
+        .verify-remember-checkbox:checked ~ .verify-custom-checkbox > span {
             color: #9ae8bd;
         }
 
-    .verify-remember-checkbox:focus-visible + .verify-custom-checkbox {
+    .verify-remember-checkbox:focus-visible ~ .verify-custom-checkbox {
         box-shadow: 0 0 0 3px rgba(214, 168, 75, 0.13);
     }
 
@@ -1109,6 +1152,77 @@
     @@media (prefers-reduced-motion: reduce) {
         .verify-orbit {
             animation: none;
+        }
+    }
+
+    .verify-code-input {
+        max-width: 100%;
+        color: var(--cinema-text);
+        font-variant-numeric: tabular-nums;
+    }
+
+        .verify-code-input:focus-visible,
+        .verify-submit:focus-visible,
+        .verify-brand:focus-visible,
+        .verify-back a:focus-visible {
+            outline: 2px solid var(--cinema-gold-light);
+            outline-offset: 3px;
+        }
+
+        .verify-code-input[aria-invalid="true"] {
+            border-color: var(--cinema-danger);
+        }
+
+    .verify-remember-checkbox:focus-visible ~ .verify-custom-checkbox {
+        outline: 2px solid var(--cinema-gold-light);
+        outline-offset: 3px;
+    }
+
+    .verify-back {
+        flex-wrap: wrap;
+        column-gap: 0.75rem;
+        row-gap: 0.5rem;
+    }
+
+    .verify-back-divider {
+        width: 3px;
+        height: 3px;
+        flex: 0 0 3px;
+        border-radius: 50%;
+        background: var(--cinema-text-muted);
+    }
+
+    .verify-back a {
+        transition: color var(--cinema-transition);
+    }
+
+    .verify-remember-card:focus-within {
+        border-color: rgba(214, 168, 75, 0.4);
+    }
+
+    .verify-remember-content {
+        flex: 1;
+    }
+
+    .verify-visual-copy p {
+        text-wrap: pretty;
+    }
+
+    @@media (max-width: 380px) {
+        .verify-content {
+            padding: 1.7rem 1rem;
+        }
+
+        .verify-heading h1 {
+            font-size: 1.95rem;
+        }
+
+        .verify-back-divider {
+            display: none;
+        }
+
+        .verify-back {
+            flex-direction: column;
         }
     }
 </style>
