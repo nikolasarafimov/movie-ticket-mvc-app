@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Привремено заклучен профил";
+    ViewBag.Title = "Account Temporarily Locked";
 }
 
 <main class="lockout-page" aria-labelledby="lockout-title">
@@ -10,7 +10,7 @@
 
         <a class="lockout-brand"
            href="@Url.Action("Index", "Home")"
-           aria-label="MovieTicket – Почетна страница">
+           aria-label="MovieTicket – Home Page">
             <span aria-hidden="true"></span>
             MOVIETICKET
         </a>
@@ -34,35 +34,37 @@
             <div class="cinema-eyebrow lockout-eyebrow">ACCOUNT SECURITY</div>
 
             <h1 id="lockout-title">
-                Профилот е
-                <span class="lockout-title-accent">привремено заклучен.</span>
+                Your Account Is
+                <span class="lockout-title-accent">Temporarily Locked.</span>
             </h1>
 
             <p class="lockout-description">
-                Поради повеќе неуспешни обиди за најава, пристапот е привремено ограничен.
-                Оваа мерка помага да се заштити твојот MovieTicket профил.
+                Due to multiple unsuccessful sign-in attempts, access to your account
+                has been temporarily restricted. This security measure helps protect
+                your MovieTicket account.
             </p>
 
             <div class="lockout-status-card" role="status">
                 <div class="lockout-status-icon" aria-hidden="true">!</div>
                 <div class="lockout-status-copy">
-                    <span>ПРИВРЕМЕНО ОГРАНИЧУВАЊЕ</span>
-                    <strong>Најавувањето моментално не е достапно</strong>
+                    <span>TEMPORARY RESTRICTION</span>
+                    <strong>Sign-In Is Currently Unavailable</strong>
                     <p>
-                        Според поставките на MovieTicket, привременото заклучување трае
-                        5 минути. Оваа страница не го прикажува точниот преостанат период.
+                        According to MovieTicket's settings, the temporary account
+                        lockout lasts 5 minutes. This page does not display the
+                        exact remaining lockout time.
                     </p>
                 </div>
             </div>
 
-            <div class="lockout-advice" aria-label="Препорачани следни чекори">
+            <div class="lockout-advice" aria-label="Recommended next steps">
                 <div class="lockout-advice-item">
                     <span class="lockout-advice-number" aria-hidden="true">01</span>
                     <div>
-                        <strong>Почекај пред следниот обид</strong>
+                        <strong>Wait Before Trying Again</strong>
                         <p>
-                            Обиди се повторно по неколку минути, наместо да испраќаш
-                            нови барања додека пристапот е ограничен.
+                            Try signing in again after a few minutes instead of
+                            making additional attempts while access is restricted.
                         </p>
                     </div>
                 </div>
@@ -72,10 +74,11 @@
                 <div class="lockout-advice-item">
                     <span class="lockout-advice-number" aria-hidden="true">02</span>
                     <div>
-                        <strong>Провери ги податоците за најава</strong>
+                        <strong>Check Your Sign-In Details</strong>
                         <p>
-                            Пред да се најавиш повторно, провери ги e-mail адресата и лозинката.
-                            Ако не ја паметиш лозинката, можеш да побараш нова.
+                            Before signing in again, verify your email address and
+                            password. If you cannot remember your password,
+                            you can request a password reset.
                         </p>
                     </div>
                 </div>
@@ -84,12 +87,12 @@
             <div class="lockout-actions">
                 <a class="btn btn-primary lockout-primary-action"
                    href="@Url.Action("Index", "Home")">
-                    <span>Назад кон почетна</span>
+                    <span>Back to Home</span>
                     <span aria-hidden="true">→</span>
                 </a>
                 <a class="btn btn-outline-secondary"
                    href="@Url.Action("Contact", "Home")">
-                    Контакт и поддршка
+                    Contact &amp; Support
                 </a>
             </div>
 
@@ -97,12 +100,12 @@
                 <a class="lockout-secondary-link"
                    href="@Url.Action("Login", "Account")">
                     <span aria-hidden="true">←</span>
-                    Назад кон најава
+                    Back to Login
                 </a>
                 <span class="lockout-link-separator" aria-hidden="true"></span>
                 <a class="lockout-secondary-link"
                    href="@Url.Action("ForgotPassword", "Account")">
-                    Ја заборави лозинката?
+                    Forgot Your Password?
                 </a>
             </div>
         </div>

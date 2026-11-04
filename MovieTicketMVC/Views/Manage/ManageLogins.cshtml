@@ -2,7 +2,7 @@
 @model MovieTicketMVC.Models.ManageLoginsViewModel
 
 @{
-    ViewBag.Title = "Поврзани профили";
+    ViewBag.Title = "Linked Accounts";
 
     var connectedCount = Model != null && Model.CurrentLogins != null
         ? Model.CurrentLogins.Count
@@ -19,15 +19,15 @@
 
     if (statusMessage == "The external login was removed.")
     {
-        statusMessage = "Поврзувањето е успешно отстрането.";
+        statusMessage = "The linked account was successfully removed.";
     }
     else if (statusMessage == "An error has occurred.")
     {
-        statusMessage = "Настана грешка. Обиди се повторно.";
+        statusMessage = "An error occurred. Please try again.";
     }
     else if (statusMessage == "You cannot remove your only sign-in method.")
     {
-        statusMessage = "Не можеш да го отстраниш единствениот начин за најава.";
+        statusMessage = "You cannot remove your only sign-in method.";
     }
 }
 
@@ -43,25 +43,31 @@
                         <path d="m12 19-7-7 7-7"></path>
                     </svg>
                 </span>
-                <span>Назад кон профилот</span>
+                <span>Back to Profile</span>
             </a>
 
             <div class="cinema-eyebrow linked-hero-eyebrow">
-                НАЧИНИ ЗА НАЈАВА
+                SIGN-IN METHODS
             </div>
 
             <h1 id="linked-title">
-                Поврзани <span class="cinema-text-gradient">профили</span>
+                Linked <span class="cinema-text-gradient">Accounts</span>
             </h1>
 
             <p>
-                Прегледај ги надворешните сметки поврзани со твојот MovieTicket
-                профил и управувај со дополнителните начини за најава.
+                Review external accounts connected to your MovieTicket
+                account and manage additional sign-in methods.
             </p>
 
-            <div class="linked-hero-facts" aria-label="Преглед на поврзувањата">
-                <span><strong>@connectedCount</strong> поврзани профили</span>
-                <span><strong>@availableCount</strong> достапни провајдери</span>
+            <div class="linked-hero-facts" aria-label="Linked accounts overview">
+                <span>
+                    <strong>@connectedCount</strong>
+                    @(connectedCount == 1 ? "linked account" : "linked accounts")
+                </span>
+                <span>
+                    <strong>@availableCount</strong>
+                    @(availableCount == 1 ? "available provider" : "available providers")
+                </span>
             </div>
         </div>
 
@@ -83,7 +89,7 @@
              role="@(isStatusWarning ? "alert" : "status")">
             <span class="linked-feedback-icon" aria-hidden="true">@(isStatusWarning ? "!" : "✓")</span>
             <div>
-                <strong>@(isStatusWarning ? "Потребно е внимание" : "Промената е зачувана")</strong>
+                <strong>@(isStatusWarning ? "Attention Required" : "Changes Saved")</strong>
                 <p>@statusMessage</p>
             </div>
         </div>
@@ -94,17 +100,17 @@
         <section class="linked-section" aria-labelledby="linked-current-title">
             <div class="linked-section-heading">
                 <div>
-                    <div class="cinema-eyebrow">АКТИВНИ ПОВРЗУВАЊА</div>
-                    <h2 id="linked-current-title">Поврзани сметки</h2>
+                    <div class="cinema-eyebrow">ACTIVE CONNECTIONS</div>
+                    <h2 id="linked-current-title">Connected Accounts</h2>
                 </div>
-                <p>Овие сметки можат да се користат како дополнителен начин за најава.</p>
+                <p>These accounts can be used as additional sign-in methods.</p>
             </div>
 
             <div class="linked-list">
                 @foreach (var account in Model.CurrentLogins)
                 {
                     var providerName = string.IsNullOrWhiteSpace(account.LoginProvider)
-                        ? "Надворешен провајдер"
+                        ? "External Provider"
                         : account.LoginProvider;
 
                     <article class="linked-account-card">
@@ -112,11 +118,11 @@
                             @providerName.Substring(0, 1).ToUpperInvariant()
                         </div>
                         <div class="linked-account-info">
-                            <span class="linked-account-caption">НАЧИН ЗА НАЈАВА</span>
+                            <span class="linked-account-caption">SIGN-IN METHOD</span>
                             <h3>@providerName</h3>
                             <span class="linked-connected-label">
                                 <span aria-hidden="true"></span>
-                                Поврзан профил
+                                Connected Account
                             </span>
                         </div>
                         <div class="linked-account-action">
@@ -129,15 +135,15 @@
                                     @Html.Hidden("providerKey", account.ProviderKey)
 
                                     <button type="submit" class="btn btn-outline-danger linked-remove-button"
-                                            aria-label="Отстрани го поврзувањето со @providerName">
-                                        Отстрани поврзување
+                                            aria-label="Remove connection to @providerName">
+                                        Remove Connection
                                     </button>
                                 }
                             }
                             else
                             {
                                 <span class="linked-cannot-remove">
-                                    Ова е единствениот начин за најава и не може да се отстрани.
+                                    This is your only sign-in method and cannot be removed.
                                 </span>
                             }
                         </div>
@@ -152,10 +158,10 @@
         <section class="linked-section" aria-labelledby="linked-available-title">
             <div class="linked-section-heading">
                 <div>
-                    <div class="cinema-eyebrow">ДОПОЛНИТЕЛЕН ПРИСТАП</div>
-                    <h2 id="linked-available-title">Поврзи друг профил</h2>
+                    <div class="cinema-eyebrow">ADDITIONAL ACCESS</div>
+                    <h2 id="linked-available-title">Link Another Account</h2>
                 </div>
-                <p>Избери достапен провајдер за да додадеш нов начин за најава.</p>
+                <p>Select an available provider to add a new sign-in method.</p>
             </div>
 
             @using (Html.BeginForm("LinkLogin", "Manage", FormMethod.Post, new { @class = "linked-provider-form" }))
@@ -171,11 +177,11 @@
 
                         <button type="submit" name="provider" value="@provider.AuthenticationType"
                                 class="linked-provider-option"
-                                aria-label="Поврзи профил преку @providerName">
+                                aria-label="Link account using @providerName">
                             <span class="linked-provider-icon" aria-hidden="true">@providerName.Substring(0, 1).ToUpperInvariant()</span>
                             <span class="linked-provider-copy">
                                 <strong>@providerName</strong>
-                                <small>Поврзи како дополнителен начин за најава</small>
+                                <small>Link as an additional sign-in method</small>
                             </span>
                             <span class="linked-provider-arrow" aria-hidden="true">→</span>
                         </button>
@@ -195,16 +201,16 @@
                     <path d="M29 17h9a10 10 0 0 1 0 20h-3" />
                 </svg>
             </div>
-            <div class="cinema-eyebrow">НАДВОРЕШНИ НАЈАВУВАЊА</div>
-            <h2 id="linked-empty-title">Нема достапни профили за поврзување</h2>
+            <div class="cinema-eyebrow">EXTERNAL SIGN-IN</div>
+            <h2 id="linked-empty-title">No Accounts Available to Link</h2>
             <p>
-                Во моментов не се конфигурирани надворешни начини за најава,
-                како Google или Microsoft. Можеш и понатаму да го користиш
-                својот MovieTicket профил со е-пошта и лозинка.
+                No external sign-in providers, such as Google or Microsoft,
+                are currently configured. You can continue using your
+                MovieTicket account with your email address and password.
             </p>
             <a class="btn btn-outline-secondary linked-empty-button" href="@Url.Action("Index", "Manage")">
                 <span aria-hidden="true">←</span>
-                Назад кон профилот
+                Back to Profile
             </a>
         </section>
     }
@@ -212,12 +218,12 @@
     {
         <section class="linked-empty linked-empty-compact" aria-labelledby="linked-empty-title">
             <div class="linked-empty-icon" aria-hidden="true">+</div>
-            <h2 id="linked-empty-title">Сè уште немаш поврзано надворешен профил</h2>
-            <p>Избери еден од достапните провајдери за да додадеш начин за најава.</p>
+            <h2 id="linked-empty-title">You Haven't Linked Any External Accounts Yet</h2>
+            <p>Select one of the available providers to add a sign-in method.</p>
         </section>
     }
 
-    <aside class="linked-security-note" aria-label="Совет за безбедност">
+    <aside class="linked-security-note" aria-label="Security tip">
         <div class="linked-note-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 2 20 6v6c0 5-3 8-8 10-5-2-8-5-8-10V6l8-4Z" />
@@ -225,10 +231,10 @@
             </svg>
         </div>
         <div>
-            <strong>Заштити го пристапот до профилот</strong>
+            <strong>Protect Your Account Access</strong>
             <p>
-                Не го отстранувај единствениот начин за најава. Системот го блокира
-                отстранувањето ако немаш поставена лозинка или друг поврзан профил.
+                Do not remove your only sign-in method. The system prevents
+                removal if you have not set a password or linked another account.
             </p>
         </div>
     </aside>

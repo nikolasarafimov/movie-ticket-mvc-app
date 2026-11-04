@@ -1,4 +1,4 @@
-﻿@using System
+﻿﻿@using System
 
 @{
     var currentController = Convert.ToString(ViewContext.RouteData.Values["controller"]);
@@ -62,7 +62,7 @@
 }
 
 <!DOCTYPE html>
-<html lang="mk">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
 
@@ -73,7 +73,7 @@
           content="#07090d" />
 
     <meta name="description"
-          content="MovieTicket - преглед на актуелни филмови и премиери, избор на седишта и резервација на кино билети." />
+          content="MovieTicket - browse movies now showing and coming soon, choose your seats, and book cinema tickets." />
 
     <title>@pageTitle</title>
 
@@ -393,17 +393,17 @@
 <body>
     <a class="cinema-skip-link"
        href="#mainContent">
-        Прескокни до содржината
+        Skip to main content
     </a>
 
     <nav class="navbar navbar-expand-lg navbar-dark"
-         aria-label="Главна навигација">
+         aria-label="Main navigation">
 
         <div class="container">
 
             <a class="navbar-brand movie-brand"
                href="@Url.Action("Index", "Home")"
-               aria-label="MovieTicket - Почетна">
+               aria-label="MovieTicket - Home">
 
                 <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
                      alt="MovieTicket"
@@ -420,7 +420,7 @@
                     data-bs-target="#mainNavbar"
                     aria-controls="mainNavbar"
                     aria-expanded="false"
-                    aria-label="Отвори или затвори навигација">
+                    aria-label="Toggle navigation">
 
                 <span class="navbar-toggler-icon"></span>
 
@@ -435,7 +435,7 @@
                         <a class="nav-link @(isHome ? "active" : "")"
                            href="@Url.Action("Index", "Home")"
                            aria-current="@(isHome ? "page" : null)">
-                            Почетна
+                            Home
                         </a>
                     </li>
 
@@ -443,7 +443,7 @@
                         <a class="nav-link @(isCurrentMovies ? "active" : "")"
                            href="@Url.Action("Current", "Movies")"
                            aria-current="@(isCurrentMovies ? "page" : null)">
-                            Актуелни
+                            Now Showing
                         </a>
                     </li>
 
@@ -451,7 +451,7 @@
                         <a class="nav-link @(isComingSoonMovies ? "active" : "")"
                            href="@Url.Action("ComingSoon", "Movies")"
                            aria-current="@(isComingSoonMovies ? "page" : null)">
-                            Наскоро
+                            Coming Soon
                         </a>
                     </li>
 
@@ -461,7 +461,7 @@
                             <a class="nav-link @(isTicketHistory ? "active" : "")"
                                href="@Url.Action("Index", "Tickets")"
                                aria-current="@(isTicketHistory ? "page" : null)">
-                                @(isAdmin ? "Сите билети" : "Мои билети")
+                                @(isAdmin ? "All Tickets" : "My Tickets")
                             </a>
                         </li>
                     }
@@ -470,7 +470,7 @@
                         <a class="nav-link @(isContact ? "active" : "")"
                            href="@Url.Action("Contact", "Home")"
                            aria-current="@(isContact ? "page" : null)">
-                            Контакт
+                            Contact
                         </a>
                     </li>
 
@@ -483,7 +483,7 @@
                     <a class="btn btn-primary btn-sm cinema-nav-buy @(isBuyTicket ? "active" : "")"
                        href="@Url.Action("Buy", "Tickets")"
                        aria-current="@(isBuyTicket ? "page" : null)">
-                        Купи билет
+                        Buy Tickets
                     </a>
 
                 </div>
@@ -507,7 +507,7 @@
             <div>
                 <a class="cinema-footer-brand"
                    href="@Url.Action("Index", "Home")"
-                   aria-label="MovieTicket - Почетна">
+                   aria-label="MovieTicket - Home">
 
                     <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
                          alt="MovieTicket"
@@ -519,28 +519,28 @@
                 </a>
 
                 <p class="cinema-footer-tagline">
-                    Твојот следен филмски момент започнува тука.
+                    Your next movie moment starts here.
                 </p>
 
             </div>
 
             <nav class="cinema-footer-links"
-                 aria-label="Навигација во подножјето">
+                 aria-label="Footer navigation">
 
                 <a href="@Url.Action("Current", "Movies")">
-                    Актуелни филмови
+                    Now Showing
                 </a>
 
                 <a href="@Url.Action("ComingSoon", "Movies")">
-                    Наскоро
+                    Coming Soon
                 </a>
 
                 <a href="@Url.Action("Buy", "Tickets")">
-                    Купи билет
+                    Buy Tickets
                 </a>
 
                 <a href="@Url.Action("Contact", "Home")">
-                    Контакт
+                    Contact
                 </a>
 
             </nav>

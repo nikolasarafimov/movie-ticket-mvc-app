@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Неуспешна најава";
+    ViewBag.Title = "External Sign-In Failed";
 }
 
 <main class="external-failure-page" aria-labelledby="external-failure-title">
@@ -10,7 +10,7 @@
 
         <a class="external-failure-brand"
            href="@Url.Action("Index", "Home")"
-           aria-label="MovieTicket – почетна страница">
+           aria-label="MovieTicket home page">
             <span aria-hidden="true"></span>
             MOVIETICKET
         </a>
@@ -29,24 +29,23 @@
             </div>
 
             <h1 id="external-failure-title">
-                Најавата не беше
-                <span class="external-failure-accent">успешна.</span>
+                We couldn’t complete your
+                <span class="external-failure-accent">sign-in.</span>
             </h1>
 
             <p class="external-failure-description">
-                Не успеавме да го завршиме обидот за најава преку надворешен сервис.
-                Можеш да се вратиш на страницата за најава и повторно да го избереш
-                посакуваниот начин за пристап до MovieTicket.
+                We couldn’t complete your sign-in through the external provider.
+                Return to the sign-in page and try your preferred sign-in method again.
             </p>
 
             <div class="external-failure-panel" role="status">
                 <div class="external-failure-panel-icon" aria-hidden="true">!</div>
                 <div class="external-failure-panel-content">
-                    <span>СТАТУС НА НАЈАВАТА</span>
-                    <strong>Надворешната најава не е завршена</strong>
+                    <span>SIGN-IN STATUS</span>
+                    <strong>External sign-in was not completed</strong>
                     <p>
-                        Обиди се повторно. Ако проблемот продолжи, провери дали
-                        можеш да пристапиш до избраниот сервис или контактирај нè.
+                        Please try again. If the problem persists, check whether
+                        you can access the provider or contact our support team.
                     </p>
                 </div>
             </div>
@@ -54,27 +53,27 @@
             <div class="external-failure-actions">
                 <a class="btn btn-primary external-failure-login"
                    href="@Url.Action("Login", "Account")">
-                    <span>Обиди се повторно</span>
+                    <span>Try Again</span>
                     <span aria-hidden="true">→</span>
                 </a>
 
                 <a class="btn btn-outline-secondary"
                    href="@Url.Action("Index", "Home")">
-                    Почетна страница
+                    Back to Home
                 </a>
             </div>
 
             <div class="external-failure-help">
                 <span class="external-failure-help-icon" aria-hidden="true">i</span>
                 <div>
-                    <strong>Друг начин за најава</strong>
+                    <strong>Other ways to sign in</strong>
                     <p>
-                        Ако имаш поставено MovieTicket лозинка, можеш да се најавиш со
-                        e-mail адреса и лозинка. Ако користиш само надворешен профил,
-                        избери го повторно соодветниот сервис.
+                        If you have a MovieTicket password, you can sign in using your
+                        email address and password. If you only use an external
+                        account, select that provider again.
                     </p>
                     <a href="@Url.Action("Contact", "Home")" class="external-failure-support-link">
-                        Потребна ти е помош? Контактирај нè
+                        Need help? Contact us
                         <span aria-hidden="true">→</span>
                     </a>
                 </div>

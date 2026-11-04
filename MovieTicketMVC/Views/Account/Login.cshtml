@@ -2,7 +2,7 @@
 @model LoginViewModel
 
 @{
-    ViewBag.Title = "Најава";
+    ViewBag.Title = "Sign In";
 }
 
 <div class="login-page" aria-labelledby="login-title">
@@ -12,7 +12,7 @@
             <div class="login-showcase-glow login-showcase-glow-blue" aria-hidden="true"></div>
 
             <div class="login-showcase-content">
-                <a class="login-brand" href="@Url.Action("Index", "Home")" aria-label="MovieTicket — Почетна">
+                <a class="login-brand" href="@Url.Action("Index", "Home")" aria-label="MovieTicket home page">
                     <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
                          alt="MovieTicket"
                          width="174"
@@ -21,11 +21,11 @@
                 </a>
 
                 <div class="login-showcase-copy">
-                    <div class="cinema-eyebrow">ТВОЕТО КИНО ИСКУСТВО</div>
-                    <h2>Филмот започнува <span class="cinema-text-gradient">тука.</span></h2>
+                    <div class="cinema-eyebrow">YOUR CINEMA EXPERIENCE</div>
+                    <h2>The movie starts <span class="cinema-text-gradient">here.</span></h2>
                     <p>
-                        Најави се и продолжи кон следната кино вечер.
-                        Избери филм, резервирај седиште и пронајди ги своите билети на едно место.
+                        Sign in and get ready for your next movie night.
+                        Browse movies, reserve seats, and find all your tickets in one place.
                     </p>
                 </div>
             </div>
@@ -37,29 +37,29 @@
                          width="105"
                          height="32"
                          decoding="async" />
-                    <span class="login-ticket-badge">КИНО БИЛЕТ</span>
+                    <span class="login-ticket-badge">MOVIE TICKET</span>
                 </div>
 
                 <div class="login-ticket-art-title">
-                    <span>КИНО</span>
-                    <strong>Твојата<br />кино вечер</strong>
+                    <span>CINEMA</span>
+                    <strong>Your<br />movie night</strong>
                 </div>
 
                 <div class="login-ticket-art-divider"></div>
 
                 <div class="login-ticket-art-meta">
                     <div>
-                        <span>ТЕРМИН</span>
+                        <span>SHOWTIME</span>
                         <strong>21:00</strong>
                     </div>
 
                     <div>
-                        <span>РЕД</span>
+                        <span>ROW</span>
                         <strong>05</strong>
                     </div>
 
                     <div>
-                        <span>СЕДИШТЕ</span>
+                        <span>SEAT</span>
                         <strong>07</strong>
                     </div>
                 </div>
@@ -76,9 +76,9 @@
         <div class="login-form-side">
             <div class="login-form-wrapper">
                 <div class="login-heading">
-                    <span class="login-heading-label">ДОБРЕДОЈДЕ НАЗАД</span>
-                    <h1 id="login-title">Најави се</h1>
-                    <p>Внеси ги податоците од твојот профил за да продолжиш.</p>
+                    <span class="login-heading-label">WELCOME BACK</span>
+                    <h1 id="login-title">Sign In</h1>
+                    <p>Enter your account details to continue.</p>
                 </div>
 
                 @using (Html.BeginForm(
@@ -91,7 +91,7 @@
                         role = "form",
                         id = "loginForm",
                         @class = "login-form",
-                        aria_label = "Форма за најава"
+                        aria_label = "Sign-in form"
                     }))
                 {
                     @Html.AntiForgeryToken()
@@ -104,7 +104,7 @@
                     })
 
                     <div class="login-field">
-                        @Html.LabelFor(m => m.Email, "Е-пошта", new { @class = "form-label" })
+                        @Html.LabelFor(m => m.Email, "Email address", new { @class = "form-label" })
 
                         <div class="login-input-wrapper">
                             @Html.TextBoxFor(m => m.Email, new
@@ -118,7 +118,7 @@
                                 required = "required",
                                 aria_required = "true",
                                 aria_describedby = "loginEmailError",
-                                placeholder = "ime@primer.com",
+                                placeholder = "name@example.com",
                                 autofocus = "autofocus"
                             })
                         </div>
@@ -132,11 +132,11 @@
 
                     <div class="login-field">
                         <div class="login-label-row">
-                            @Html.LabelFor(m => m.Password, "Лозинка", new { @class = "form-label" })
+                            @Html.LabelFor(m => m.Password, "Password", new { @class = "form-label" })
 
                             <a class="login-forgot-link"
                                href="@Url.Action("ForgotPassword", "Account")">
-                                Ја заборави лозинката?
+                                Forgot your password?
                             </a>
                         </div>
 
@@ -149,16 +149,16 @@
                                 required = "required",
                                 aria_required = "true",
                                 aria_describedby = "loginPasswordError",
-                                placeholder = "Внеси ја лозинката"
+                                placeholder = "Enter your password"
                             })
 
                             <button type="button"
                                     id="togglePassword"
                                     class="login-password-toggle"
-                                    aria-label="Прикажи лозинка"
+                                    aria-label="Show password"
                                     aria-controls="Password"
                                     aria-pressed="false">
-                                <span id="passwordToggleText">Прикажи</span>
+                                <span id="passwordToggleText">Show</span>
                             </button>
                         </div>
 
@@ -172,26 +172,26 @@
                     <div class="login-options">
                         <label class="login-remember" for="RememberMe">
                             @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
-                            <span>Запомни ме</span>
+                            <span>Remember me</span>
                         </label>
                     </div>
 
                     <button type="submit"
                             id="loginButton"
                             class="btn btn-primary login-submit">
-                        <span id="loginButtonText">Најави се</span>
+                        <span id="loginButtonText">Sign In</span>
                         <span aria-hidden="true">→</span>
                     </button>
 
                     <div class="login-register">
-                        <span>Немаш профил?</span>
+                        <span>Don't have an account?</span>
 
                         @Html.ActionLink(
-                                 "Креирај сметка",
-                                 "Register",
-                                 "Account",
-                                 new { ReturnUrl = ViewBag.ReturnUrl },
-                                 null)
+                                      "Create an account",
+                                      "Register",
+                                      "Account",
+                                      new { ReturnUrl = ViewBag.ReturnUrl },
+                                      null)
                     </div>
                 }
 
@@ -206,8 +206,8 @@
                     <span class="login-security-icon" aria-hidden="true">✓</span>
 
                     <p>
-                        На јавен или споделен уред не ја избирај опцијата „Запомни ме“.
-                        Никогаш не ја споделувај својата лозинка.
+                        Do not select “Remember me” on a public or shared device.
+                        Never share your password.
                     </p>
                 </div>
             </div>
@@ -834,8 +834,8 @@
                     passwordInput.type = showPassword ? "text" : "password";
 
                     toggleText.textContent = showPassword
-                        ? "Сокриј"
-                        : "Прикажи";
+                        ? "Hide"
+                        : "Show";
 
                     toggleButton.setAttribute(
                         "aria-pressed",
@@ -845,8 +845,8 @@
                     toggleButton.setAttribute(
                         "aria-label",
                         showPassword
-                            ? "Сокриј лозинка"
-                            : "Прикажи лозинка"
+                            ? "Hide password"
+                            : "Show password"
                     );
                 });
             }
@@ -864,7 +864,7 @@
                 }
 
                 if (submitText) {
-                    submitText.textContent = "Најави се";
+                    submitText.textContent = "Sign In";
                 }
             }
 
@@ -890,7 +890,7 @@
                     form.setAttribute("aria-busy", "true");
                     submitButton.disabled = true;
                     submitButton.classList.add("is-submitting");
-                    submitText.textContent = "Се најавува...";
+                    submitText.textContent = "Signing in...";
                 });
 
                 window.addEventListener("pageshow", function (event) {

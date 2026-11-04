@@ -1,7 +1,7 @@
 ﻿@model MovieTicketMVC.Models.RegisterViewModel
 
 @{
-    ViewBag.Title = "Регистрација";
+    ViewBag.Title = "Register";
 }
 
 <main class="register-page" aria-labelledby="register-title">
@@ -11,7 +11,7 @@
             <div class="register-showcase-glow register-showcase-glow-blue" aria-hidden="true"></div>
 
             <div class="register-showcase-content">
-                <a class="register-brand" href="@Url.Action("Index", "Home")" aria-label="MovieTicket — Почетна">
+                <a class="register-brand" href="@Url.Action("Index", "Home")" aria-label="MovieTicket home page">
                     <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
                          alt="MovieTicket"
                          width="174"
@@ -20,15 +20,15 @@
                 </a>
 
                 <div class="register-showcase-copy">
-                    <div class="cinema-eyebrow">ТВОЈОТ СЛЕДЕН ФИЛМСКИ МОМЕНТ</div>
+                    <div class="cinema-eyebrow">YOUR NEXT MOVIE MOMENT</div>
                     <h2>
-                        Твојот следен
-                        <span class="cinema-text-gradient">филм</span>
-                        е на само неколку клика.
+                        Your next
+                        <span class="cinema-text-gradient">movie</span>
+                        is just a few clicks away.
                     </h2>
                     <p>
-                        Креирај MovieTicket профил, избери ги своите седишта
-                        и чувај ги сите билети на едно место.
+                        Create a MovieTicket account, choose your seats,
+                        and keep all your tickets in one place.
                     </p>
                 </div>
             </div>
@@ -40,12 +40,12 @@
                          width="105"
                          height="30"
                          decoding="async" />
-                    <span>КИНО БИЛЕТ</span>
+                    <span>MOVIE TICKET</span>
                 </div>
 
                 <div class="register-ticket-title">
-                    <small>ТВОЕТО КИНО ИСКУСТВО</small>
-                    <strong>Следната<br />кино вечер</strong>
+                    <small>YOUR CINEMA EXPERIENCE</small>
+                    <strong>Your next<br />movie night</strong>
                 </div>
 
                 <div class="register-ticket-divider"></div>
@@ -61,11 +61,11 @@
         <div class="register-form-side">
             <div class="register-form-wrapper">
                 <div class="register-heading">
-                    <span class="register-heading-label">ПРИДРУЖИ СЕ НА MOVIETICKET</span>
-                    <h1 id="register-title">Креирај профил</h1>
+                    <span class="register-heading-label">JOIN MOVIETICKET</span>
+                    <h1 id="register-title">Create an account</h1>
                     <p>
-                        Внеси е-пошта и лозинка. По успешната регистрација
-                        автоматски ќе бидеш најавен.
+                        Enter your email address and create a password. Once
+                        registration is complete, you will be signed in automatically.
                     </p>
                 </div>
 
@@ -74,12 +74,12 @@
                     id = "registerForm",
                     @class = "register-form",
                     role = "form",
-                    aria_label = "Форма за регистрација"
+                    aria_label = "Registration form"
                 }))
                 {
                     @Html.AntiForgeryToken()
 
-                    @Html.ValidationSummary(true, "Неуспешна регистрација", new
+                    @Html.ValidationSummary(true, "Registration failed", new
                     {
                         @class = "register-validation",
                         role = "alert"
@@ -91,7 +91,7 @@
                          hidden></div>
 
                     <div class="register-field">
-                        @Html.LabelFor(m => m.Email, "Е-пошта", new { @class = "form-label" })
+                        @Html.LabelFor(m => m.Email, "Email address", new { @class = "form-label" })
 
                         <div class="register-input-wrapper">
                             @Html.TextBoxFor(m => m.Email, new
@@ -102,7 +102,7 @@
                                 inputmode = "email",
                                 autocapitalize = "none",
                                 spellcheck = "false",
-                                placeholder = "ime@primer.com",
+                                placeholder = "name@example.com",
                                 required = "required",
                                 aria_required = "true",
                                 aria_describedby = "registerEmailError",
@@ -118,7 +118,7 @@
                     </div>
 
                     <div class="register-field">
-                        @Html.LabelFor(m => m.Password, "Лозинка", new { @class = "form-label" })
+                        @Html.LabelFor(m => m.Password, "Password", new { @class = "form-label" })
 
                         <div class="register-input-wrapper">
                             @Html.PasswordFor(m => m.Password, new
@@ -126,7 +126,7 @@
                                 @class = "form-control register-input register-password-input",
                                 id = "Password",
                                 autocomplete = "new-password",
-                                placeholder = "Креирај лозинка",
+                                placeholder = "Create a password",
                                 minlength = "8",
                                 maxlength = "100",
                                 required = "required",
@@ -137,10 +137,10 @@
                             <button type="button"
                                     class="register-password-toggle"
                                     data-password-target="Password"
-                                    aria-label="Прикажи лозинка"
+                                    aria-label="Show password"
                                     aria-controls="Password"
                                     aria-pressed="false">
-                                Прикажи
+                                Show
                             </button>
                         </div>
 
@@ -152,7 +152,7 @@
 
                         <div class="register-password-strength">
                             <div class="register-strength-header">
-                                <span>Исполнетост на условите</span>
+                                <span>Password requirements met</span>
                                 <strong id="passwordStrengthText" aria-live="polite">—</strong>
                             </div>
 
@@ -163,37 +163,37 @@
 
                         <div id="registerPasswordRules"
                              class="register-requirements"
-                             aria-label="Услови за лозинка">
+                             aria-label="Password requirements">
 
                             <div class="register-requirement" id="requirementLength">
                                 <span aria-hidden="true">✓</span>
-                                Од 8 до 100 знаци
+                                8 to 100 characters
                             </div>
 
                             <div class="register-requirement" id="requirementUpper">
                                 <span aria-hidden="true">✓</span>
-                                Голема буква
+                                Uppercase letter
                             </div>
 
                             <div class="register-requirement" id="requirementLower">
                                 <span aria-hidden="true">✓</span>
-                                Мала буква
+                                Lowercase letter
                             </div>
 
                             <div class="register-requirement" id="requirementNumber">
                                 <span aria-hidden="true">✓</span>
-                                Број
+                                Number
                             </div>
 
                             <div class="register-requirement" id="requirementSpecial">
                                 <span aria-hidden="true">✓</span>
-                                Специјален знак
+                                Special character
                             </div>
                         </div>
                     </div>
 
                     <div class="register-field register-confirm-field">
-                        @Html.LabelFor(m => m.ConfirmPassword, "Потврди лозинка", new { @class = "form-label" })
+                        @Html.LabelFor(m => m.ConfirmPassword, "Confirm password", new { @class = "form-label" })
 
                         <div class="register-input-wrapper">
                             @Html.PasswordFor(m => m.ConfirmPassword, new
@@ -201,7 +201,7 @@
                                 @class = "form-control register-input register-password-input",
                                 id = "ConfirmPassword",
                                 autocomplete = "new-password",
-                                placeholder = "Повтори ја лозинката",
+                                placeholder = "Re-enter your password",
                                 maxlength = "100",
                                 required = "required",
                                 aria_required = "true",
@@ -211,10 +211,10 @@
                             <button type="button"
                                     class="register-password-toggle"
                                     data-password-target="ConfirmPassword"
-                                    aria-label="Прикажи лозинка"
+                                    aria-label="Show password"
                                     aria-controls="ConfirmPassword"
                                     aria-pressed="false">
-                                Прикажи
+                                Show
                             </button>
                         </div>
 
@@ -232,21 +232,21 @@
                     <button type="submit"
                             id="registerButton"
                             class="btn btn-primary register-submit">
-                        <span id="registerButtonText">Креирај профил</span>
+                        <span id="registerButtonText">Create Account</span>
                         <span aria-hidden="true">→</span>
                     </button>
 
                     <div class="register-login-link">
-                        <span>Веќе имаш профил?</span>
-                        @Html.ActionLink("Најави се", "Login", "Account")
+                        <span>Already have an account?</span>
+                        @Html.ActionLink("Sign In", "Login", "Account")
                     </div>
                 }
 
                 <div class="register-security-note">
                     <span class="register-security-icon" aria-hidden="true">✓</span>
                     <p>
-                        Избери уникатна лозинка со голема и мала буква,
-                        број и специјален знак. Не користи лозинка од друг профил.
+                        Choose a unique password with uppercase and lowercase letters,
+                        a number, and a special character. Do not reuse passwords from other accounts.
                     </p>
                 </div>
             </div>
@@ -1032,11 +1032,11 @@
                     confirmation.removeAttribute("aria-invalid");
                 } else if (password.value === confirmation.value) {
                     matchIndicator.classList.add("valid");
-                    matchIndicator.textContent = "Лозинките се совпаѓаат.";
+                    matchIndicator.textContent = "Passwords match.";
                     confirmation.setAttribute("aria-invalid", "false");
                 } else {
                     matchIndicator.classList.add("invalid");
-                    matchIndicator.textContent = "Лозинките не се совпаѓаат.";
+                    matchIndicator.textContent = "Passwords do not match.";
                     confirmation.setAttribute("aria-invalid", "true");
                 }
             }
@@ -1064,13 +1064,13 @@
                         strengthText.textContent = "—";
                     } else if (score <= 2) {
                         strengthBar.classList.add("weak");
-                        strengthText.textContent = score + " од 5 услови";
+                        strengthText.textContent = score + " of 5 requirements met";
                     } else if (score <= 4) {
                         strengthBar.classList.add("medium");
-                        strengthText.textContent = score + " од 5 услови";
+                        strengthText.textContent = score + " of 5 requirements met";
                     } else {
                         strengthBar.classList.add("strong");
-                        strengthText.textContent = "Сите услови се исполнети";
+                        strengthText.textContent = "All requirements met";
                     }
                 }
 
@@ -1093,7 +1093,7 @@
                         var show = target.type === "password";
 
                         target.type = show ? "text" : "password";
-                        toggle.textContent = show ? "Сокриј" : "Прикажи";
+                        toggle.textContent = show ? "Hide" : "Show";
 
                         toggle.setAttribute(
                             "aria-pressed",
@@ -1102,7 +1102,7 @@
 
                         toggle.setAttribute(
                             "aria-label",
-                            show ? "Сокриј лозинка" : "Прикажи лозинка"
+                            show ? "Hide password" : "Show password"
                         );
                     });
                 }
@@ -1140,7 +1140,7 @@
                 if (!updatePassword()) {
                     event.preventDefault();
                     setClientError(
-                        "Лозинката мора да ги исполнува сите наведени услови."
+                        "Your password must meet all the listed requirements."
                     );
                     password.focus();
                     return;
@@ -1149,7 +1149,7 @@
                 if (confirmation.value !== password.value) {
                     event.preventDefault();
                     setClientError(
-                        "Потврдата мора да биде идентична со лозинката."
+                        "The password confirmation must match your password."
                     );
                     confirmation.focus();
                     return;
@@ -1161,7 +1161,7 @@
                 setClientError("");
 
                 if (buttonText) {
-                    buttonText.textContent = "Се креира профил...";
+                    buttonText.textContent = "Creating your account...";
                 }
             });
 
@@ -1172,7 +1172,7 @@
                     form.removeAttribute("aria-busy");
 
                     if (buttonText) {
-                        buttonText.textContent = "Креирај профил";
+                        buttonText.textContent = "Create Account";
                     }
                 }
             });

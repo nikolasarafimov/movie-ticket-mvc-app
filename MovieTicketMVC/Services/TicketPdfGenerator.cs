@@ -23,6 +23,9 @@ namespace MovieTicketMVC.Services
         private static readonly BaseColor LightBackground =
             new BaseColor(245, 247, 250);
 
+        private static readonly CultureInfo EnglishCulture =
+            CultureInfo.GetCultureInfo("en-US");
+
         public byte[] GeneratePdf(Ticket ticket)
         {
             ValidateTicket(ticket);
@@ -87,12 +90,12 @@ namespace MovieTicketMVC.Services
                 try
                 {
                     document.AddTitle(
-                        "MovieTicket - Резервација #" +
+                        "MovieTicket - Booking #" +
                         ticket.Id.ToString(
                             CultureInfo.InvariantCulture));
 
                     document.AddSubject(
-                        "Потврда за кино резервација");
+                        "Cinema booking confirmation");
 
                     document.AddAuthor("MovieTicket");
 
@@ -111,7 +114,7 @@ namespace MovieTicketMVC.Services
                     document.Add(brand);
 
                     var subtitle = new Paragraph(
-                        "ПОТВРДА ЗА РЕЗЕРВАЦИЈА",
+                        "BOOKING CONFIRMATION",
                         subtitleFont)
                     {
                         Alignment = Element.ALIGN_CENTER,
@@ -160,7 +163,7 @@ namespace MovieTicketMVC.Services
 
                     AddRow(
                         detailsTable,
-                        "Број на резервација",
+                        "Booking reference",
                         "#" + ticket.Id.ToString(
                             CultureInfo.InvariantCulture),
                         labelFont,
@@ -169,7 +172,7 @@ namespace MovieTicketMVC.Services
 
                     AddRow(
                         detailsTable,
-                        "Филм",
+                        "Movie",
                         ticket.Movie.Title.Trim(),
                         labelFont,
                         valueFont,
@@ -177,17 +180,17 @@ namespace MovieTicketMVC.Services
 
                     AddRow(
                         detailsTable,
-                        "Датум",
+                        "Screening date",
                         ticket.SelectedDay.ToString(
-                            "dd.MM.yyyy",
-                            CultureInfo.InvariantCulture),
+                            "dd MMM yyyy",
+                            EnglishCulture),
                         labelFont,
                         valueFont,
                         LightBackground);
 
                     AddRow(
                         detailsTable,
-                        "Време",
+                        "Screening time",
                         ticket.SelectedTime.Trim(),
                         labelFont,
                         valueFont,
@@ -195,7 +198,7 @@ namespace MovieTicketMVC.Services
 
                     AddRow(
                         detailsTable,
-                        "Седишта",
+                        "Seats",
                         formattedSeats,
                         labelFont,
                         valueFont,
@@ -203,7 +206,7 @@ namespace MovieTicketMVC.Services
 
                     AddRow(
                         detailsTable,
-                        "Број на седишта",
+                        "Number of seats",
                         ticket.NumberOfSeats.ToString(
                             CultureInfo.InvariantCulture),
                         labelFont,
@@ -212,10 +215,10 @@ namespace MovieTicketMVC.Services
 
                     AddRow(
                         detailsTable,
-                        "Вкупна цена",
+                        "Total price",
                         string.Format(
-                            CultureInfo.InvariantCulture,
-                            "{0:N0} МКД",
+                            EnglishCulture,
+                            "{0:N0} MKD",
                             ticket.TotalPrice),
                         labelFont,
                         valueFont,
@@ -225,7 +228,7 @@ namespace MovieTicketMVC.Services
                     {
                         AddRow(
                             detailsTable,
-                            "Е-пошта",
+                            "Email address",
                             ticket.Email.Trim(),
                             labelFont,
                             valueFont,
@@ -235,7 +238,7 @@ namespace MovieTicketMVC.Services
                     document.Add(detailsTable);
 
                     var confirmationTitle = new Paragraph(
-                        "Резервацијата е успешно евидентирана",
+                        "Your booking has been confirmed",
                         labelFont)
                     {
                         Alignment = Element.ALIGN_CENTER,
@@ -245,8 +248,8 @@ namespace MovieTicketMVC.Services
                     document.Add(confirmationTitle);
 
                     var confirmationText = new Paragraph(
-                        "Зачувајте го овој документ како потврда " +
-                        "за вашата кино резервација.",
+                        "Keep this document as confirmation " +
+                        "of your cinema booking.",
                         noteFont)
                     {
                         Alignment = Element.ALIGN_CENTER,
@@ -257,8 +260,8 @@ namespace MovieTicketMVC.Services
                     document.Add(confirmationText);
 
                     var paymentNotice = new Paragraph(
-                        "Овој документ потврдува резервација, " +
-                        "но не претставува доказ за извршено плаќање.",
+                        "This document confirms your booking " +
+                        "but does not constitute proof of payment.",
                         noteFont)
                     {
                         Alignment = Element.ALIGN_CENTER,
@@ -309,13 +312,13 @@ namespace MovieTicketMVC.Services
             if (ticket.SelectedDay == default(DateTime))
             {
                 throw new InvalidOperationException(
-                    "Ticket projection date is required to generate the PDF.");
+                    "Ticket screening date is required to generate the PDF.");
             }
 
             if (string.IsNullOrWhiteSpace(ticket.SelectedTime))
             {
                 throw new InvalidOperationException(
-                    "Ticket projection time is required to generate the PDF.");
+                    "Ticket screening time is required to generate the PDF.");
             }
 
             if (string.IsNullOrWhiteSpace(ticket.SelectedSeats))

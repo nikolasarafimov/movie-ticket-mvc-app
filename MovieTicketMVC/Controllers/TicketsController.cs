@@ -21,31 +21,20 @@ namespace MovieTicketMVC.Controllers
         private const int StandardSeatPrice = 250;
         private const int MaximumSeats = 100;
 
-        private static readonly Regex SeatIdRegex =
-            new Regex(
-                @"^R([1-9]|10)C([1-9]|10)$",
-                RegexOptions.Compiled |
-                RegexOptions.IgnoreCase |
-                RegexOptions.CultureInvariant);
+        private static readonly Regex SeatIdRegex = new Regex(
+            @"^R([1-9]|10)C([1-9]|10)$",
+            RegexOptions.Compiled |
+            RegexOptions.IgnoreCase |
+            RegexOptions.CultureInvariant);
 
         private static readonly HashSet<string> AllowedProjectionTimes =
             new HashSet<string>(
-                new[]
-                {
-                    "10:00",
-                    "14:00",
-                    "18:00",
-                    "21:00"
-                },
+                new[] { "10:00", "14:00", "18:00", "21:00" },
                 StringComparer.Ordinal);
 
         private static readonly HashSet<string> AllowedAgeCategories =
             new HashSet<string>(
-                new[]
-                {
-                    "18+",
-                    "Under18"
-                },
+                new[] { "18+", "Under18" },
                 StringComparer.OrdinalIgnoreCase);
 
         private readonly ApplicationDbContext _context;
@@ -65,9 +54,7 @@ namespace MovieTicketMVC.Controllers
 
             if (movieId <= 0 ||
                 !day.HasValue ||
-                !TryNormalizeProjectionTime(
-                    time,
-                    out normalizedTime))
+                !TryNormalizeProjectionTime(time, out normalizedTime))
             {
                 return EmptySeatResult();
             }
@@ -82,11 +69,9 @@ namespace MovieTicketMVC.Controllers
 
             var movie = await _context.Movies
                 .AsNoTracking()
-                .SingleOrDefaultAsync(
-                    m => m.Id == movieId);
+                .SingleOrDefaultAsync(m => m.Id == movieId);
 
-            if (movie == null ||
-                selectedDay < movie.ReleaseDate.Date)
+            if (movie == null || selectedDay < movie.ReleaseDate.Date)
             {
                 return EmptySeatResult();
             }
@@ -108,17 +93,13 @@ namespace MovieTicketMVC.Controllers
                     (value ?? string.Empty).Split(
                         new[] { ',' },
                         StringSplitOptions.RemoveEmptyEntries))
-                .Select(value =>
-                    value.Trim().ToUpperInvariant())
-                .Where(value =>
-                    SeatIdRegex.IsMatch(value))
+                .Select(value => value.Trim().ToUpperInvariant())
+                .Where(value => SeatIdRegex.IsMatch(value))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .OrderBy(GetSeatSortValue)
                 .ToList();
 
-            return Json(
-                purchasedSeats,
-                JsonRequestBehavior.AllowGet);
+            return Json(purchasedSeats, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -132,9 +113,7 @@ namespace MovieTicketMVC.Controllers
             if (!User.IsInRole("Admin"))
             {
                 var email = User.Identity.Name;
-
-                query = query.Where(
-                    t => t.Email == email);
+                query = query.Where(t => t.Email == email);
             }
 
             var tickets = query
@@ -150,30 +129,31 @@ namespace MovieTicketMVC.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                ViewBag.ReturnUrl = Url.Action(
-                    "Buy",
-                    "Tickets");
-
+                ViewBag.ReturnUrl = Url.Action("Buy", "Tickets");
                 return View("LoginPrompt");
             }
 
             PopulateMovieLists();
 
-            return View(
-                new Ticket
-                {
-                    Email = User.Identity.Name
-                });
+            return View(new Ticket
+            {
+                Email = User.Identity.Name
+            });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Buy(
-            [Bind(
-                Include = "MovieId,SelectedDay,SelectedTime,AgeCategory")]
+            [Bind(Include = "MovieId,SelectedDay,SelectedTime,AgeCategory")]
             Ticket ticket,
-            string[] selectedSeats)
+            string[] selectedSeats,
+            string signalRConnectionId)
         {
+            if (ticket == null)
+            {
+                return View("Error");
+            }
+
             PopulateMovieLists();
 
             var tooManySubmittedSeats =
@@ -184,21 +164,10 @@ namespace MovieTicketMVC.Controllers
 
             var normalizedSeats = tooManySubmittedSeats
                 ? new List<string>()
-                : NormalizeSelectedSeats(
-                    selectedSeats,
-                    out invalidSeats);
-
-            if (tooManySubmittedSeats)
-            {
-                invalidSeats = new List<string>();
-            }
+                : NormalizeSelectedSeats(selectedSeats, out invalidSeats);
 
             ticket.Email = User.Identity.Name;
-
-            ticket.SelectedSeats = string.Join(
-                ",",
-                normalizedSeats);
-
+            ticket.SelectedSeats = string.Join(",", normalizedSeats);
             ticket.NumberOfSeats = normalizedSeats.Count;
             ticket.SelectedDay = ticket.SelectedDay.Date;
 
@@ -212,7 +181,7 @@ namespace MovieTicketMVC.Controllers
             {
                 ModelState.AddModelError(
                     "",
-                    "Не можевме да ја утврдиме e-mail адресата на најавениот корисник.");
+                    "We couldn't identify the email address of the signed-in user.");
             }
 
             if (tooManySubmittedSeats ||
@@ -220,30 +189,29 @@ namespace MovieTicketMVC.Controllers
             {
                 ModelState.AddModelError(
                     "SelectedSeats",
-                    "Не можете да одберете повеќе од 100 седишта.");
+                    "You cannot select more than 100 seats.");
             }
 
             if (invalidSeats.Count > 0)
             {
                 ModelState.AddModelError(
                     "SelectedSeats",
-                    "Невалидни седишта: " +
+                    "Invalid seat selections: " +
                     string.Join(", ", invalidSeats));
             }
 
-            if (normalizedSeats.Count == 0 &&
-                !tooManySubmittedSeats)
+            if (normalizedSeats.Count == 0 && !tooManySubmittedSeats)
             {
                 ModelState.AddModelError(
                     "SelectedSeats",
-                    "Мора да одберете барем едно седиште.");
+                    "Please select at least one seat.");
             }
 
             if (ticket.MovieId <= 0)
             {
                 ModelState.AddModelError(
                     "MovieId",
-                    "Ве молиме одберете филм.");
+                    "Please select a movie.");
             }
 
             Movie movie = null;
@@ -251,15 +219,14 @@ namespace MovieTicketMVC.Controllers
             if (ticket.MovieId > 0)
             {
                 movie = await _context.Movies
-                    .SingleOrDefaultAsync(
-                        m => m.Id == ticket.MovieId);
+                    .SingleOrDefaultAsync(m => m.Id == ticket.MovieId);
             }
 
             if (movie == null)
             {
                 ModelState.AddModelError(
                     "MovieId",
-                    "Невалиден филм.");
+                    "The selected movie is invalid.");
             }
 
             string normalizedTime;
@@ -270,7 +237,7 @@ namespace MovieTicketMVC.Controllers
             {
                 ModelState.AddModelError(
                     "SelectedTime",
-                    "Невалиден термин на проекција.");
+                    "Please select a valid screening time.");
             }
             else
             {
@@ -279,14 +246,13 @@ namespace MovieTicketMVC.Controllers
 
             var ageCategoryIsValid =
                 !string.IsNullOrWhiteSpace(ticket.AgeCategory) &&
-                AllowedAgeCategories.Contains(
-                    ticket.AgeCategory.Trim());
+                AllowedAgeCategories.Contains(ticket.AgeCategory.Trim());
 
             if (!ageCategoryIsValid)
             {
                 ModelState.AddModelError(
                     "AgeCategory",
-                    "Невалидна возрастна категорија.");
+                    "Please select a valid age category.");
             }
             else
             {
@@ -302,14 +268,14 @@ namespace MovieTicketMVC.Controllers
             {
                 ModelState.AddModelError(
                     "SelectedDay",
-                    "Не можете да одберете ден во минатото.");
+                    "You cannot book a screening in the past.");
             }
 
             if (ticket.SelectedDay >= DateTime.MaxValue.Date)
             {
                 ModelState.AddModelError(
                     "SelectedDay",
-                    "Невалиден датум на проекција.");
+                    "Please select a valid screening date.");
             }
 
             if (movie != null)
@@ -318,7 +284,7 @@ namespace MovieTicketMVC.Controllers
                 {
                     ModelState.AddModelError(
                         "SelectedDay",
-                        "Не можете да одберете ден пред почетокот на филмот.");
+                        "You cannot book a screening before the movie's release date.");
                 }
 
                 if (movie.IsForAdults == true &&
@@ -327,24 +293,35 @@ namespace MovieTicketMVC.Controllers
                 {
                     ModelState.AddModelError(
                         "AgeCategory",
-                        "За овој филм мора да потврдите дека имате 18 или повеќе години.");
+                        "You must confirm that you are at least 18 years old to book this movie.");
                 }
             }
 
             DateTime projectionDateTime;
+            var hasValidProjectionDateTime = TryGetProjectionDateTime(
+                ticket.SelectedDay,
+                normalizedTime,
+                out projectionDateTime);
 
-            var hasValidProjectionDateTime =
-                TryGetProjectionDateTime(
-                    ticket.SelectedDay,
-                    normalizedTime,
-                    out projectionDateTime);
-
-            if (hasValidProjectionDateTime &&
-                projectionDateTime <= DateTime.Now)
+            if (!hasValidProjectionDateTime)
             {
                 ModelState.AddModelError(
                     "SelectedTime",
-                    "Избраната проекција е веќе помината.");
+                    "Please select a valid screening date and time.");
+            }
+            else if (projectionDateTime <= DateTime.Now)
+            {
+                ModelState.AddModelError(
+                    "SelectedTime",
+                    "The selected screening has already started.");
+            }
+
+            if (string.IsNullOrWhiteSpace(signalRConnectionId) ||
+                signalRConnectionId.Length > 256)
+            {
+                ModelState.AddModelError(
+                    "SelectedSeats",
+                    "Your seat selection session is invalid. Please refresh the page.");
             }
 
             if (!ModelState.IsValid)
@@ -352,129 +329,137 @@ namespace MovieTicketMVC.Controllers
                 return View(ticket);
             }
 
-            ticket.TotalPrice = CalculateTotalPrice(
-                normalizedSeats);
-
+            ticket.TotalPrice = CalculateTotalPrice(normalizedSeats);
             ticket.Movie = movie;
 
-            using (var transaction = _context.Database
-                .BeginTransaction(IsolationLevel.Serializable))
+            var purchaseId = SeatLockService.TryBeginPurchase(
+                ticket.MovieId,
+                ticket.SelectedDay,
+                ticket.SelectedTime,
+                normalizedSeats,
+                signalRConnectionId,
+                ticket.Email);
+
+            if (!purchaseId.HasValue)
             {
-                try
+                ModelState.AddModelError(
+                    "SelectedSeats",
+                    "Your seat holds could not be verified. Please select the seats again.");
+                return View(ticket);
+            }
+
+            try
+            {
+                using (var transaction = _context.Database
+                    .BeginTransaction(IsolationLevel.Serializable))
                 {
-                    var resource = string.Format(
-                        CultureInfo.InvariantCulture,
-                        "MovieTicket:{0}:{1:yyyyMMdd}:{2}",
-                        ticket.MovieId,
-                        ticket.SelectedDay,
-                        ticket.SelectedTime);
+                    try
+                    {
+                        var resource = string.Format(
+                            CultureInfo.InvariantCulture,
+                            "MovieTicket:{0}:{1:yyyyMMdd}:{2}",
+                            ticket.MovieId,
+                            ticket.SelectedDay,
+                            ticket.SelectedTime);
 
-                    var lockResult = await _context.Database
-                        .SqlQuery<int>(
-                            @"DECLARE @result int;
-                              EXEC @result = sys.sp_getapplock
-                                  @Resource = @resourceName,
-                                  @LockMode = 'Exclusive',
-                                  @LockOwner = 'Transaction',
-                                  @LockTimeout = 10000;
-                              SELECT @result;",
-                            new SqlParameter(
-                                "@resourceName",
-                                SqlDbType.NVarChar,
-                                255)
-                            {
-                                Value = resource
-                            })
-                        .SingleAsync();
+                        var lockResult = await _context.Database
+                            .SqlQuery<int>(
+                                @"DECLARE @result int;
+                                  EXEC @result = sys.sp_getapplock
+                                      @Resource = @resourceName,
+                                      @LockMode = 'Exclusive',
+                                      @LockOwner = 'Transaction',
+                                      @LockTimeout = 10000;
+                                  SELECT @result;",
+                                new SqlParameter(
+                                    "@resourceName",
+                                    SqlDbType.NVarChar,
+                                    255)
+                                {
+                                    Value = resource
+                                })
+                            .SingleAsync();
 
-                    if (lockResult < 0)
+                        if (lockResult < 0)
+                        {
+                            transaction.Rollback();
+                            ModelState.AddModelError(
+                                "",
+                                "This screening is currently processing another booking. Please try again.");
+                            return View(ticket);
+                        }
+
+                        if (projectionDateTime <= DateTime.Now)
+                        {
+                            transaction.Rollback();
+                            ModelState.AddModelError(
+                                "SelectedTime",
+                                "The selected screening has already started.");
+                            return View(ticket);
+                        }
+
+                        var dayStart = ticket.SelectedDay.Date;
+                        var dayEnd = dayStart.AddDays(1);
+
+                        var existingSeats = await _context.Tickets
+                            .AsNoTracking()
+                            .Where(t =>
+                                t.MovieId == ticket.MovieId &&
+                                t.SelectedDay >= dayStart &&
+                                t.SelectedDay < dayEnd &&
+                                t.SelectedTime == ticket.SelectedTime)
+                            .Select(t => t.SelectedSeats)
+                            .ToListAsync();
+
+                        var takenSeats = new HashSet<string>(
+                            existingSeats
+                                .SelectMany(value =>
+                                    (value ?? string.Empty).Split(
+                                        new[] { ',' },
+                                        StringSplitOptions.RemoveEmptyEntries))
+                                .Select(value => value.Trim().ToUpperInvariant())
+                                .Where(value => SeatIdRegex.IsMatch(value)),
+                            StringComparer.OrdinalIgnoreCase);
+
+                        var overlappingSeats = normalizedSeats
+                            .Where(seat => takenSeats.Contains(seat))
+                            .OrderBy(GetSeatSortValue)
+                            .ToList();
+
+                        if (overlappingSeats.Count > 0)
+                        {
+                            transaction.Rollback();
+                            ModelState.AddModelError(
+                                "SelectedSeats",
+                                "The following seats were booked by someone else: " +
+                                string.Join(", ", overlappingSeats));
+                            return View(ticket);
+                        }
+
+                        _context.Tickets.Add(ticket);
+                        await _context.SaveChangesAsync();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
+                        Trace.TraceError(
+                            "Ticket reservation failed for movie {0}, day {1:yyyy-MM-dd}, time {2}: {3}",
+                            ticket.MovieId,
+                            ticket.SelectedDay,
+                            ticket.SelectedTime,
+                            ex);
 
                         ModelState.AddModelError(
                             "",
-                            "Избраната проекција моментално се обработува. Обидете се повторно.");
-
+                            "Your booking could not be completed. Seat availability may have changed. Please try again.");
                         return View(ticket);
                     }
-
-                    if (projectionDateTime <= DateTime.Now)
-                    {
-                        transaction.Rollback();
-
-                        ModelState.AddModelError(
-                            "SelectedTime",
-                            "Избраната проекција е веќе помината.");
-
-                        return View(ticket);
-                    }
-
-                    var dayStart = ticket.SelectedDay.Date;
-                    var dayEnd = dayStart.AddDays(1);
-
-                    var existingSeats = await _context.Tickets
-                        .AsNoTracking()
-                        .Where(t =>
-                            t.MovieId == ticket.MovieId &&
-                            t.SelectedDay >= dayStart &&
-                            t.SelectedDay < dayEnd &&
-                            t.SelectedTime == ticket.SelectedTime)
-                        .Select(t => t.SelectedSeats)
-                        .ToListAsync();
-
-                    var takenSeats = new HashSet<string>(
-                        existingSeats
-                            .SelectMany(value =>
-                                (value ?? string.Empty).Split(
-                                    new[] { ',' },
-                                    StringSplitOptions.RemoveEmptyEntries))
-                            .Select(value =>
-                                value.Trim().ToUpperInvariant())
-                            .Where(value =>
-                                SeatIdRegex.IsMatch(value)),
-                        StringComparer.OrdinalIgnoreCase);
-
-                    var overlappingSeats = normalizedSeats
-                        .Where(seat =>
-                            takenSeats.Contains(seat))
-                        .OrderBy(GetSeatSortValue)
-                        .ToList();
-
-                    if (overlappingSeats.Count > 0)
-                    {
-                        transaction.Rollback();
-
-                        ModelState.AddModelError(
-                            "SelectedSeats",
-                            "Следните седишта во меѓувреме беа резервирани: " +
-                            string.Join(", ", overlappingSeats));
-
-                        return View(ticket);
-                    }
-
-                    _context.Tickets.Add(ticket);
-
-                    await _context.SaveChangesAsync();
-
-                    transaction.Commit();
                 }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-
-                    Trace.TraceError(
-                        "Ticket reservation failed for movie {0}, day {1:yyyy-MM-dd}, time {2}: {3}",
-                        ticket.MovieId,
-                        ticket.SelectedDay,
-                        ticket.SelectedTime,
-                        ex);
-
-                    ModelState.AddModelError(
-                        "",
-                        "Резервацијата не можеше да се заврши. Можно е достапноста на седиштата да се променила. Обидете се повторно.");
-
-                    return View(ticket);
-                }
+            }
+            finally
+            {
+                SeatLockService.EndPurchase(purchaseId.Value);
             }
 
             try
@@ -482,19 +467,18 @@ namespace MovieTicketMVC.Controllers
                 var pdfBytes = new TicketPdfGenerator()
                     .GeneratePdf(ticket);
 
-                await TicketEmailService
-                    .SendTicketConfirmationAsync(
-                        to: ticket.Email,
-                        subject: "ВАШИТЕ КИНО БИЛЕТИ",
-                        body:
-                            "Ви благодариме за купувањето! " +
-                            "Во прилог ги испраќаме вашите билети " +
-                            "и инструкциите за плаќање.",
-                        attachmentBytes: pdfBytes,
-                        attachmentName: "MovieTickets.pdf");
+                await TicketEmailService.SendTicketConfirmationAsync(
+                    to: ticket.Email,
+                    subject: "MovieTicket Booking Confirmation",
+                    body:
+                        "Thank you for booking with MovieTicket! " +
+                        "Your booking confirmation is attached as a PDF.",
+                    attachmentBytes: pdfBytes,
+                    attachmentName: "MovieTickets.pdf");
 
+                TempData["EmailDeliveryFailed"] = false;
                 TempData["SuccessMessage"] =
-                    "Ви благодариме! Билетите се успешно резервирани и испратени на вашата e-mail адреса.";
+                    "Your booking is confirmed. A confirmation email has been sent to your email address.";
             }
             catch (Exception ex)
             {
@@ -503,16 +487,13 @@ namespace MovieTicketMVC.Controllers
                     ticket.Id,
                     ex);
 
+                TempData["EmailDeliveryFailed"] = true;
                 TempData["SuccessMessage"] =
-                    "Билетите се успешно резервирани, но e-mail потврдата не можеше да биде испратена. Резервацијата е достапна во вашата историја.";
+                    "Your booking is confirmed, but we couldn't send the confirmation email. " +
+                    "You can still find your booking under My Tickets.";
             }
 
-            return RedirectToAction(
-                "Summary",
-                new
-                {
-                    id = ticket.Id
-                });
+            return RedirectToAction("Summary", new { id = ticket.Id });
         }
 
         [HttpGet]
@@ -561,9 +542,7 @@ namespace MovieTicketMVC.Controllers
 
         private JsonResult EmptySeatResult()
         {
-            return Json(
-                new string[0],
-                JsonRequestBehavior.AllowGet);
+            return Json(new string[0], JsonRequestBehavior.AllowGet);
         }
 
         private static List<string> NormalizeSelectedSeats(
@@ -632,8 +611,7 @@ namespace MovieTicketMVC.Controllers
 
         private static int GetSeatSortValue(string seatId)
         {
-            var match = SeatIdRegex.Match(
-                seatId ?? string.Empty);
+            var match = SeatIdRegex.Match(seatId ?? string.Empty);
 
             if (!match.Success)
             {
@@ -713,9 +691,7 @@ namespace MovieTicketMVC.Controllers
                 return false;
             }
 
-            projectionDateTime = day.Date.Add(
-                parsedTime.TimeOfDay);
-
+            projectionDateTime = day.Date.Add(parsedTime.TimeOfDay);
             return true;
         }
 

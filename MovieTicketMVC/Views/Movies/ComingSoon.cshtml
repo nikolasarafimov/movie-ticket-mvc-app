@@ -6,7 +6,7 @@
 @model IEnumerable<MovieTicketMVC.Models.Movie>
 
 @{
-    ViewBag.Title = "Наскоро";
+    ViewBag.Title = "Coming Soon";
     ViewBag.ActiveMovieSection = "ComingSoon";
 
     var searchString =
@@ -48,20 +48,20 @@
 
         <div>
             <div class="cinema-eyebrow">
-                СКОРО ВО КИНАТА
+                COMING TO CINEMAS SOON
             </div>
 
             <h1 id="movies-title">
-                Следните
+                Upcoming
                 <span class="cinema-text-gradient">
-                    премиери
+                    Releases
                 </span>
             </h1>
 
             <p>
-                Погледни кои филмови наскоро пристигнуваат,
-                дознај ги датумите на премиера и испланирај ја
-                следната кино вечер однапред.
+                Discover which movies are coming soon,
+                check their release dates, and plan
+                your next movie night in advance.
             </p>
         </div>
 
@@ -72,8 +72,8 @@
 
                 <small>
                     @(movies.Count == 1
-                        ? "филм"
-                        : "филмови")
+                        ? "movie"
+                        : "movies")
                 </small>
             </div>
 
@@ -85,7 +85,7 @@
                     <span class="movies-button-icon"
                           aria-hidden="true">+</span>
 
-                    Додади филм
+                    Add Movie
                 </a>
             }
 
@@ -94,7 +94,7 @@
     </section>
 
     <section class="cinema-filter-bar movies-filter"
-             aria-label="Филтрирање на најавени филмови">
+             aria-label="Filter upcoming movies">
 
         @using (Html.BeginForm(
             "ComingSoon",
@@ -112,7 +112,7 @@
 
                 <label for="searchString"
                        class="form-label">
-                    Пребарај филм
+                    Search Movies
                 </label>
 
                 <div class="movies-search-input">
@@ -125,7 +125,7 @@
                            name="searchString"
                            value="@searchString"
                            class="form-control"
-                           placeholder="Наслов на филм..."
+                           placeholder="Movie title..."
                            autocomplete="off" />
 
                 </div>
@@ -136,7 +136,7 @@
 
                 <label for="ageFilter"
                        class="form-label">
-                    Возрасна категорија
+                    Age Rating
                 </label>
 
                 <select id="ageFilter"
@@ -145,12 +145,12 @@
 
                     <option value=""
                             @(string.IsNullOrWhiteSpace(ageFilter) ? "selected" : "")>
-                        Сите филмови
+                        All Movies
                     </option>
 
                     <option value="Over18"
                             @(string.Equals(ageFilter, "Over18", StringComparison.OrdinalIgnoreCase) ? "selected" : "")>
-                        Само 18+
+                        18+ Only
                     </option>
 
                 </select>
@@ -161,12 +161,12 @@
 
                 <button type="submit"
                         class="btn btn-primary">
-                    Пребарај
+                    Search
                 </button>
 
                 <a class="btn btn-outline-secondary"
                    href="@Url.Action("ComingSoon", "Movies")">
-                    Исчисти
+                    Clear
                 </a>
 
             </div>
@@ -186,8 +186,8 @@
                    })">
 
                 @(isDescending
-                    ? "Наслов: Z → A"
-                    : "Наслов: A → Z")
+                    ? "Title: Z → A"
+                    : "Title: A → Z")
 
             </a>
 
@@ -198,7 +198,7 @@
     @if (movies.Any())
     {
         <section class="movie-catalog"
-                 aria-label="Филмови што пристигнуваат наскоро">
+                 aria-label="Upcoming movies">
 
             @for (var index = 0; index < movies.Count; index++)
             {
@@ -206,17 +206,17 @@
 
                 var movieTitle =
                     string.IsNullOrWhiteSpace(movie.Title)
-                        ? "Непознат филм"
+                        ? "Unknown Movie"
                         : movie.Title.Trim();
 
                 var genre =
                     string.IsNullOrWhiteSpace(movie.Genre)
-                        ? "Филм"
+                        ? "Film"
                         : movie.Genre.Trim();
 
                 var language =
                     string.IsNullOrWhiteSpace(movie.Language)
-                        ? "Непознат"
+                        ? "Unknown"
                         : movie.Language.Trim();
 
                 var cardNumber =
@@ -330,7 +330,7 @@
                                       aria-hidden="true">
                                 </span>
 
-                                НАСКОРО
+                                COMING SOON
                             </span>
 
                         </div>
@@ -348,7 +348,7 @@
                             <div class="catalog-rating-row">
 
                                 <div class="catalog-rating"
-                                     aria-label="Оценка: @(movie.Rating.HasValue ? ratingText + " од 10" : "нема оценка")">
+                                     aria-label="Rating: @(movie.Rating.HasValue ? ratingText + " out of 10" : "not rated")">
 
                                     @if (movie.Rating.HasValue)
                                     {
@@ -367,7 +367,7 @@
                                     else
                                     {
                                         <strong>
-                                            Без оценка
+                                            Not Rated
                                         </strong>
                                     }
 
@@ -376,21 +376,21 @@
                                 @if (movie.IsForAdults == true)
                                 {
                                     <span class="catalog-age-badge adult"
-                                          aria-label="Само за лица над 18 години">
+                                          aria-label="Ages 18 and over only">
                                         18+
                                     </span>
                                 }
                                 else if (movie.IsForAdults == false)
                                 {
                                     <span class="catalog-age-badge"
-                                          aria-label="За сите возрасти">
-                                        ЗА СИТЕ
+                                          aria-label="Suitable for all ages">
+                                        ALL AGES
                                     </span>
                                 }
                                 else
                                 {
                                     <span class="catalog-age-badge unknown"
-                                          aria-label="Непозната возрасна категорија">
+                                          aria-label="Age rating unknown">
                                         —
                                     </span>
                                 }
@@ -408,11 +408,11 @@
                             <div class="catalog-meta-item">
 
                                 <span>
-                                    ВРЕМЕТРАЕЊЕ
+                                    DURATION
                                 </span>
 
                                 <strong>
-                                    @movie.LengthInMinutes мин.
+                                    @movie.LengthInMinutes min
                                 </strong>
 
                             </div>
@@ -420,7 +420,7 @@
                             <div class="catalog-meta-item">
 
                                 <span>
-                                    ЈАЗИК
+                                    LANGUAGE
                                 </span>
 
                                 <strong title="@language">
@@ -432,7 +432,7 @@
                             <div class="catalog-meta-item">
 
                                 <span>
-                                    ПРЕМИЕРА
+                                    RELEASE DATE
                                 </span>
 
                                 <strong>
@@ -450,9 +450,9 @@
                                    "Details",
                                    "Movies",
                                    new { id = movie.Id })"
-                               aria-label="Детали за филмот @movieTitle">
+                               aria-label="Details for @movieTitle">
 
-                                Детали за филмот
+                                Movie Details
 
                                 <span aria-hidden="true">
                                     →
@@ -471,8 +471,8 @@
                                        "Edit",
                                        "Movies",
                                        new { id = movie.Id })"
-                                   aria-label="Уреди го филмот @movieTitle">
-                                    Уреди
+                                   aria-label="Edit movie @movieTitle">
+                                    Edit
                                 </a>
 
                                 <a class="btn btn-outline-danger btn-sm"
@@ -480,8 +480,8 @@
                                        "Delete",
                                        "Movies",
                                        new { id = movie.Id })"
-                                   aria-label="Избриши го филмот @movieTitle">
-                                    Избриши
+                                   aria-label="Delete movie @movieTitle">
+                                    Delete
                                 </a>
 
                             </div>
@@ -505,18 +505,18 @@
             </div>
 
             <h2 id="movies-empty-title">
-                Нема пронајдени премиери
+                No Upcoming Movies Found
             </h2>
 
             <p>
-                Во моментов нема најавени филмови што
-                одговараат на избраните критериуми.
-                Промени го пребарувањето или исчисти ги филтрите.
+                There are currently no upcoming movies that
+                match your selected criteria.
+                Try a different search or clear the filters.
             </p>
 
             <a class="btn btn-primary"
                href="@Url.Action("ComingSoon", "Movies")">
-                Исчисти филтри
+                Clear Filters
             </a>
 
         </section>

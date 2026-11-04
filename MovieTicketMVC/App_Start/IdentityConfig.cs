@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
@@ -32,30 +33,11 @@ namespace MovieTicketMVC
             var smtpHost = Environment.GetEnvironmentVariable(
                 "MOVIETICKET_SMTP_HOST");
 
-            if (string.IsNullOrWhiteSpace(smtpHost))
-            {
-                smtpHost = "smtp.gmail.com";
-            }
-            else
-            {
-                smtpHost = smtpHost.Trim();
-            }
+            smtpHost = string.IsNullOrWhiteSpace(smtpHost)
+                ? "smtp.gmail.com"
+                : smtpHost.Trim();
 
-            var smtpPortValue = Environment.GetEnvironmentVariable(
-                "MOVIETICKET_SMTP_PORT");
-
-            var smtpPort = 587;
-
-            if (!string.IsNullOrWhiteSpace(smtpPortValue))
-            {
-                if (!int.TryParse(smtpPortValue, out smtpPort) ||
-                    smtpPort < 1 ||
-                    smtpPort > 65535)
-                {
-                    throw new InvalidOperationException(
-                        "MOVIETICKET_SMTP_PORT must contain a valid port number between 1 and 65535.");
-                }
-            }
+            var smtpPort = GetSmtpPort();
 
             var smtpUsername = GetRequiredEnvironmentVariable(
                 "MOVIETICKET_SMTP_USERNAME").Trim();
@@ -66,32 +48,38 @@ namespace MovieTicketMVC
             var fromAddress = Environment.GetEnvironmentVariable(
                 "MOVIETICKET_SMTP_FROM");
 
-            if (string.IsNullOrWhiteSpace(fromAddress))
-            {
-                fromAddress = smtpUsername;
-            }
-            else
-            {
-                fromAddress = fromAddress.Trim();
-            }
+            fromAddress = string.IsNullOrWhiteSpace(fromAddress)
+                ? smtpUsername
+                : fromAddress.Trim();
 
             using (var mailMessage = new MailMessage())
             {
                 mailMessage.From = new MailAddress(
                     fromAddress,
-                    "MovieTicket App");
+                    "MovieTicket App",
+                    Encoding.UTF8);
 
                 mailMessage.To.Add(
                     new MailAddress(message.Destination.Trim()));
 
-                mailMessage.Subject = message.Subject ?? string.Empty;
-                mailMessage.Body = message.Body ?? string.Empty;
+                mailMessage.Subject =
+                    message.Subject ?? string.Empty;
+
+                mailMessage.Body =
+                    message.Body ?? string.Empty;
+
                 mailMessage.IsBodyHtml = true;
                 mailMessage.SubjectEncoding = Encoding.UTF8;
                 mailMessage.BodyEncoding = Encoding.UTF8;
+                mailMessage.HeadersEncoding = Encoding.UTF8;
 
-                using (var client = new SmtpClient(smtpHost, smtpPort))
+                using (var client = new SmtpClient(
+                    smtpHost,
+                    smtpPort))
                 {
+                    client.DeliveryMethod =
+                        SmtpDeliveryMethod.Network;
+
                     client.EnableSsl = true;
                     client.UseDefaultCredentials = false;
 
@@ -102,6 +90,33 @@ namespace MovieTicketMVC
                     await client.SendMailAsync(mailMessage);
                 }
             }
+        }
+
+        private static int GetSmtpPort()
+        {
+            var value = Environment.GetEnvironmentVariable(
+                "MOVIETICKET_SMTP_PORT");
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return 587;
+            }
+
+            int port;
+
+            if (!int.TryParse(
+                    value.Trim(),
+                    NumberStyles.None,
+                    CultureInfo.InvariantCulture,
+                    out port) ||
+                port < 1 ||
+                port > 65535)
+            {
+                throw new InvalidOperationException(
+                    "MOVIETICKET_SMTP_PORT must contain a valid port number between 1 and 65535.");
+            }
+
+            return port;
         }
 
         private static string GetRequiredEnvironmentVariable(
@@ -144,7 +159,8 @@ namespace MovieTicketMVC
 
     public class ApplicationUserManager : UserManager<ApplicationUser>
     {
-        public ApplicationUserManager(IUserStore<ApplicationUser> store)
+        public ApplicationUserManager(
+            IUserStore<ApplicationUser> store)
             : base(store)
         {
         }

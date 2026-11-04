@@ -12,7 +12,7 @@
         User.Identity.IsAuthenticated &&
         User.IsInRole("Admin");
 
-    ViewBag.Title = isAdmin ? "Сите билети" : "Мои билети";
+    ViewBag.Title = isAdmin ? "All Tickets" : "My Tickets";
 
     var tickets = Model != null
         ? Model.Where(ticket => ticket != null).ToList()
@@ -52,44 +52,44 @@
     <section class="ticket-wallet-hero" aria-labelledby="ticket-wallet-title">
         <div class="ticket-wallet-intro">
             <div class="cinema-eyebrow">
-                @(isAdmin ? "АДМИНИСТРАЦИЈА · РЕЗЕРВАЦИИ" : "ТВОИТЕ РЕЗЕРВАЦИИ")
+                @(isAdmin ? "ADMIN · RESERVATIONS" : "YOUR RESERVATIONS")
             </div>
 
             <h1 id="ticket-wallet-title">
-                @(isAdmin ? "Сите " : "Мои ")<span class="cinema-text-gradient">билети</span>
+                @(isAdmin ? "All " : "My ")<span class="cinema-text-gradient">Tickets</span>
             </h1>
 
             <p>
                 @(isAdmin
-                    ? "Преглед на сите резервации направени преку MovieTicket."
-                    : "Сите твои кино резервации, организирани на едно место.")
+                    ? "View all reservations made through MovieTicket."
+                    : "All your cinema reservations, organized in one place.")
             </p>
         </div>
 
-        <div class="ticket-wallet-stats" aria-label="Статистика на резервации">
+        <div class="ticket-wallet-stats" aria-label="Reservation statistics">
             <div class="ticket-wallet-stat">
-                <span>ВКУПНО</span>
+                <span>TOTAL</span>
                 <strong>@tickets.Count</strong>
-                <small>резервации</small>
+                <small>reservations</small>
             </div>
 
             <div class="ticket-wallet-stat">
-                <span>ПРЕТСТОЈНИ</span>
+                <span>UPCOMING</span>
                 <strong>@upcomingTickets</strong>
-                <small>резервации</small>
+                <small>reservations</small>
             </div>
 
             <div class="ticket-wallet-stat">
-                <span>ВКУПНА ВРЕДНОСТ</span>
+                <span>TOTAL VALUE</span>
                 <strong class="ticket-wallet-price">@totalValue.ToString("N0", numberCulture)</strong>
-                <small>ден.</small>
+                <small>MKD</small>
             </div>
         </div>
     </section>
 
     @if (tickets.Any())
     {
-        <section class="ticket-wallet-grid" aria-label="Резервирани билети">
+        <section class="ticket-wallet-grid" aria-label="Booked tickets">
             @foreach (var ticket in tickets)
             {
                 var groupedSeats = new SortedDictionary<int, SortedSet<int>>();
@@ -149,15 +149,15 @@
                 var ticketClass = !hasValidTime ? "unknown" : isUpcoming ? "upcoming" : "past";
 
                 var statusText = !hasValidTime
-                    ? "НЕПОЗНАТ ТЕРМИН"
-                    : isUpcoming ? "ПРЕТСТОЈНА ПРОЕКЦИЈА" : "ЗАВРШЕНА ПРОЕКЦИЈА";
+                    ? "UNKNOWN SHOWTIME"
+                    : isUpcoming ? "UPCOMING SCREENING" : "PAST SCREENING";
 
                 var movieTitle = ticket.Movie != null &&
                     !string.IsNullOrWhiteSpace(ticket.Movie.Title)
                         ? ticket.Movie.Title
-                        : "Непознат филм";
+                        : "Unknown Movie";
 
-                <article class="wallet-ticket @ticketClass" aria-label="Билет број @ticket.Id">
+                <article class="wallet-ticket @ticketClass" aria-label="Ticket number @ticket.Id">
                     <div class="wallet-ticket-main">
                         <div class="wallet-ticket-top">
                             <div>
@@ -165,7 +165,7 @@
                                     <span aria-hidden="true"></span>
                                     @statusText
                                 </span>
-                                <span class="wallet-ticket-id">РЕЗЕРВАЦИЈА #@ticket.Id</span>
+                                <span class="wallet-ticket-id">RESERVATION #@ticket.Id</span>
                             </div>
 
                             <img class="wallet-ticket-brand"
@@ -178,27 +178,27 @@
                         </div>
 
                         <div class="wallet-ticket-title">
-                            <span>ФИЛМ</span>
+                            <span>MOVIE</span>
                             <h2>@movieTitle</h2>
                         </div>
 
                         <div class="wallet-ticket-meta">
                             <div>
-                                <span>ДАТУМ</span>
+                                <span>DATE</span>
                                 <strong>@ticket.SelectedDay.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture)</strong>
                             </div>
                             <div>
-                                <span>ТЕРМИН</span>
+                                <span>SHOWTIME</span>
                                 <strong>@(string.IsNullOrWhiteSpace(ticket.SelectedTime) ? "—" : ticket.SelectedTime)</strong>
                             </div>
                             <div>
-                                <span>СЕДИШТА</span>
+                                <span>SEATS</span>
                                 <strong>@seatCount</strong>
                             </div>
                         </div>
 
                         <div class="wallet-ticket-seats">
-                            <span>ИЗБРАНИ СЕДИШТА</span>
+                            <span>SELECTED SEATS</span>
 
                             <div class="wallet-seat-list">
                                 @if (groupedSeats.Any())
@@ -207,20 +207,20 @@
                                     {
                                         foreach (var column in group.Value)
                                         {
-                                            <span class="wallet-seat">Ред @(group.Key) · Седиште @(column)</span>
+                                            <span class="wallet-seat">Row @(group.Key) · Seat @(column)</span>
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    <span class="wallet-empty-seats">Нема валидни избрани седишта</span>
+                                    <span class="wallet-empty-seats">No Valid Seats Selected</span>
                                 }
                             </div>
 
                             @if (invalidSeats.Any())
                             {
                                 <div class="wallet-invalid-seats">
-                                    Невалидни записи: @string.Join(", ", invalidSeats)
+                                    Invalid Entries: @string.Join(", ", invalidSeats)
                                 </div>
                             }
                         </div>
@@ -228,10 +228,10 @@
                         @if (isAdmin)
                         {
                             <div class="wallet-ticket-customer">
-                                <span>КОРИСНИК</span>
+                                <span>CUSTOMER</span>
                                 <strong title="@ticket.Email">
                                     @(string.IsNullOrWhiteSpace(ticket.Email)
-                                        ? "Не е наведена е-пошта"
+                                        ? "No Email Provided"
                                         : ticket.Email)
                                 </strong>
                             </div>
@@ -240,9 +240,9 @@
 
                     <div class="wallet-ticket-stub">
                         <div class="wallet-ticket-price">
-                            <span>ВКУПНО</span>
+                            <span>TOTAL</span>
                             <strong>@ticket.TotalPrice.ToString("N0", numberCulture)</strong>
-                            <small>ден.</small>
+                            <small>MKD</small>
                         </div>
 
                         <div class="wallet-barcode" aria-hidden="true">
@@ -254,8 +254,8 @@
 
                         <a class="btn btn-primary wallet-ticket-action"
                            href="@Url.Action("Summary", "Tickets", new { id = ticket.Id })"
-                           aria-label="Детали за билет број @ticket.Id">
-                            Детали
+                           aria-label="Details for ticket number @ticket.Id">
+                            Details
                             <span aria-hidden="true">→</span>
                         </a>
                     </div>
@@ -276,20 +276,20 @@
             </div>
 
             <h2 id="ticket-wallet-empty-title">
-                @(isAdmin ? "Сè уште нема резервации" : "Сè уште немаш резервирано билети")
+                @(isAdmin ? "No Reservations Yet" : "You Haven’t Booked Any Tickets Yet")
             </h2>
 
             <p>
                 @(isAdmin
-                    ? "Кога ќе биде направена првата резервација, ќе се појави овде."
-                    : "Кога ќе резервираш кино билет, ќе можеш да го најдеш овде, заедно со деталите за проекцијата.")
+                    ? "Once the first reservation is made, it will appear here."
+                    : "When you book a cinema ticket, you’ll find it here along with the screening details.")
             </p>
 
             @if (!isAdmin)
             {
                 <a class="btn btn-primary ticket-wallet-empty-action"
                    href="@Url.Action("Buy", "Tickets")">
-                    Купи билет
+                    Buy Tickets
                     <span aria-hidden="true">→</span>
                 </a>
             }

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "E-mail адресата е потврдена";
+    ViewBag.Title = "Email Verified";
 
     var isAuthenticated =
         User != null &&
@@ -11,7 +11,7 @@
       aria-labelledby="email-confirm-title">
 
     <section class="email-confirm-shell"
-             aria-label="Успешна потврда на e-mail адреса">
+             aria-label="Email verification successful">
 
         <div class="email-confirm-ambient email-confirm-ambient-one"
              aria-hidden="true"></div>
@@ -21,7 +21,7 @@
 
         <a class="email-confirm-brand"
            href="@Url.Action("Index", "Home")"
-           aria-label="MovieTicket – почетна страница">
+           aria-label="MovieTicket home page">
             <span aria-hidden="true"></span>
             MOVIETICKET
         </a>
@@ -54,21 +54,21 @@
             </div>
 
             <h1 id="email-confirm-title">
-                E-mail адресата е
+                Your email address is
                 <span class="cinema-text-gradient">
-                    потврдена.
+                    verified.
                 </span>
             </h1>
 
             <p class="email-confirm-description">
-                Успешно ја потврди e-mail адресата поврзана со твојот
-                MovieTicket профил. Сега можеш да продолжиш со користење
-                на платформата.
+                You've successfully verified the email address associated
+                with your MovieTicket account. You can now continue using
+                the platform.
             </p>
 
             <div class="email-confirm-status"
                  role="status"
-                 aria-label="Статус на потврдата">
+                 aria-label="Email verification status">
 
                 <div class="email-confirm-status-icon"
                      aria-hidden="true">✓</div>
@@ -77,12 +77,12 @@
                     <span>ACCOUNT VERIFIED</span>
 
                     <strong>
-                        Потврдата е успешно завршена
+                        Email verification completed successfully
                     </strong>
 
                     <p>
-                        E-mail адресата е потврдена. Можеш да продолжиш
-                        кон профилот или да се најавиш на MovieTicket.
+                        Your email address is verified. You can access
+                        your account or sign in to MovieTicket.
                     </p>
                 </div>
             </div>
@@ -93,7 +93,7 @@
                     <a id="accountLink"
                        class="btn btn-primary email-confirm-primary-action"
                        href="@Url.Action("Index", "Manage")">
-                        <span>Продолжи кон профилот</span>
+                        <span>Go to My Account</span>
                         <span aria-hidden="true">→</span>
                     </a>
                 }
@@ -102,7 +102,7 @@
                     <a id="loginLink"
                        class="btn btn-primary email-confirm-primary-action"
                        href="@Url.Action("Login", "Account")">
-                        <span>Продолжи кон најава</span>
+                        <span>Continue to Sign In</span>
                         <span aria-hidden="true">→</span>
                     </a>
                 }
@@ -110,7 +110,7 @@
                 <a class="email-confirm-home"
                    href="@Url.Action("Index", "Home")">
                     <span aria-hidden="true">←</span>
-                    Назад кон почетна
+                    Back to Home
                 </a>
             </div>
         </div>

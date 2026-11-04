@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Контакт";
+    ViewBag.Title = "Contact";
 
     var isAuthenticated =
         User != null &&
@@ -25,28 +25,28 @@
         <div class="contact-hero-glow contact-hero-glow-two" aria-hidden="true"></div>
 
         <div class="contact-hero-content">
-            <div class="cinema-eyebrow">КОНТАКТ И ПОДДРШКА</div>
+            <div class="cinema-eyebrow">CONTACT & SUPPORT</div>
 
             <h1 id="contact-title">
-                Како можеме да
-                <span class="cinema-text-gradient">помогнеме?</span>
+                How can we
+                <span class="cinema-text-gradient">help you?</span>
             </h1>
 
             <p>
-                Имаш прашање за резервација, билет или користењето на MovieTicket?
-                Контактирај нè преку е-пошта или телефон.
+                Have a question about a booking, a ticket, or using MovieTicket?
+                Reach us by email or phone.
             </p>
 
             <div class="contact-hero-actions">
                 <a class="btn btn-primary contact-primary-action"
                    href="@contactEmailUrl"
-                   aria-label="Испрати е-пошта на @contactEmail">
-                    <span>Испрати порака</span>
+                   aria-label="Send an email to @contactEmail">
+                    <span>Send a Message</span>
                     <span aria-hidden="true">→</span>
                 </a>
 
                 <a class="btn btn-outline-secondary" href="@currentMoviesUrl">
-                    Прегледај филмови
+                    Browse Movies
                 </a>
             </div>
         </div>
@@ -67,11 +67,11 @@
     <section class="contact-section" aria-labelledby="contact-information-title">
         <div class="contact-section-heading">
             <div>
-                <div class="cinema-eyebrow">СТАПИ ВО КОНТАКТ</div>
-                <h2 id="contact-information-title">Контакт информации</h2>
+                <div class="cinema-eyebrow">GET IN TOUCH</div>
+                <h2 id="contact-information-title">Contact Information</h2>
             </div>
 
-            <p>Избери го начинот што најмногу ти одговара.</p>
+            <p>Choose the contact method that works best for you.</p>
         </div>
 
         <div class="contact-grid">
@@ -82,17 +82,17 @@
                 </div>
 
                 <div class="contact-card-content">
-                    <span>Е-ПОШТА</span>
-                    <h3>Пиши ни</h3>
+                    <span>EMAIL</span>
+                    <h3>Email Us</h3>
                     <p>
-                        За прашања поврзани со билети, резервации
-                        или твојот MovieTicket профил.
+                        For questions about tickets, bookings,
+                        or your MovieTicket account.
                     </p>
                 </div>
 
                 <a class="contact-card-link"
                    href="@contactEmailUrl"
-                   aria-label="Испрати е-пошта на @contactEmail">
+                   aria-label="Send an email to @contactEmail">
                     <span>@contactEmail</span>
                     <span aria-hidden="true">→</span>
                 </a>
@@ -112,17 +112,17 @@
                 </div>
 
                 <div class="contact-card-content">
-                    <span>ТЕЛЕФОН</span>
-                    <h3>Јави ни се</h3>
+                    <span>PHONE</span>
+                    <h3>Call Us</h3>
                     <p>
-                        Контактирај нè директно доколку ти е потребна
-                        помош при користењето на платформата.
+                        Call us directly if you need assistance
+                        using the platform.
                     </p>
                 </div>
 
                 <a class="contact-card-link"
                    href="@contactPhoneUrl"
-                   aria-label="Јави се на @contactPhone">
+                   aria-label="Call @contactPhone">
                     <span>@contactPhone</span>
                     <span aria-hidden="true">→</span>
                 </a>
@@ -137,11 +137,11 @@
             </div>
 
             <div>
-                <span class="contact-support-label">ПРЕД ДА НÈ КОНТАКТИРАШ</span>
-                <h2 id="contact-support-title">Провери ги деталите за билетот</h2>
+                <span class="contact-support-label">BEFORE YOU CONTACT US</span>
+                <h2 id="contact-support-title">Check Your Ticket Details</h2>
                 <p>
-                    Ако прашањето се однесува на резервација, деталите за филмот,
-                    датумот, терминот и седиштата можеш да ги најдеш во делот со билети.
+                    If your question is about a booking, you can find the movie,
+                    date, showtime, and seat details in your tickets section.
                 </p>
             </div>
         </div>
@@ -149,26 +149,26 @@
         @if (isAuthenticated)
         {
             <a class="btn btn-outline-secondary" href="@ticketsUrl">
-                @(isAdmin ? "Сите билети" : "Мои билети")
+                @(isAdmin ? "All Tickets" : "My Tickets")
             </a>
         }
         else
         {
             <a class="btn btn-outline-secondary" href="@loginUrl">
-                Најави се
+                Log In
             </a>
         }
     </section>
 
     <section class="contact-bottom" aria-labelledby="contact-bottom-title">
         <div>
-            <div class="cinema-eyebrow">ПОДГОТВЕН ЗА СЛЕДНИОТ ФИЛМ?</div>
-            <h2 id="contact-bottom-title">Назад кон големото платно.</h2>
-            <p>Прегледај ги актуелните филмови и избери го следниот термин.</p>
+            <div class="cinema-eyebrow">READY FOR YOUR NEXT MOVIE?</div>
+            <h2 id="contact-bottom-title">Back to the Big Screen.</h2>
+            <p>Browse movies now showing and choose your next showtime.</p>
         </div>
 
         <a class="btn btn-primary" href="@currentMoviesUrl">
-            <span>Актуелни филмови</span>
+            <span>Now Showing</span>
             <span aria-hidden="true">→</span>
         </a>
     </section>

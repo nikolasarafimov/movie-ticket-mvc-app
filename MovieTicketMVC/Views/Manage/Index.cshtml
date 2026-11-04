@@ -1,10 +1,9 @@
-﻿
-@using System
+﻿@using System
 @using System.Collections.Generic
 @model MovieTicketMVC.Models.IndexViewModel
 
 @{
-    ViewBag.Title = "Твојот профил";
+    ViewBag.Title = "Your Profile";
 
     var externalLoginCount = Model != null && Model.Logins != null
         ? Model.Logins.Count
@@ -17,16 +16,16 @@
     var statusMessage = Convert.ToString(ViewBag.StatusMessage);
     var statusTranslations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 {
-        { "Your password has been changed.", "Лозинката е успешно променета." },
-        { "Your password has been set.", "Лозинката е успешно поставена." },
-        { "Two-factor authentication has been enabled.", "Двофакторската автентикација е активирана." },
-        { "Two-factor authentication has been disabled.", "Двофакторската автентикација е исклучена." },
-        { "The external login was removed.", "Надворешниот начин на најава е отстранет." },
-        { "Your phone number was removed.", "Телефонскиот број е отстранет." },
-        { "Phone verification is not configured for this application.", "Потврдувањето телефонски број не е конфигурирано во апликацијата." },
-        { "Two-factor authentication cannot be enabled because no verified provider is available.", "Двофакторската автентикација не може да се активира бидејќи нема достапен потврден метод за верификација." },
-        { "You cannot remove your only sign-in method.", "Не можеш да го отстраниш единствениот начин за најава." },
-        { "An error has occurred.", "Настана грешка. Обиди се повторно." }
+        { "Your password has been changed.", "Your password has been changed." },
+        { "Your password has been set.", "Your password has been set." },
+        { "Two-factor authentication has been enabled.", "Two-factor authentication has been enabled." },
+        { "Two-factor authentication has been disabled.", "Two-factor authentication has been disabled." },
+        { "The external login was removed.", "The external login was removed." },
+        { "Your phone number was removed.", "Your phone number was removed." },
+        { "Phone verification is not configured for this application.", "Phone verification is not configured for this application." },
+        { "Two-factor authentication cannot be enabled because no verified provider is available.", "Two-factor authentication cannot be enabled because no verified provider is available." },
+        { "You cannot remove your only sign-in method.", "You cannot remove your only sign-in method." },
+        { "An error has occurred.", "An error occurred. Please try again." }
     };
 
     string translatedStatus = string.Empty;
@@ -38,36 +37,36 @@
     }
 
     var isWarning =
-        statusMessage == "Настана грешка. Обиди се повторно." ||
-        statusMessage == "Потврдувањето телефонски број не е конфигурирано во апликацијата." ||
-        statusMessage == "Двофакторската автентикација не може да се активира бидејќи нема достапен потврден метод за верификација." ||
-        statusMessage == "Не можеш да го отстраниш единствениот начин за најава.";
+        statusMessage == "An error occurred. Please try again." ||
+        statusMessage == "Phone verification is not configured for this application." ||
+        statusMessage == "Two-factor authentication cannot be enabled because no verified provider is available." ||
+        statusMessage == "You cannot remove your only sign-in method.";
 }
 
 <main class="account-page" aria-labelledby="account-title">
     <section class="account-hero" aria-labelledby="account-title">
         <div class="account-hero-copy">
-            <div class="cinema-eyebrow">МОЈ ПРОФИЛ</div>
+            <div class="cinema-eyebrow">MY PROFILE</div>
 
             <h1 id="account-title">
-                Твојот <span class="cinema-text-gradient">профил</span>
+                Your <span class="cinema-text-gradient">profile</span>
             </h1>
 
             <p>
-                Управувај со лозинката, поврзаните начини за најава
-                и безбедноста на твојот MovieTicket профил.
+                Manage your password, linked sign-in methods,
+                and the security of your MovieTicket account.
             </p>
 
             <div class="account-hero-summary"
-                 aria-label="Моментална состојба на профилот">
+                 aria-label="Current account security status">
 
                 <span class="account-hero-pill">
                     <span class="account-pill-dot @(hasPassword ? "is-positive" : "is-warning")"
                           aria-hidden="true"></span>
 
                     @(hasPassword
-                        ? "Лозинката е поставена"
-                        : "Нема поставена лозинка")
+                        ? "Password set"
+                        : "No password set")
                 </span>
 
                 <span class="account-hero-pill">
@@ -75,8 +74,8 @@
                           aria-hidden="true"></span>
 
                     @(twoFactorEnabled
-                        ? "2FA е активна"
-                        : "2FA не е активна")
+                        ? "2FA enabled"
+                        : "2FA disabled")
                 </span>
             </div>
         </div>
@@ -130,8 +129,8 @@
             <div>
                 <strong>
                     @(isWarning
-                        ? "Потребно е внимание"
-                        : "Промената е зачувана")
+                        ? "Attention required"
+                        : "Changes saved")
                 </strong>
 
                 <p>@statusMessage</p>
@@ -145,17 +144,17 @@
         <div class="account-section-heading">
             <div>
                 <div class="cinema-eyebrow">
-                    ПОСТАВКИ НА ПРОФИЛОТ
+                    ACCOUNT SETTINGS
                 </div>
 
                 <h2 id="account-settings-title">
-                    Безбедност и најавување
+                    Security and Sign-In
                 </h2>
             </div>
 
             <p>
-                Избери ја поставката што сакаш да ја промениш
-                или провериш.
+                Select the setting you want to change
+                or review.
             </p>
         </div>
 
@@ -189,22 +188,22 @@
                               aria-hidden="true"></span>
 
                         @(hasPassword
-                            ? "Поставена"
-                            : "Не е поставена")
+                            ? "Set"
+                            : "Not set")
                     </span>
                 </div>
 
                 <div class="account-card-content">
                     <span class="account-card-number">
-                        01 / ЛОЗИНКА
+                        01 / PASSWORD
                     </span>
 
-                    <h3>Лозинка</h3>
+                    <h3>Password</h3>
 
                     <p>
                         @(hasPassword
-                            ? "Промени ја лозинката за да го заштитиш пристапот до твојот профил."
-                            : "Постави лозинка за да можеш да се најавуваш и со е-пошта.")
+                            ? "Change your password to help keep your account secure."
+                            : "Set a password so you can also sign in with your email address.")
                     </p>
                 </div>
 
@@ -214,7 +213,7 @@
                         <a class="btn btn-outline-secondary account-card-button"
                            href="@Url.Action("ChangePassword", "Manage")">
 
-                            <span>Промени лозинка</span>
+                            <span>Change Password</span>
                             <span aria-hidden="true">→</span>
                         </a>
                     }
@@ -223,7 +222,7 @@
                         <a class="btn btn-primary account-card-button"
                            href="@Url.Action("SetPassword", "Manage")">
 
-                            <span>Постави лозинка</span>
+                            <span>Set Password</span>
                             <span aria-hidden="true">→</span>
                         </a>
                     }
@@ -259,22 +258,22 @@
                     <span class="account-card-status is-neutral">
                         @externalLoginCount
                         @(externalLoginCount == 1
-                            ? "поврзан профил"
-                            : "поврзани профили")
+                            ? "linked account"
+                            : "linked accounts")
                     </span>
                 </div>
 
                 <div class="account-card-content">
                     <span class="account-card-number">
-                        02 / НАЈАВУВАЊЕ
+                        02 / SIGN-IN
                     </span>
 
-                    <h3>Поврзани профили</h3>
+                    <h3>Linked Accounts</h3>
 
                     <p>
-                        Прегледај ги надворешните сметки поврзани
-                        со MovieTicket и управувај со достапните
-                        начини за најава.
+                        Review external accounts connected
+                        to MovieTicket and manage your available
+                        sign-in methods.
                     </p>
                 </div>
 
@@ -282,7 +281,7 @@
                     <a class="btn btn-outline-secondary account-card-button"
                        href="@Url.Action("ManageLogins", "Manage")">
 
-                        <span>Управувај со поврзувања</span>
+                        <span>Manage Linked Accounts</span>
                         <span aria-hidden="true">→</span>
                     </a>
                 </div>
@@ -313,22 +312,22 @@
                               aria-hidden="true"></span>
 
                         @(twoFactorEnabled
-                            ? "Активна"
-                            : "Неактивна")
+                            ? "Enabled"
+                            : "Disabled")
                     </span>
                 </div>
 
                 <div class="account-card-content">
                     <span class="account-card-number">
-                        03 / ДОПОЛНИТЕЛНА ЗАШТИТА
+                        03 / EXTRA SECURITY
                     </span>
 
-                    <h3>Двофакторска автентикација</h3>
+                    <h3>Two-Factor Authentication</h3>
 
                     <p>
                         @(twoFactorEnabled
-                            ? "Дополнителната проверка при најавување е активна и го заштитува твојот профил."
-                            : "Додај уште еден чекор за проверка при најавување и зголеми ја безбедноста на профилот.")
+                            ? "An additional verification step is enabled to help protect your account when signing in."
+                            : "Add a verification step when signing in for extra account security.")
                     </p>
 
                     @if (browserRemembered)
@@ -337,11 +336,11 @@
                             <span aria-hidden="true">✓</span>
 
                             <div>
-                                <strong>Запомнет прелистувач</strong>
+                                <strong>Remembered Browser</strong>
 
                                 <small>
-                                    Овој прелистувач е запомнет
-                                    за двофакторска најава.
+                                    This browser is remembered
+                                    for two-factor sign-in.
                                 </small>
                             </div>
                         </div>
@@ -353,9 +352,9 @@
 
                             <div>
                                 <small>
-                                    За активирање е потребен
-                                    достапен и потврден начин
-                                    за верификација.
+                                    Enabling 2FA requires
+                                    an available, verified
+                                    authentication method.
                                 </small>
                             </div>
                         </div>
@@ -376,7 +375,7 @@
                             <button type="submit"
                                     class="btn btn-outline-danger account-card-button">
 
-                                <span>Исклучи 2FA</span>
+                                <span>Disable 2FA</span>
                                 <span aria-hidden="true">→</span>
                             </button>
                         }
@@ -394,7 +393,7 @@
                             <button type="submit"
                                     class="btn btn-primary account-card-button">
 
-                                <span>Активирај 2FA</span>
+                                <span>Enable 2FA</span>
                                 <span aria-hidden="true">→</span>
                             </button>
                         }
@@ -429,18 +428,18 @@
 
         <div>
             <span class="account-note-eyebrow">
-                БЕЗБЕДНОСЕН СОВЕТ
+                SECURITY TIP
             </span>
 
             <h2 id="account-security-note-title">
-                Чувај го профилот безбеден
+                Keep Your Account Secure
             </h2>
 
             <p>
-                Користи уникатна лозинка. Доколку е достапна
-                двофакторската автентикација, активирај ја
-                за дополнителна заштита. Не избирај
-                „Запомни го прелистувачот“ на јавен или споделен уред.
+                Use a unique password. If two-factor
+                authentication is available, enable it
+                for extra protection. Never select
+                “Remember this browser” on a public or shared device.
             </p>
         </div>
     </aside>

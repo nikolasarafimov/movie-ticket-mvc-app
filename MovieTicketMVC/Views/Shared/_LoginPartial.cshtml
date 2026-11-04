@@ -1,5 +1,4 @@
-﻿
-@using Microsoft.AspNet.Identity
+﻿@using Microsoft.AspNet.Identity
 
 @{
     var isAuthenticated =
@@ -50,7 +49,7 @@
 
         </svg>
 
-        <span>Профил</span>
+        <span>Profile</span>
 
     </button>
 
@@ -68,7 +67,7 @@
         {
             <li class="cinema-account-user">
 
-                <small>Најавен профил</small>
+                <small>Signed-in account</small>
 
                 <strong title="@User.Identity.GetUserName()">
                     @User.Identity.GetUserName()
@@ -83,7 +82,7 @@
             <li>
                 <a class="dropdown-item cinema-account-item"
                    href="@Url.Action("Index", "Manage")">
-                    Мој профил
+                    My Profile
                 </a>
             </li>
 
@@ -98,7 +97,7 @@
 
                     <button type="submit"
                             class="dropdown-item cinema-account-item cinema-account-logout">
-                        Одјави се
+                        Log Out
                     </button>
                 }
             </li>
@@ -108,7 +107,7 @@
             <li>
                 <a class="dropdown-item cinema-account-item"
                    href="@Url.Action("Login", "Account")">
-                    Најави се
+                    Log In
                 </a>
             </li>
 
@@ -119,7 +118,7 @@
             <li>
                 <a class="dropdown-item cinema-account-item cinema-account-register"
                    href="@Url.Action("Register", "Account")">
-                    Регистрирај се
+                    Register
                 </a>
             </li>
         }

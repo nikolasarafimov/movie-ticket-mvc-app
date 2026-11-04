@@ -310,6 +310,11 @@ namespace MovieTicketMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
         {
+            if (model == null)
+            {
+                return View("Error");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -361,6 +366,11 @@ namespace MovieTicketMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SetPassword(SetPasswordViewModel model)
         {
+            if (model == null)
+            {
+                return View("Error");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);

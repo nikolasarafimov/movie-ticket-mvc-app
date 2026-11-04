@@ -1,9 +1,9 @@
-﻿@using System
+﻿
 @using System.Globalization
 @model System.Web.Mvc.HandleErrorInfo
 
 @{
-    ViewBag.Title = "Настана грешка";
+    ViewBag.Title = "An Error Occurred";
 
     var responseStatus = Response != null
         ? Response.StatusCode
@@ -18,14 +18,14 @@
             : "ERR";
 
     var errorLabel = isServerError
-        ? "Серверска грешка"
+        ? "Server Error"
         : responseStatus == 404
-            ? "Страницата не е пронајдена"
-            : "Барањето не можеше да се обработи";
+            ? "Page Not Found"
+            : "The Request Could Not Be Processed";
 
     var errorDescription = responseStatus == 404 && !isServerError
-        ? "Страницата што ја бараш не е достапна или нејзината адреса е променета. Продолжи кон почетната страница или разгледај ги актуелните филмови."
-        : "Настана проблем при обработката на барањето. Можеш да се вратиш на почетната страница или да продолжиш со разгледување на филмовите.";
+        ? "The page you are looking for is unavailable or its address has changed. Return to the home page or browse the movies currently showing."
+        : "A problem occurred while processing your request. You can return to the home page or continue browsing movies.";
 }
 
 <main class="error-page" aria-labelledby="error-title">
@@ -36,7 +36,7 @@
 
         <a class="error-brand"
            href="@Url.Action("Index", "Home")"
-           aria-label="MovieTicket — кон почетната страница">
+           aria-label="MovieTicket — go to the home page">
             <span aria-hidden="true"></span>
             MOVIETICKET
         </a>
@@ -67,8 +67,8 @@
             </div>
 
             <h1 id="error-title">
-                Нешто не помина
-                <span class="error-title-accent">според планот.</span>
+                Something Didn't Go
+                <span class="error-title-accent">as Planned.</span>
             </h1>
 
             <p id="error-description" class="error-description">
@@ -82,9 +82,9 @@
                     <span>REQUEST STATUS</span>
                     <strong>@errorLabel</strong>
                     <p>
-                        Ако проблемот се повторува, можеш да ни пишеш преку
-                        страницата за контакт. Не е потребно да споделуваш лозинки
-                        или други доверливи податоци.
+                        If the problem persists, you can contact us
+                        through our contact page. There is no need to share
+                        passwords or other sensitive information.
                     </p>
                 </div>
             </div>
@@ -92,20 +92,20 @@
             <div class="error-actions">
                 <a class="btn btn-primary error-primary-action"
                    href="@Url.Action("Index", "Home")">
-                    <span>Назад кон почетна</span>
+                    <span>Back to Home</span>
                     <span aria-hidden="true">→</span>
                 </a>
 
                 <a class="btn btn-outline-secondary"
                    href="@Url.Action("Current", "Movies")">
-                    Актуелни филмови
+                    Now Showing
                 </a>
             </div>
 
             <a class="error-support-link"
                href="@Url.Action("Contact", "Home")">
                 <span aria-hidden="true">?</span>
-                Потребна ти е помош? Контактирај нè.
+                Need Help? Contact Us.
             </a>
         </div>
     </section>

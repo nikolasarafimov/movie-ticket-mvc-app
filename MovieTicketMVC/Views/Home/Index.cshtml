@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Почетна";
+    ViewBag.Title = "Home";
 
     var isAuthenticated =
         User != null &&
@@ -17,31 +17,31 @@
         <div class="home-hero-content">
             <h1 id="home-title"
                 class="home-hero-title">
-                Твојот следен
+                Your next
                 <span class="cinema-text-gradient">
-                    филмски момент
+                    movie moment
                 </span>
-                започнува тука.
+                starts here.
             </h1>
 
             <p class="home-hero-description">
-                Откриј ги актуелните филмови, избери термин и
-                резервирај ги твоите седишта во реално време —
-                сè на едно место.
+                Discover movies now showing, choose a showtime,
+                and book your seats in real time —
+                all in one place.
             </p>
 
             <div class="home-hero-actions">
                 <a class="btn btn-primary home-primary-action"
                    href="@Url.Action("Current", "Movies")">
-                    Разгледај филмови
+                    Explore Movies
                     <span aria-hidden="true">→</span>
                 </a>
 
                 <a class="btn btn-outline-secondary"
                    href="@Url.Action("Buy", "Tickets")">
-                    Купи билет
+                    Book Tickets
                 </a>
-            </div>       
+            </div>
         </div>
 
         <div class="home-hero-visual"
@@ -62,19 +62,19 @@
 
 
                     <span class="movie-badge">
-                        ИЗБОР НА СЕДИШТА
+                        SEAT SELECTION
                     </span>
                 </div>
 
                 <div class="home-ticket-feature">
                     <span class="home-ticket-label">
-                        КИНО
+                        CINEMA
                     </span>
 
                     <strong>
-                        Твојата
+                        Your
                         <br />
-                        кино вечер
+                        movie night
                     </strong>
                 </div>
 
@@ -84,7 +84,7 @@
 
                     <div>
                         <span>
-                            ТЕРМИН
+                            SHOWTIME
                         </span>
 
                         <strong>
@@ -94,7 +94,7 @@
 
                     <div>
                         <span>
-                            РЕД
+                            ROW
                         </span>
 
                         <strong>
@@ -104,7 +104,7 @@
 
                     <div>
                         <span>
-                            СЕДИШТЕ
+                            SEAT
                         </span>
 
                         <strong>
@@ -143,20 +143,20 @@
         <div class="cinema-page-header">
             <div>
                 <div class="cinema-eyebrow">
-                    ИСКУСТВОТО
+                    THE EXPERIENCE
                 </div>
 
                 <h2 id="experience-title">
-                    Сè што ти треба за
+                    Everything you need for
                     <span class="cinema-text-gradient">
-                        филмска вечер
+                        movie night
                     </span>
                 </h2>
 
                 <p>
-                    Од откривање филм до избор на конкретно седиште,
-                    MovieTicket го води целиот процес во едноставно
-                    и модерно искуство.
+                    From discovering a movie to choosing your exact seat,
+                    MovieTicket brings the whole process together in a simple,
+                    modern experience.
                 </p>
             </div>
         </div>
@@ -173,19 +173,19 @@
                     <div class="cinema-divider"></div>
 
                     <h3 class="movie-card-title">
-                        Откриј што се прикажува
+                        Discover What’s Showing
                     </h3>
 
                     <p class="movie-card-description">
-                        Прегледај ги актуелните филмови, жанрот,
-                        времетраењето, оценката и сите детали пред
-                        да го направиш изборот.
+                        Browse movies now showing, including their genres,
+                        runtimes, ratings, and details before
+                        making your choice.
                     </p>
 
                     <div class="movie-card-actions">
                         <a class="btn btn-outline-primary btn-sm"
                            href="@Url.Action("Current", "Movies")">
-                            Актуелни филмови
+                            Now Showing
                         </a>
                     </div>
 
@@ -203,19 +203,19 @@
                     <div class="cinema-divider"></div>
 
                     <h3 class="movie-card-title">
-                        Резервирај во реално време
+                        Book in Real Time
                     </h3>
 
                     <p class="movie-card-description">
-                        Избери датум, термин и седишта преку
-                        интерактивен распоред на кино салата,
-                        со ажурирана достапност во реално време.
+                        Choose your date, showtime, and seats using
+                        an interactive cinema seating chart
+                        with real-time availability updates.
                     </p>
 
                     <div class="movie-card-actions">
                         <a class="btn btn-outline-primary btn-sm"
                            href="@Url.Action("Buy", "Tickets")">
-                            Избери седишта
+                            Choose Seats
                         </a>
                     </div>
 
@@ -233,13 +233,13 @@
                     <div class="cinema-divider"></div>
 
                     <h3 class="movie-card-title">
-                        Чувај ги билетите
+                        Keep Your Tickets Together
                     </h3>
 
                     <p class="movie-card-description">
-                        По успешната резервација билетот е достапен
-                        во твојот профил, а потврдата со PDF билет
-                        може да пристигне и преку e-mail.
+                        After a successful booking, your ticket is available
+                        in your account. A confirmation with your PDF ticket
+                        may also arrive by email.
                     </p>
 
                     <div class="movie-card-actions">
@@ -248,14 +248,14 @@
                         {
                             <a class="btn btn-outline-primary btn-sm"
                                href="@Url.Action("Index", "Tickets")">
-                                Мои билети
+                                My Tickets
                             </a>
                         }
                         else
                         {
                             <a class="btn btn-outline-primary btn-sm"
                                href="@Url.Action("Login", "Account")">
-                                Најави се
+                                Sign In
                             </a>
                         }
 
@@ -275,27 +275,27 @@
 
             <div>
                 <div class="cinema-eyebrow">
-                    НАСКОРО
+                    COMING SOON
                 </div>
 
                 <h2 id="home-coming-soon-title">
-                    Следната премиера
-                    можеби е твојот
+                    The next premiere
+                    could be your
                     <span class="cinema-text-gradient">
-                        нов омилен филм.
+                        new favorite movie.
                     </span>
                 </h2>
 
                 <p>
-                    Погледни што пристигнува наскоро и испланирај
-                    ја следната кино вечер однапред.
+                    Explore upcoming releases and plan
+                    your next movie night ahead of time.
                 </p>
             </div>
 
             <div>
                 <a class="btn btn-primary"
                    href="@Url.Action("ComingSoon", "Movies")">
-                    Погледни што следува
+                    Explore Upcoming Movies
                     <span aria-hidden="true">→</span>
                 </a>
             </div>
@@ -313,32 +313,32 @@
             <div class="home-final-cta-content">
 
                 <span class="cinema-eyebrow">
-                    ПОДГОТВЕН ЗА ФИЛМ
+                    READY FOR THE MOVIES
                 </span>
 
                 <h2 id="home-final-title">
-                    Светлата се гасат.
+                    The lights go down.
                     <br />
-                    Филмот започнува.
+                    The movie begins.
                 </h2>
 
                 <p>
-                    Одбери филм, термин и седиште и резервирај
-                    го твоето место.
+                    Choose a movie, showtime, and seat, then reserve
+                    your place.
                 </p>
 
                 <div class="home-hero-actions">
 
                     <a class="btn btn-primary"
                        href="@Url.Action("Buy", "Tickets")">
-                        Купи билет
+                        Book Tickets
                     </a>
 
                     @if (!isAuthenticated)
                     {
                         <a class="btn btn-outline-secondary"
                            href="@Url.Action("Register", "Account")">
-                            Креирај профил
+                            Create an Account
                         </a>
                     }
 

@@ -1,7 +1,7 @@
 ﻿@model MovieTicketMVC.Models.VerifyCodeViewModel
 
 @{
-    ViewBag.Title = "Потврда на идентитет";
+    ViewBag.Title = "Verify Your Identity";
 
     var isEmailCode = Model != null &&
         string.Equals(Model.Provider, "Email Code", System.StringComparison.OrdinalIgnoreCase);
@@ -63,13 +63,13 @@
                 </span>
 
                 <strong>
-                    Уште еден чекор
+                    One more step
                 </strong>
 
                 <p>
-                    Внеси го еднократниот код за да
-                    го потврдиш пристапот до својот
-                    MovieTicket профил.
+                    Enter your one-time verification code to
+                    confirm access to your
+                    MovieTicket account.
                 </p>
 
             </div>
@@ -89,7 +89,7 @@
 
 
             <div class="verify-progress"
-                 aria-label="Процес за двофакторска автентикација">
+                 aria-label="Two-factor authentication progress">
 
                 <div class="verify-progress-step completed">
 
@@ -100,11 +100,11 @@
                     <div>
 
                         <strong>
-                            Метод
+                            Method
                         </strong>
 
                         <small>
-                            Метод избран
+                            Method selected
                         </small>
 
                     </div>
@@ -125,11 +125,11 @@
                     <div>
 
                         <strong>
-                            Код
+                            Code
                         </strong>
 
                         <small>
-                            Потврди пристап
+                            Verify access
                         </small>
 
                     </div>
@@ -146,15 +146,15 @@
                 </div>
 
                 <h1 id="verify-title">
-                    Внеси го
+                    Enter the
                     <span class="cinema-text-gradient">
-                        кодот
+                        code
                     </span>
                 </h1>
 
                 <p>
-                    Внеси го еднократниот код што ти е испратен
-                    преку избраниот метод за потврда.
+                    Enter the one-time code sent to you
+                    through your selected verification method.
                 </p>
 
             </div>
@@ -172,7 +172,7 @@
                     <div>
 
                         <span>
-                            МЕТОД ЗА ПОТВРДА
+                            VERIFICATION METHOD
                         </span>
 
                         <strong>
@@ -199,35 +199,35 @@
                 @Html.AntiForgeryToken()
 
                 @Html.HiddenFor(
-                         m => m.Provider)
+                              m => m.Provider)
 
                 @Html.HiddenFor(
-                         m => m.ReturnUrl)
+                              m => m.ReturnUrl)
 
                 @Html.HiddenFor(
-                         m => m.RememberMe)
+                              m => m.RememberMe)
 
 
                 @Html.ValidationSummary(
-                         true,
-                         "",
-                         new
-                         {
-                             @class =
-                                 "validation-summary-errors verify-validation"
-                         })
+                              true,
+                              "",
+                              new
+                              {
+                                  @class =
+                                      "validation-summary-errors verify-validation"
+                              })
 
 
                 <div class="form-group verify-code-group">
 
                     @Html.LabelFor(
-                             m => m.Code,
-                             "Безбедносен код",
-                             new
-                             {
-                                 @class =
-                                     "form-label"
-                             })
+                                  m => m.Code,
+                                  "Security code",
+                                  new
+                                  {
+                                      @class =
+                                          "form-label"
+                                  })
 
 
                     <div class="verify-input-wrapper">
@@ -238,50 +238,50 @@
                         </span>
 
                         @Html.TextBoxFor(
-                                 m => m.Code,
-                                 new
-                                 {
-                                     @class =
-                                         "form-control verify-code-input",
-                                     autocomplete =
-                                         "one-time-code",
-                                     inputmode =
-                                         isEmailCode ? "numeric" : "text",
-                                     placeholder =
-                                         "Внеси го добиениот код",
-                                     autofocus =
-                                         "autofocus",
-                                     id =
-                                         "Code",
-                                     aria_describedby =
-                                         "verificationCodeHelp",
-                                     required =
-                                         "required",
-                                     spellcheck =
-                                         "false",
-                                     autocapitalize =
-                                         "off",
-                                     autocorrect =
-                                         "off"
-                                 })
+                                      m => m.Code,
+                                      new
+                                      {
+                                          @class =
+                                              "form-control verify-code-input",
+                                          autocomplete =
+                                              "one-time-code",
+                                          inputmode =
+                                              isEmailCode ? "numeric" : "text",
+                                          placeholder =
+                                              "Enter your verification code",
+                                          autofocus =
+                                              "autofocus",
+                                          id =
+                                              "Code",
+                                          aria_describedby =
+                                              "verificationCodeHelp",
+                                          required =
+                                              "required",
+                                          spellcheck =
+                                              "false",
+                                          autocapitalize =
+                                              "off",
+                                          autocorrect =
+                                              "off"
+                                      })
 
                     </div>
 
 
                     @Html.ValidationMessageFor(
-                             m => m.Code,
-                             "",
-                             new
-                             {
-                                 @class =
-                                     "text-danger"
-                             })
+                                  m => m.Code,
+                                  "",
+                                  new
+                                  {
+                                      @class =
+                                          "text-danger"
+                                  })
 
 
                     <small id="verificationCodeHelp"
                            class="verify-code-help">
-                        Внеси го кодот точно како што е прикажан во пораката.
-                        Не го споделувај со други лица.
+                        Enter the code exactly as shown in the message.
+                        Do not share it with anyone.
                     </small>
 
                 </div>
@@ -291,12 +291,12 @@
                        for="RememberBrowser">
 
                     @Html.CheckBoxFor(
-                             m => m.RememberBrowser,
-                             new
-                             {
-                                 @class =
-                                     "verify-remember-checkbox"
-                             })
+                                  m => m.RememberBrowser,
+                                  new
+                                  {
+                                      @class =
+                                          "verify-remember-checkbox"
+                                  })
 
 
                     <span class="verify-custom-checkbox"
@@ -312,12 +312,12 @@
                     <span class="verify-remember-content">
 
                         <strong>
-                            Запомни го овој прелистувач
+                            Remember this browser
                         </strong>
 
                         <small>
-                            Прескокни ја дополнителната проверка
-                            при идни најавувања на овој прелистувач.
+                            Skip the additional verification step
+                            on future sign-ins from this browser.
                         </small>
 
                     </span>
@@ -332,8 +332,8 @@
                     </span>
 
                     <p>
-                        Не ја избирај оваа опција ако користиш
-                        јавен или заеднички компјутер.
+                        Do not select this option if you are using
+                        a public or shared computer.
                     </p>
 
                 </div>
@@ -344,7 +344,7 @@
                         class="btn btn-primary verify-submit">
 
                     <span id="verifyButtonText">
-                        Потврди и продолжи
+                        Verify and Continue
                     </span>
 
                     <span aria-hidden="true">
@@ -362,8 +362,8 @@
                 </span>
 
                 <p>
-                    Кодот го проверува серверот. Ако не е точен,
-                    ќе можеш повторно да се обидеш.
+                    The server will verify your code. If it is incorrect,
+                    you can try again.
                 </p>
 
             </div>
@@ -376,7 +376,7 @@
                 </span>
 
                 <a href="@Url.Action("Login", "Account")">
-                    Назад кон најава
+                    Back to Sign In
                 </a>
 
                 <span class="verify-back-divider"
@@ -390,7 +390,7 @@
                         ReturnUrl = Model.ReturnUrl,
                         RememberMe = Model.RememberMe
                     })">
-                    Избери друг метод
+                    Choose Another Method
                 </a>
 
             </div>
@@ -442,7 +442,7 @@
 
                 if (!codeInput.value) {
                     event.preventDefault();
-                    codeInput.setCustomValidity("Внеси го безбедносниот код.");
+                    codeInput.setCustomValidity("Enter your security code.");
                     codeInput.reportValidity();
                     codeInput.focus();
                     return;
@@ -466,7 +466,7 @@
                 button.setAttribute("aria-busy", "true");
 
                 if (buttonText) {
-                    buttonText.textContent = "Се потврдува...";
+                    buttonText.textContent = "Verifying...";
                 }
             });
 
@@ -477,7 +477,7 @@
                     button.removeAttribute("aria-busy");
 
                     if (buttonText) {
-                        buttonText.textContent = "Потврди и продолжи";
+                        buttonText.textContent = "Verify and Continue";
                     }
                 }
             });

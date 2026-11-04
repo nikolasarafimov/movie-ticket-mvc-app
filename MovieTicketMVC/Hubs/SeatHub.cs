@@ -33,6 +33,12 @@ namespace MovieTicketMVC.Hubs
                 },
                 StringComparer.Ordinal);
 
+        static SeatHub()
+        {
+            SeatLockService.LocksExpired += BroadcastExpiredLocks;
+            SeatLockService.PurchaseLocksReleased += BroadcastExpiredLocks;
+        }
+
         public async Task<bool> LockSeat(
             int movieId,
             string day,
@@ -124,7 +130,8 @@ namespace MovieTicketMVC.Hubs
                 selectedDay,
                 normalizedTime,
                 normalizedSeatId,
-                Context.ConnectionId);
+                Context.ConnectionId,
+                Context.User.Identity.Name);
 
             if (locked)
             {
@@ -169,7 +176,12 @@ namespace MovieTicketMVC.Hubs
                 normalizedSeatId,
                 Context.ConnectionId);
 
-            if (unlocked)
+            if (unlocked &&
+                !IsSeatCurrentlyLocked(
+                    movieId,
+                    selectedDay,
+                    normalizedTime,
+                    normalizedSeatId))
             {
                 Clients.Others.SeatUnlocked(
                     movieId,
@@ -217,12 +229,9 @@ namespace MovieTicketMVC.Hubs
                         seatLock.ConnectionId,
                         Context.ConnectionId,
                         StringComparison.Ordinal))
-                .Select(seatLock =>
-                    seatLock.SeatId)
-                .Distinct(
-                    StringComparer.OrdinalIgnoreCase)
-                .OrderBy(
-                    seatId => GetSeatSortValue(seatId))
+                .Select(seatLock => seatLock.SeatId)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(GetSeatSortValue)
                 .ToArray();
         }
 
@@ -233,6 +242,15 @@ namespace MovieTicketMVC.Hubs
 
             foreach (var releasedLock in releasedLocks)
             {
+                if (IsSeatCurrentlyLocked(
+                        releasedLock.MovieId,
+                        releasedLock.Day,
+                        releasedLock.Time,
+                        releasedLock.SeatId))
+                {
+                    continue;
+                }
+
                 Clients.Others.SeatUnlocked(
                     releasedLock.MovieId,
                     releasedLock.Day.ToString(
@@ -243,6 +261,64 @@ namespace MovieTicketMVC.Hubs
             }
 
             return base.OnDisconnected(stopCalled);
+        }
+
+        private static void BroadcastExpiredLocks(
+            IReadOnlyCollection<SeatLockInfo> expiredLocks)
+        {
+            if (expiredLocks == null || expiredLocks.Count == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                var hubContext = GlobalHost.ConnectionManager
+                    .GetHubContext<SeatHub>();
+
+                foreach (var expiredLock in expiredLocks)
+                {
+                    if (IsSeatCurrentlyLocked(
+                            expiredLock.MovieId,
+                            expiredLock.Day,
+                            expiredLock.Time,
+                            expiredLock.SeatId))
+                    {
+                        continue;
+                    }
+
+                    hubContext.Clients.All.SeatUnlocked(
+                        expiredLock.MovieId,
+                        expiredLock.Day.ToString(
+                            "yyyy-MM-dd",
+                            CultureInfo.InvariantCulture),
+                        expiredLock.Time,
+                        expiredLock.SeatId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(
+                    "Failed to broadcast expired seat locks: {0}",
+                    ex);
+            }
+        }
+
+        private static bool IsSeatCurrentlyLocked(
+            int movieId,
+            DateTime selectedDay,
+            string normalizedTime,
+            string seatId)
+        {
+            return SeatLockService.GetActiveLocks(
+                    movieId,
+                    selectedDay,
+                    normalizedTime)
+                .Any(seatLock =>
+                    string.Equals(
+                        seatLock.SeatId,
+                        seatId,
+                        StringComparison.OrdinalIgnoreCase));
         }
 
         private static bool TryNormalizeInput(
@@ -271,8 +347,7 @@ namespace MovieTicketMVC.Hubs
                 return false;
             }
 
-            normalizedSeatId =
-                seatId.Trim().ToUpperInvariant();
+            normalizedSeatId = seatId.Trim().ToUpperInvariant();
 
             return SeatIdRegex.IsMatch(normalizedSeatId);
         }
@@ -306,8 +381,7 @@ namespace MovieTicketMVC.Hubs
 
             normalizedTime = time.Trim();
 
-            return AllowedProjectionTimes.Contains(
-                normalizedTime);
+            return AllowedProjectionTimes.Contains(normalizedTime);
         }
 
         private static bool IsFutureProjection(
@@ -331,8 +405,7 @@ namespace MovieTicketMVC.Hubs
                 return false;
             }
 
-            return selectedDay.Add(projectionTime) >
-                DateTime.Now;
+            return selectedDay.Add(projectionTime) > DateTime.Now;
         }
 
         private static bool ContainsSeat(
@@ -355,10 +428,10 @@ namespace MovieTicketMVC.Hubs
                         StringComparison.OrdinalIgnoreCase));
         }
 
-        private static int GetSeatSortValue(
-            string seatId)
+        private static int GetSeatSortValue(string seatId)
         {
-            var match = SeatIdRegex.Match(seatId);
+            var match = SeatIdRegex.Match(
+                seatId ?? string.Empty);
 
             if (!match.Success)
             {

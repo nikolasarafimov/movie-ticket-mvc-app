@@ -3,14 +3,14 @@
 @model MovieTicketMVC.Models.SendCodeViewModel
 
 @{
-    ViewBag.Title = "Двофакторска автентикација";
+    ViewBag.Title = "Two-Factor Authentication";
     var availableProviders = Model != null && Model.Providers != null
         ? Model.Providers
         : Enumerable.Empty<SelectListItem>();
 }
 
 <main class="two-factor-page" aria-labelledby="two-factor-title">
-    <section class="two-factor-shell" aria-label="Проверка на идентитет">
+    <section class="two-factor-shell" aria-label="Identity verification">
         <aside class="two-factor-visual" aria-hidden="true">
             <div class="two-factor-grid"></div>
             <div class="two-factor-glow two-factor-glow-one"></div>
@@ -31,51 +31,51 @@
             </div>
 
             <div class="two-factor-visual-copy">
-                <span>ДОПОЛНИТЕЛНА ЗАШТИТА</span>
-                <strong>Твојот профил.<br />Твоја безбедност.</strong>
+                <span>ADDITIONAL PROTECTION</span>
+                <strong>Your account.<br />Your security.</strong>
                 <p>
-                    Дополнителната проверка помага да се заштити
-                    пристапот до твојот MovieTicket профил.
+                    An additional verification step helps protect
+                    access to your MovieTicket account.
                 </p>
                 <div class="two-factor-visual-footnote">
                     <span class="two-factor-status-dot"></span>
-                    СИГУРЕН ПРИСТАП
+                    SECURE ACCESS
                 </div>
             </div>
         </aside>
 
         <div class="two-factor-content">
-            <a class="two-factor-brand" href="@Url.Action("Index", "Home")" aria-label="MovieTicket — почетна страница">
+            <a class="two-factor-brand" href="@Url.Action("Index", "Home")" aria-label="MovieTicket home page">
                 <span aria-hidden="true"></span>
                 MOVIETICKET
             </a>
 
-            <div class="two-factor-progress" aria-label="Двофакторска автентикација, чекор 1 од 2">
+            <div class="two-factor-progress" aria-label="Two-factor authentication, step 1 of 2">
                 <div class="two-factor-progress-step active" aria-current="step">
                     <span aria-hidden="true">01</span>
                     <div>
-                        <strong>Метод</strong>
-                        <small>Избор на начин</small>
+                        <strong>Method</strong>
+                        <small>Choose a method</small>
                     </div>
                 </div>
                 <div class="two-factor-progress-line" aria-hidden="true"></div>
                 <div class="two-factor-progress-step">
                     <span aria-hidden="true">02</span>
                     <div>
-                        <strong>Код</strong>
-                        <small>Потврда на најава</small>
+                        <strong>Code</strong>
+                        <small>Verify sign-in</small>
                     </div>
                 </div>
             </div>
 
             <header class="two-factor-heading">
-                <div class="cinema-eyebrow">БЕЗБЕДНОСНА ПРОВЕРКА</div>
+                <div class="cinema-eyebrow">SECURITY VERIFICATION</div>
                 <h1 id="two-factor-title">
-                    Потврди го <span class="cinema-text-gradient">идентитетот</span>
+                    Verify your <span class="cinema-text-gradient">identity</span>
                 </h1>
                 <p>
-                    За да ја продолжиш најавата, избери еден од методите
-                    за добивање безбедносен код што се достапни за твојот профил.
+                    To continue signing in, select one of the available methods
+                    for receiving a security code for your account.
                 </p>
             </header>
 
@@ -95,21 +95,21 @@
                 @Html.HiddenFor(m => m.RememberMe)
 
                 @Html.ValidationSummary(
-                         true,
-                         "",
-                         new
-                         {
-                             @class = "validation-summary-errors two-factor-validation",
-                             role = "alert"
-                         })
+                              true,
+                              "",
+                              new
+                              {
+                                  @class = "validation-summary-errors two-factor-validation",
+                                  role = "alert"
+                              })
 
                 <div id="twoFactorClientError" class="two-factor-client-error" role="alert" hidden></div>
 
                 <div class="two-factor-field">
                     @Html.LabelFor(
-                             m => m.SelectedProvider,
-                             "Метод за потврда",
-                             new { @class = "form-label two-factor-label" })
+                                  m => m.SelectedProvider,
+                                  "Verification method",
+                                  new { @class = "form-label two-factor-label" })
 
                     <div class="two-factor-select-wrapper">
                         <span class="two-factor-select-icon" aria-hidden="true">
@@ -120,21 +120,21 @@
                         </span>
 
                         @Html.DropDownListFor(
-                                 m => m.SelectedProvider,
-                                 availableProviders,
-                                 "Избери метод за потврда",
-                                 new
-                                 {
-                                     @class = "form-select two-factor-select",
-                                     required = "required",
-                                     aria_describedby = "twoFactorProviderHelp"
-                                 })
+                                      m => m.SelectedProvider,
+                                      availableProviders,
+                                      "Select a verification method",
+                                      new
+                                      {
+                                          @class = "form-select two-factor-select",
+                                          required = "required",
+                                          aria_describedby = "twoFactorProviderHelp"
+                                      })
                     </div>
 
                     @Html.ValidationMessageFor(
-                             m => m.SelectedProvider,
-                             "",
-                             new { @class = "text-danger two-factor-field-error" })
+                                  m => m.SelectedProvider,
+                                  "",
+                                  new { @class = "text-danger two-factor-field-error" })
                 </div>
 
                 <div class="two-factor-provider-info" id="twoFactorProviderHelp">
@@ -145,18 +145,18 @@
                         </svg>
                     </div>
                     <div>
-                        <span>ЕДНОКРАТЕН БЕЗБЕДНОСЕН КОД</span>
-                        <strong id="twoFactorProviderTitle">Избери начин за добивање код</strong>
+                        <span>ONE-TIME SECURITY CODE</span>
+                        <strong id="twoFactorProviderTitle">Choose how to receive your code</strong>
                         <p id="twoFactorProviderDescription">
-                            По изборот на достапен метод, системот ќе се обиде
-                            да ти испрати код за проверка на идентитетот.
+                            After you select an available method, we will attempt
+                            to send you an identity verification code.
                         </p>
                     </div>
                 </div>
 
                 <button type="submit" id="sendCodeButton" class="btn btn-primary two-factor-submit">
                     <span class="two-factor-submit-main">
-                        <span id="sendCodeButtonText">Продолжи и испрати код</span>
+                        <span id="sendCodeButtonText">Continue and Send Code</span>
                         <span class="two-factor-submit-spinner" aria-hidden="true"></span>
                     </span>
                     <span class="two-factor-submit-arrow" aria-hidden="true">→</span>
@@ -166,14 +166,14 @@
             <div class="two-factor-security">
                 <span class="two-factor-security-icon" aria-hidden="true">✓</span>
                 <p>
-                    Не го споделувај безбедносниот код со никого.
-                    Ќе можеш да го внесеш во следниот чекор откако ќе биде испратен.
+                    Never share your security code with anyone.
+                    You can enter it in the next step once it has been sent.
                 </p>
             </div>
 
             <a class="two-factor-back" href="@Url.Action("Login", "Account")">
                 <span aria-hidden="true">←</span>
-                Назад кон најава
+                Back to Sign In
             </a>
         </div>
     </section>
@@ -916,24 +916,24 @@
 
                 if (!value) {
                     if (providerTitle) {
-                        providerTitle.textContent = "Избери начин за добивање код";
+                        providerTitle.textContent = "Choose how to receive your code";
                     }
                     if (providerDescription) {
-                        providerDescription.textContent = "По изборот на достапен метод, системот ќе се обиде да ти испрати код за проверка на идентитетот.";
+                        providerDescription.textContent = "After you select an available method, we will attempt to send you an identity verification code.";
                     }
                     return;
                 }
 
                 var name = selected ? selected.textContent.trim() : value;
-                var isEmail = /email|e-mail|е-пошта|пошта/i.test(name + " " + value);
+                var isEmail = /email|e-mail|\u0435-\u043f\u043e\u0448\u0442\u0430|\u043f\u043e\u0448\u0442\u0430/i.test(name + " " + value);
 
                 if (providerTitle) {
-                    providerTitle.textContent = "Избран метод: " + name;
+                    providerTitle.textContent = "Selected method: " + name;
                 }
                 if (providerDescription) {
                     providerDescription.textContent = isEmail
-                        ? "По потврдување на изборот, системот ќе се обиде да испрати еднократен код на e-mail адресата поврзана со твојот профил."
-                        : "По потврдување на изборот, системот ќе се обиде да го испрати кодот преку избраниот метод.";
+                        ? "After you continue, we will attempt to send a one-time code to the email address associated with your account."
+                        : "After you continue, we will attempt to send a code using your selected method.";
                 }
             }
 
@@ -950,7 +950,7 @@
 
                 if (!providerSelect.value) {
                     event.preventDefault();
-                    setError("Избери метод за потврда пред да продолжиш.");
+                    setError("Please select a verification method before continuing.");
                     providerSelect.focus();
                     return;
                 }
@@ -968,7 +968,7 @@
                 submitButton.classList.add("is-submitting");
 
                 if (submitText) {
-                    submitText.textContent = "Се обработува барањето...";
+                    submitText.textContent = "Sending your code...";
                 }
             });
 
@@ -978,7 +978,7 @@
                     submitButton.disabled = false;
                     submitButton.classList.remove("is-submitting");
                     if (submitText) {
-                        submitText.textContent = "Продолжи и испрати код";
+                        submitText.textContent = "Continue and Send Code";
                     }
                 }
             });

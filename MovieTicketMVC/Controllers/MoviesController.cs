@@ -97,11 +97,16 @@ namespace MovieTicketMVC.Controllers
         {
             ViewBag.ActiveMovieSection = "ComingSoon";
 
+            if (movie == null)
+            {
+                return new HttpStatusCodeResult(400);
+            }
+
             if (movie.ReleaseDate == default(DateTime))
             {
                 ModelState.AddModelError(
                     "ReleaseDate",
-                    "Мора да внесете валиден датум на премиера.");
+                    "Please enter a valid release date.");
             }
 
             if (videoFile == null ||
@@ -109,7 +114,7 @@ namespace MovieTicketMVC.Controllers
             {
                 ModelState.AddModelError(
                     "videoFile",
-                    "Мора да прикачите trailer видео.");
+                    "Please upload a movie trailer.");
             }
 
             if (!ModelState.IsValid)
@@ -132,13 +137,19 @@ namespace MovieTicketMVC.Controllers
                 return View(movie);
             }
 
-            movie.ReleaseDate = movie.ReleaseDate.Date;
-            movie.LocalTrailerPath = trailerPath;
-            movie.IsCurrentlyShowing = IsCurrentlyShowing(movie);
+            movie.ReleaseDate =
+                movie.ReleaseDate.Date;
+
+            movie.LocalTrailerPath =
+                trailerPath;
+
+            movie.IsCurrentlyShowing =
+                IsCurrentlyShowing(movie);
 
             try
             {
                 _context.Movies.Add(movie);
+
                 _context.SaveChanges();
             }
             catch
@@ -176,14 +187,22 @@ namespace MovieTicketMVC.Controllers
             string ReturnSection,
             HttpPostedFileBase videoFile)
         {
-            var movieInDb = _context.Movies.Find(movie.Id);
+            if (movie == null)
+            {
+                return new HttpStatusCodeResult(400);
+            }
+
+            var movieInDb =
+                _context.Movies.Find(movie.Id);
 
             if (movieInDb == null)
             {
                 return HttpNotFound();
             }
 
-            ViewBag.ReturnSection = ReturnSection;
+            ViewBag.ReturnSection =
+                ReturnSection;
+
             ViewBag.ActiveMovieSection =
                 GetMovieSection(movieInDb);
 
@@ -191,7 +210,7 @@ namespace MovieTicketMVC.Controllers
             {
                 ModelState.AddModelError(
                     "ReleaseDate",
-                    "Мора да внесете валиден датум на премиера.");
+                    "Please enter a valid release date.");
             }
 
             if (!ModelState.IsValid)
@@ -228,20 +247,38 @@ namespace MovieTicketMVC.Controllers
             var oldTrailerPath =
                 movieInDb.LocalTrailerPath;
 
-            movieInDb.Title = movie.Title;
-            movieInDb.LengthInMinutes = movie.LengthInMinutes;
-            movieInDb.ReleaseDate = movie.ReleaseDate.Date;
-            movieInDb.Description = movie.Description;
-            movieInDb.Genre = movie.Genre;
-            movieInDb.IsForAdults = movie.IsForAdults;
-            movieInDb.Rating = movie.Rating;
-            movieInDb.Actors = movie.Actors;
-            movieInDb.Language = movie.Language;
+            movieInDb.Title =
+                movie.Title;
+
+            movieInDb.LengthInMinutes =
+                movie.LengthInMinutes;
+
+            movieInDb.ReleaseDate =
+                movie.ReleaseDate.Date;
+
+            movieInDb.Description =
+                movie.Description;
+
+            movieInDb.Genre =
+                movie.Genre;
+
+            movieInDb.IsForAdults =
+                movie.IsForAdults;
+
+            movieInDb.Rating =
+                movie.Rating;
+
+            movieInDb.Actors =
+                movie.Actors;
+
+            movieInDb.Language =
+                movie.Language;
 
             movieInDb.IsCurrentlyShowing =
                 IsCurrentlyShowing(movieInDb);
 
-            if (!string.IsNullOrWhiteSpace(newTrailerPath))
+            if (!string.IsNullOrWhiteSpace(
+                    newTrailerPath))
             {
                 movieInDb.LocalTrailerPath =
                     newTrailerPath;
@@ -253,7 +290,8 @@ namespace MovieTicketMVC.Controllers
             }
             catch
             {
-                if (!string.IsNullOrWhiteSpace(newTrailerPath))
+                if (!string.IsNullOrWhiteSpace(
+                        newTrailerPath))
                 {
                     TryDeleteTrailer(newTrailerPath);
                 }
@@ -317,13 +355,17 @@ namespace MovieTicketMVC.Controllers
             {
                 ModelState.AddModelError(
                     "",
-                    "Филмот не може да се избрише бидејќи за него веќе постојат купени билети.");
+                    "This movie cannot be deleted because " +
+                    "it has existing ticket bookings.");
 
                 return View("Delete", movie);
             }
 
-            var trailerPath = movie.LocalTrailerPath;
-            var section = GetMovieSection(movie);
+            var trailerPath =
+                movie.LocalTrailerPath;
+
+            var section =
+                GetMovieSection(movie);
 
             _context.Movies.Remove(movie);
 
@@ -338,7 +380,9 @@ namespace MovieTicketMVC.Controllers
 
                 ModelState.AddModelError(
                     "",
-                    "Филмот не можеше да се избрише. Можно е во меѓувреме да се создадени поврзани билети.");
+                    "The movie could not be deleted because " +
+                    "related bookings may have been created " +
+                    "in the meantime.");
 
                 return View("Delete", movie);
             }
@@ -357,14 +401,15 @@ namespace MovieTicketMVC.Controllers
             string sortOrder,
             string ageFilter)
         {
-            var today = DateTime.Today;
+            var tomorrow =
+                DateTime.Today.AddDays(1);
 
-            IQueryable<Movie> query = _context.Movies
-                .AsNoTracking();
+            IQueryable<Movie> query =
+                _context.Movies.AsNoTracking();
 
             query = current
-                ? query.Where(m => m.ReleaseDate <= today)
-                : query.Where(m => m.ReleaseDate > today);
+                ? query.Where(m => m.ReleaseDate < tomorrow)
+                : query.Where(m => m.ReleaseDate >= tomorrow);
 
             if (string.Equals(
                     ageFilter,
@@ -393,9 +438,11 @@ namespace MovieTicketMVC.Controllers
                 : "title_desc";
 
             query = descending
-                ? query.OrderByDescending(m => m.Title)
+                ? query
+                    .OrderByDescending(m => m.Title)
                     .ThenBy(m => m.Id)
-                : query.OrderBy(m => m.Title)
+                : query
+                    .OrderBy(m => m.Title)
                     .ThenBy(m => m.Id);
 
             return View(
@@ -415,7 +462,7 @@ namespace MovieTicketMVC.Controllers
                 videoFile.ContentLength <= 0)
             {
                 errorMessage =
-                    "Мора да прикачите trailer видео.";
+                    "Please upload a movie trailer.";
 
                 return false;
             }
@@ -423,52 +470,94 @@ namespace MovieTicketMVC.Controllers
             if (videoFile.ContentLength > MaxTrailerSizeBytes)
             {
                 errorMessage =
-                    "Trailer видеото не смее да биде поголемо од 200 MB.";
+                    "The trailer must not exceed 200 MB.";
 
                 return false;
             }
 
-            var extension = Path.GetExtension(
-                videoFile.FileName);
+            string extension;
+
+            try
+            {
+                extension = Path.GetExtension(
+                    videoFile.FileName ?? string.Empty);
+            }
+            catch (ArgumentException)
+            {
+                errorMessage =
+                    "The uploaded file name is invalid.";
+
+                return false;
+            }
 
             if (string.IsNullOrWhiteSpace(extension) ||
                 !AllowedVideoExtensions.Contains(extension))
             {
                 errorMessage =
-                    "Дозволени се само MP4, WebM и Ogg видео датотеки.";
+                    "Only MP4, WebM, and Ogg video files are allowed.";
 
                 return false;
             }
 
             extension = extension.ToLowerInvariant();
 
-            if (!HasValidVideoSignature(videoFile, extension))
+            bool hasValidSignature;
+
+            try
+            {
+                hasValidSignature =
+                    HasValidVideoSignature(
+                        videoFile,
+                        extension);
+            }
+            catch (IOException)
             {
                 errorMessage =
-                    "Прикачената датотека не е валидно видео од дозволениот формат.";
+                    "The uploaded video could not be read.";
+
+                return false;
+            }
+            catch (NotSupportedException)
+            {
+                errorMessage =
+                    "The uploaded video could not be read.";
+
+                return false;
+            }
+
+            if (!hasValidSignature)
+            {
+                errorMessage =
+                    "The uploaded file does not have " +
+                    "a valid video file signature.";
 
                 return false;
             }
 
             var fileName =
-                Guid.NewGuid().ToString("N") + extension;
+                Guid.NewGuid().ToString("N") +
+                extension;
 
             string physicalPath = null;
 
             try
             {
-                var videosDirectory = Server.MapPath(
-                    VideosVirtualDirectory);
+                var videosDirectory =
+                    Server.MapPath(
+                        VideosVirtualDirectory);
 
-                if (string.IsNullOrWhiteSpace(videosDirectory))
+                if (string.IsNullOrWhiteSpace(
+                        videosDirectory))
                 {
                     errorMessage =
-                        "Не можеше да се одреди директориумот за trailer видеата.";
+                        "The trailer upload directory " +
+                        "could not be determined.";
 
                     return false;
                 }
 
-                Directory.CreateDirectory(videosDirectory);
+                Directory.CreateDirectory(
+                    videosDirectory);
 
                 physicalPath = Path.Combine(
                     videosDirectory,
@@ -481,7 +570,7 @@ namespace MovieTicketMVC.Controllers
                 TryDeletePhysicalFile(physicalPath);
 
                 errorMessage =
-                    "Trailer видеото не можеше да се зачува.";
+                    "The trailer could not be saved.";
 
                 return false;
             }
@@ -490,7 +579,8 @@ namespace MovieTicketMVC.Controllers
                 TryDeletePhysicalFile(physicalPath);
 
                 errorMessage =
-                    "Апликацијата нема дозвола да го зачува trailer видеото.";
+                    "The server does not have permission " +
+                    "to save the trailer.";
 
                 return false;
             }
@@ -499,12 +589,13 @@ namespace MovieTicketMVC.Controllers
                 TryDeletePhysicalFile(physicalPath);
 
                 errorMessage =
-                    "Trailer видеото не можеше да се зачува.";
+                    "The trailer could not be saved.";
 
                 return false;
             }
 
-            virtualPath = VideosVirtualDirectory + fileName;
+            virtualPath =
+                VideosVirtualDirectory + fileName;
 
             return true;
         }
@@ -522,7 +613,8 @@ namespace MovieTicketMVC.Controllers
                 return false;
             }
 
-            var originalPosition = stream.Position;
+            var originalPosition =
+                stream.Position;
 
             try
             {
@@ -577,24 +669,29 @@ namespace MovieTicketMVC.Controllers
             }
             finally
             {
-                stream.Position = originalPosition;
+                stream.Position =
+                    originalPosition;
             }
         }
 
-        private static bool IsCurrentlyShowing(Movie movie)
+        private static bool IsCurrentlyShowing(
+            Movie movie)
         {
             return movie != null &&
-                   movie.ReleaseDate.Date <= DateTime.Today;
+                   movie.ReleaseDate.Date <=
+                   DateTime.Today;
         }
 
-        private static string GetMovieSection(Movie movie)
+        private static string GetMovieSection(
+            Movie movie)
         {
             return IsCurrentlyShowing(movie)
                 ? "Current"
                 : "ComingSoon";
         }
 
-        private void DeleteTrailerIfUnused(string trailerPath)
+        private void DeleteTrailerIfUnused(
+            string trailerPath)
         {
             if (string.IsNullOrWhiteSpace(trailerPath))
             {
@@ -603,7 +700,8 @@ namespace MovieTicketMVC.Controllers
 
             var stillInUse = _context.Movies
                 .AsNoTracking()
-                .Any(m => m.LocalTrailerPath == trailerPath);
+                .Any(m =>
+                    m.LocalTrailerPath == trailerPath);
 
             if (!stillInUse)
             {
@@ -611,15 +709,18 @@ namespace MovieTicketMVC.Controllers
             }
         }
 
-        private void TryDeleteTrailer(string localTrailerPath)
+        private void TryDeleteTrailer(
+            string localTrailerPath)
         {
-            if (string.IsNullOrWhiteSpace(localTrailerPath))
+            if (string.IsNullOrWhiteSpace(
+                    localTrailerPath))
             {
                 return;
             }
 
-            var fileName = Path.GetFileName(
-                localTrailerPath);
+            var fileName =
+                Path.GetFileName(
+                    localTrailerPath);
 
             if (string.IsNullOrWhiteSpace(fileName))
             {
@@ -634,7 +735,8 @@ namespace MovieTicketMVC.Controllers
                 return;
             }
 
-            var extension = Path.GetExtension(fileName);
+            var extension =
+                Path.GetExtension(fileName);
 
             if (!AllowedVideoExtensions.Contains(extension))
             {
@@ -656,17 +758,20 @@ namespace MovieTicketMVC.Controllers
 
             try
             {
-                var videosDirectory = Server.MapPath(
-                    VideosVirtualDirectory);
+                var videosDirectory =
+                    Server.MapPath(
+                        VideosVirtualDirectory);
 
-                if (string.IsNullOrWhiteSpace(videosDirectory))
+                if (string.IsNullOrWhiteSpace(
+                        videosDirectory))
                 {
                     return;
                 }
 
-                var physicalPath = Path.Combine(
-                    videosDirectory,
-                    fileName);
+                var physicalPath =
+                    Path.Combine(
+                        videosDirectory,
+                        fileName);
 
                 TryDeletePhysicalFile(physicalPath);
             }
@@ -685,9 +790,11 @@ namespace MovieTicketMVC.Controllers
 
             try
             {
-                if (System.IO.File.Exists(physicalPath))
+                if (System.IO.File.Exists(
+                        physicalPath))
                 {
-                    System.IO.File.Delete(physicalPath);
+                    System.IO.File.Delete(
+                        physicalPath);
                 }
             }
             catch (IOException)

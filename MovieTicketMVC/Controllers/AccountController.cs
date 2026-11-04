@@ -120,7 +120,7 @@ namespace MovieTicketMVC.Controllers
                 default:
                     ModelState.AddModelError(
                         "",
-                        "Невалидна e-mail адреса или лозинка.");
+                        "Invalid email address or password.");
 
                     return View(model);
             }
@@ -219,7 +219,7 @@ namespace MovieTicketMVC.Controllers
                 default:
                     ModelState.AddModelError(
                         "",
-                        "Невалиден безбедносен код.");
+                        "Invalid verification code.");
 
                     return View(model);
             }
@@ -273,7 +273,6 @@ namespace MovieTicketMVC.Controllers
                     user,
                     model.Password);
 
-
             if (!result.Succeeded)
             {
                 var existingUser =
@@ -289,8 +288,8 @@ namespace MovieTicketMVC.Controllers
                 {
                     ModelState.AddModelError(
                         "",
-                        "Веќе постои профил со оваа е-пошта. " +
-                        "Можеш да се најавиш или да ја обновиш лозинката.");
+                        "An account with this email address already exists. " +
+                        "Sign in or reset your password.");
 
                     ViewBag.EmailAlreadyRegistered = true;
                 }
@@ -393,11 +392,10 @@ namespace MovieTicketMVC.Controllers
 
                 await UserManager.SendEmailAsync(
                     user.Id,
-                    "Ресетирање на лозинка – MovieTicket",
-                    "За да ја ресетираш лозинката, отвори го "
-                    + "<a href=\""
-                    + encodedCallbackUrl
-                    + "\">овој безбеден линк</a>.");
+                    "Reset your password | MovieTicket",
+                    "To reset your MovieTicket password, " +
+                    "select <a href=\"" + encodedCallbackUrl +
+                    "\">Reset password</a>.");
             }
             catch (Exception ex)
             {
@@ -582,7 +580,7 @@ namespace MovieTicketMVC.Controllers
                 {
                     ModelState.AddModelError(
                         "SelectedProvider",
-                        "Невалиден метод за верификација.");
+                        "Invalid verification method.");
                 }
 
                 return View(model);
@@ -605,8 +603,8 @@ namespace MovieTicketMVC.Controllers
 
                 ModelState.AddModelError(
                     "",
-                    "Безбедносниот код не можеше да биде испратен. "
-                    + "Обидете се повторно подоцна.");
+                    "We could not send your verification code. " +
+                    "Please try again later.");
 
                 model.Providers =
                     validProviders
@@ -625,8 +623,8 @@ namespace MovieTicketMVC.Controllers
             {
                 ModelState.AddModelError(
                     "",
-                    "Безбедносниот код не можеше да биде испратен. "
-                    + "Обидете се повторно подоцна.");
+                    "We could not send your verification code. " +
+                    "Please try again later.");
 
                 model.Providers =
                     validProviders
@@ -908,10 +906,10 @@ namespace MovieTicketMVC.Controllers
 
                 await UserManager.SendEmailAsync(
                     user.Id,
-                    "Потврда на e-mail адреса – MovieTicket",
-                    "За да ја потврдиш твојата e-mail адреса, " +
-                    "отвори го <a href=\"" + encodedUrl +
-                    "\">овој безбеден линк</a>.");
+                    "Confirm your email address | MovieTicket",
+                    "To confirm your MovieTicket email address, " +
+                    "select <a href=\"" + encodedUrl +
+                    "\">Confirm email address</a>.");
             }
             catch (Exception ex)
             {

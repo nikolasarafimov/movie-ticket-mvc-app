@@ -3,24 +3,24 @@
 @model MovieTicketMVC.Models.Movie
 
 @{
-    ViewBag.Title = "Избриши филм";
+    ViewBag.Title = "Delete Movie";
 
     var isCurrent =
         Model.ReleaseDate.Date <= DateTime.Today;
 
     var movieTitle =
         string.IsNullOrWhiteSpace(Model.Title)
-            ? "Непознат филм"
+            ? "Unknown Movie"
             : Model.Title.Trim();
 
     var genre =
         string.IsNullOrWhiteSpace(Model.Genre)
-            ? "Непознат жанр"
+            ? "Unknown Genre"
             : Model.Genre.Trim();
 
     var language =
         string.IsNullOrWhiteSpace(Model.Language)
-            ? "Непознат"
+            ? "Unknown"
             : Model.Language.Trim();
 
     var hasTrailer =
@@ -30,8 +30,8 @@
         Model.IsForAdults == true
             ? "18+"
             : Model.IsForAdults == false
-                ? "Без рестрикција"
-                : "Непозната";
+                ? "No Age Restriction"
+                : "Unknown";
 
     var ageBadge =
         Model.IsForAdults == true
@@ -74,8 +74,8 @@
             new { id = Model.Id });
 }
 
-<main class="movie-delete-page"
-      aria-labelledby="delete-title">
+<div class="movie-delete-page"
+     aria-labelledby="delete-title">
 
     <section class="movie-delete-shell">
 
@@ -93,16 +93,16 @@
                 </div>
 
                 <h1 id="delete-title">
-                    Избриши
+                    Delete
                     <span>
-                        филм
+                        Movie
                     </span>
                 </h1>
 
                 <p>
-                    Провери ги информациите пред да продолжиш.
-                    Бришењето на филмот е трајна операција
-                    и не може автоматски да се врати.
+                    Review the information before proceeding.
+                    Deleting a movie is a permanent action
+                    and cannot be automatically undone.
                 </p>
 
             </div>
@@ -121,7 +121,7 @@
         <div class="movie-delete-layout">
 
             <section class="movie-delete-preview"
-                     aria-label="Филм за бришење">
+                     aria-label="Movie selected for deletion">
 
                 <div class="movie-delete-preview-top">
 
@@ -129,8 +129,8 @@
 
                         <span class="movie-delete-status">
                             @(isCurrent
-                                ? "АКТУЕЛЕН"
-                                : "НАСКОРО")
+                                ? "NOW SHOWING"
+                                : "COMING SOON")
                         </span>
 
                         <span class="movie-delete-genre">
@@ -140,7 +140,7 @@
                     </div>
 
                     <span class="movie-delete-age @ageClass"
-                          aria-label="Возрасна категорија: @ageText">
+                          aria-label="Age rating: @ageText">
 
                         @ageBadge
 
@@ -161,7 +161,7 @@
                     @if (Model.Rating.HasValue)
                     {
                         <div class="movie-delete-rating"
-                             aria-label="Рејтинг: @ratingText од 10">
+                             aria-label="Rating: @ratingText out of 10">
 
                             <span aria-hidden="true">
                                 ★
@@ -197,7 +197,7 @@
                         </div>
 
                         <h2>
-                            Детали
+                            Details
                         </h2>
 
                     </div>
@@ -213,11 +213,11 @@
                     <div class="movie-delete-info-item">
 
                         <span>
-                            ВРЕМЕТРАЕЊЕ
+                            DURATION
                         </span>
 
                         <strong>
-                            @Model.LengthInMinutes мин.
+                            @Model.LengthInMinutes min
                         </strong>
 
                     </div>
@@ -225,7 +225,7 @@
                     <div class="movie-delete-info-item">
 
                         <span>
-                            ПРЕМИЕРА
+                            RELEASE DATE
                         </span>
 
                         <strong>
@@ -237,7 +237,7 @@
                     <div class="movie-delete-info-item">
 
                         <span>
-                            ЖАНР
+                            GENRE
                         </span>
 
                         <strong title="@genre">
@@ -249,7 +249,7 @@
                     <div class="movie-delete-info-item">
 
                         <span>
-                            ЈАЗИК
+                            LANGUAGE
                         </span>
 
                         <strong title="@language">
@@ -266,8 +266,8 @@
 
                         <strong>
                             @(hasTrailer
-                                ? "Достапен"
-                                : "Нема")
+                                ? "Available"
+                                : "Not Available")
                         </strong>
 
                     </div>
@@ -275,7 +275,7 @@
                     <div class="movie-delete-info-item">
 
                         <span>
-                            КАТЕГОРИЈА
+                            AGE CATEGORY
                         </span>
 
                         <strong>
@@ -301,18 +301,18 @@
             <div>
 
                 <strong id="delete-consequences-title">
-                    Што ќе се случи?
+                    What Happens Next?
                 </strong>
 
                 <p>
-                    Ако филмот нема поврзани купени билети,
-                    записот ќе биде трајно отстранет од каталогот
-                    и неговото trailer видео ќе биде отстрането
-                    од серверот.
+                    If the movie has no associated purchased tickets,
+                    its record will be permanently removed from the catalog,
+                    and its trailer video will be removed from the server
+                    if it is no longer used by another movie.
 
-                    Доколку постојат купени билети за овој филм,
-                    системот ќе го блокира бришењето за
-                    да ги зачува резервациите.
+                    If purchased tickets exist for this movie,
+                    the system will prevent deletion in order
+                    to preserve existing reservations.
                 </p>
 
             </div>
@@ -344,12 +344,12 @@
                     </span>
 
                     <strong>
-                        Дали сигурно сакаш да го избришеш
-                        „@movieTitle“?
+                        Are you sure you want to delete
+                        “@movieTitle”?
                     </strong>
 
                     <p>
-                        Оваа акција не може да се поништи.
+                        This action cannot be undone.
                     </p>
 
                 </div>
@@ -359,14 +359,14 @@
                     <a class="btn btn-outline-secondary"
                        href="@returnUrl">
 
-                        Откажи
+                        Cancel
 
                     </a>
 
                     <a class="btn btn-outline-primary"
                        href="@detailsUrl">
 
-                        Прегледај филм
+                        View Movie
 
                     </a>
 
@@ -379,7 +379,7 @@
                         </span>
 
                         <span id="deleteMovieButtonText">
-                            Избриши филм
+                            Delete Movie
                         </span>
 
                     </button>
@@ -391,7 +391,7 @@
 
     </section>
 
-</main>
+</div>
 
 @section scripts
 {
@@ -433,7 +433,7 @@
                 submitting = true;
 
                 button.disabled = true;
-                buttonText.textContent = "Се брише...";
+                buttonText.textContent = "Deleting...";
                 button.setAttribute("aria-busy", "true");
             });
 
@@ -442,7 +442,7 @@
                     submitting = false;
 
                     button.disabled = false;
-                    buttonText.textContent = "Избриши филм";
+                    buttonText.textContent = "Delete Movie";
                     button.removeAttribute("aria-busy");
                 }
             });

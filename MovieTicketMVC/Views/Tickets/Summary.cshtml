@@ -6,15 +6,28 @@
 @model MovieTicketMVC.Models.Ticket
 
 @{
-    ViewBag.Title = "Детали за билет";
+    ViewBag.Title = "Ticket Details";
 
     var flashMessage = Convert.ToString(TempData["SuccessMessage"]);
 
-    var emailDeliveryFailed =
-        !string.IsNullOrWhiteSpace(flashMessage) &&
-        flashMessage.IndexOf(
-            "не можеше да биде испратена",
-            StringComparison.OrdinalIgnoreCase) >= 0;
+    var emailDeliveryFlag = TempData["EmailDeliveryFailed"];
+
+    var emailDeliveryFailed = emailDeliveryFlag is bool
+        ? (bool)emailDeliveryFlag
+        : !string.IsNullOrWhiteSpace(flashMessage) &&
+          (flashMessage.IndexOf(
+              "\u043d\u0435 \u043c\u043e\u0436\u0435\u0448\u0435 \u0434\u0430 \u0431\u0438\u0434\u0435 \u0438\u0441\u043f\u0440\u0430\u0442\u0435\u043d\u0430",
+              StringComparison.OrdinalIgnoreCase) >= 0 ||
+           flashMessage.IndexOf(
+              "could not be sent",
+              StringComparison.OrdinalIgnoreCase) >= 0 ||
+           flashMessage.IndexOf(
+              "failed to send",
+              StringComparison.OrdinalIgnoreCase) >= 0);
+
+    var hasBookingFeedback =
+        !string.IsNullOrWhiteSpace(flashMessage) ||
+        emailDeliveryFlag is bool;
 
     var logoUrl = Url.Content("~/Content/Images/movieticket-logo.png");
 
@@ -27,6 +40,9 @@
     var numberCulture =
         CultureInfo.GetCultureInfo("mk-MK");
 
+    var monthCulture =
+        CultureInfo.GetCultureInfo("en-US");
+
     var allowedTimes =
         new HashSet<string>(
             new[]
@@ -35,7 +51,7 @@
                 "14:00",
                 "18:00",
                 "21:00"
-                            },
+                                                    },
             StringComparer.Ordinal);
 
     var seatPattern =
@@ -114,7 +130,7 @@
         Model.Movie != null &&
         !string.IsNullOrWhiteSpace(Model.Movie.Title)
             ? Model.Movie.Title
-            : "Непознат филм";
+            : "Unknown Movie";
 
     TimeSpan projectionTime = TimeSpan.Zero;
 
@@ -141,10 +157,10 @@
 
     var statusText =
         !hasValidTime
-            ? "НЕПОЗНАТ ТЕРМИН"
+            ? "UNKNOWN SHOWTIME"
             : isUpcoming
-                ? "ПРЕТСТОЈНА ПРОЕКЦИЈА"
-                : "ЗАВРШЕНА ПРОЕКЦИЈА";
+                ? "UPCOMING SCREENING"
+                : "PAST SCREENING";
 
     var formattedDate =
         Model.SelectedDay.ToString(
@@ -159,7 +175,7 @@
     var formattedMonth =
         Model.SelectedDay.ToString(
             "MMM",
-            numberCulture).ToUpperInvariant();
+            monthCulture).ToUpperInvariant();
 
     var formattedYear =
         Model.SelectedDay.ToString(
@@ -173,7 +189,7 @@
 
     var ticketEmail =
         string.IsNullOrWhiteSpace(Model.Email)
-            ? "Непозната e-mail адреса"
+            ? "Unknown Email Address"
             : Model.Email;
 
     var ticketsUrl =
@@ -183,21 +199,21 @@
         Url.Action("Buy", "Tickets");
 }
 
-<main class="ticket-summary-page"
-      aria-labelledby="ticket-summary-title">
+<div class="ticket-summary-page"
+     aria-labelledby="ticket-summary-title">
 
-    @if (!string.IsNullOrWhiteSpace(flashMessage))
+    @if (hasBookingFeedback)
     {
         <div class="ticket-success-message"
              role="status"
              aria-live="polite">
             <span aria-hidden="true">✓</span>
             <div>
-                <strong>Резервацијата е успешна</strong>
+                <strong>Booking Confirmed</strong>
                 <p>
                     @(emailDeliveryFailed
-                        ? "Билетот е успешно зачуван и достапен во „Мои билети“."
-                        : flashMessage)
+                        ? "Your ticket has been saved successfully and is available under My Tickets."
+                        : "Thank you! Your tickets have been booked successfully and sent to your email address.")
                 </p>
             </div>
         </div>
@@ -207,10 +223,10 @@
             <div class="ticket-email-warning" role="alert">
                 <span class="ticket-email-warning-icon" aria-hidden="true">!</span>
                 <div>
-                    <strong>Потврдата не е испратена по е-пошта</strong>
+                    <strong>Email Confirmation Could Not Be Sent</strong>
                     <p>
-                        Резервацијата останува активна. Провери ја во „Мои билети“.
-                        Ако е потребна потврда по е-пошта, контактирај ја поддршката.
+                        Your booking remains valid. You can view it under My Tickets.
+                        If you need an email confirmation, please contact support.
                     </p>
                 </div>
             </div>
@@ -221,19 +237,19 @@
 
         <div>
             <div class="cinema-eyebrow">
-                ПОТВРДА ЗА РЕЗЕРВАЦИЈА
+                BOOKING CONFIRMATION
             </div>
 
             <h1 id="ticket-summary-title">
-                Твојот
+                Your
                 <span class="cinema-text-gradient">
-                    билет
+                    Ticket
                 </span>
             </h1>
 
             <p>
-                Сите детали за резервираната проекција
-                се прикажани подолу.
+                All details of your booked screening
+                are shown below.
             </p>
         </div>
 
@@ -241,15 +257,15 @@
            href="@ticketsUrl">
 
             @(isAdmin
-                ? "Сите билети"
-                : "Мои билети")
+                ? "All Tickets"
+                : "My Tickets")
 
         </a>
 
     </section>
 
     <section class="digital-ticket"
-             aria-label="Детали за билет број @Model.Id">
+             aria-label="Details for ticket number @Model.Id">
 
         <div class="digital-ticket-main">
 
@@ -264,7 +280,7 @@
                          decoding="async" />
 
                     <span class="digital-ticket-id">
-                        РЕЗЕРВАЦИЈА #@Model.Id
+                        RESERVATION #@Model.Id
                     </span>
                 </div>
 
@@ -281,7 +297,7 @@
             <div class="digital-ticket-film">
 
                 <span>
-                    ФИЛМ
+                    MOVIE
                 </span>
 
                 <h2>
@@ -294,7 +310,7 @@
 
                 <div>
                     <span>
-                        ДАТУМ
+                        DATE
                     </span>
 
                     <strong>
@@ -304,7 +320,7 @@
 
                 <div>
                     <span>
-                        ТЕРМИН
+                        SHOWTIME
                     </span>
 
                     <strong>
@@ -316,7 +332,7 @@
 
                 <div>
                     <span>
-                        СЕДИШТА
+                        SEATS
                     </span>
 
                     <strong>
@@ -329,7 +345,7 @@
             <div class="digital-ticket-seat-section">
 
                 <span class="digital-ticket-section-label">
-                    РЕЗЕРВИРАНИ СЕДИШТА
+                    RESERVED SEATS
                 </span>
 
                 @if (groupedSeats.Any())
@@ -341,7 +357,7 @@
                             foreach (var column in group.Value)
                             {
                                 <span class="digital-ticket-seat">
-                                    Ред @(group.Key) · Седиште @(column)
+                                    Row @(group.Key) · Seat @(column)
                                 </span>
                             }
                         }
@@ -351,7 +367,7 @@
                 else
                 {
                     <p class="digital-ticket-no-seats">
-                        Нема валидни избрани седишта.
+                        No valid seats selected.
                     </p>
                 }
 
@@ -359,7 +375,7 @@
                 {
                     <div class="digital-ticket-invalid">
 
-                        Невалидни записи:
+                        Invalid entries:
 
                         @string.Join(", ", invalidSeats)
 
@@ -371,7 +387,7 @@
             <div class="digital-ticket-customer">
 
                 <span>
-                    НОСИТЕЛ НА БИЛЕТОТ
+                    TICKET HOLDER
                 </span>
 
                 <strong>
@@ -410,7 +426,7 @@
             <div class="digital-ticket-stub-time">
 
                 <span>
-                    ПРОЕКЦИЈА
+                    SHOWTIME
                 </span>
 
                 <strong>
@@ -440,12 +456,12 @@
     </section>
 
     <section class="ticket-summary-information"
-             aria-label="Преглед на цената">
+             aria-label="Price breakdown">
 
         <div class="ticket-summary-info-card">
 
             <span>
-                ПРЕМИУМ
+                PREMIUM
             </span>
 
             <strong>
@@ -453,7 +469,7 @@
             </strong>
 
             <small>
-                × 500 ден.
+                × 500 MKD
             </small>
 
         </div>
@@ -461,7 +477,7 @@
         <div class="ticket-summary-info-card">
 
             <span>
-                СТАНДАРД
+                STANDARD
             </span>
 
             <strong>
@@ -469,7 +485,7 @@
             </strong>
 
             <small>
-                × 250 ден.
+                × 250 MKD
             </small>
 
         </div>
@@ -477,7 +493,7 @@
         <div class="ticket-summary-info-card highlight">
 
             <span>
-                ВКУПНА ЦЕНА
+                TOTAL PRICE
             </span>
 
             <strong>
@@ -485,7 +501,7 @@
             </strong>
 
             <small>
-                ден.
+                MKD
             </small>
 
         </div>
@@ -497,17 +513,17 @@
         <div>
 
             <span class="ticket-summary-footer-label">
-                ДЕТАЛИ ЗА РЕЗЕРВАЦИЈАТА
+                BOOKING DETAILS
             </span>
 
             <strong>
-                Билетот е поврзан со
+                This ticket is associated with
                 @ticketEmail
             </strong>
 
             <p>
-                Резервацијата е зачувана во твојот профил.
-                Деталите се достапни и во „Мои билети“.
+                Your booking has been saved to your account.
+                You can also find the details under My Tickets.
             </p>
 
         </div>
@@ -518,8 +534,8 @@
                href="@ticketsUrl">
 
                 @(isAdmin
-                    ? "Назад кон сите билети"
-                    : "Назад кон моите билети")
+                    ? "Back to All Tickets"
+                    : "Back to My Tickets")
 
             </a>
 
@@ -528,7 +544,7 @@
                 <a class="btn btn-primary"
                    href="@buyUrl">
 
-                    Купи нов билет
+                    Book Another Ticket
 
                 </a>
             }
@@ -537,7 +553,9 @@
 
     </section>
 
-</main>
+</div>
+
+
 
 <style>
     .ticket-summary-page {

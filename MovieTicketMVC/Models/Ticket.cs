@@ -10,34 +10,34 @@ namespace MovieTicketMVC.Models
         [Range(
             1,
             int.MaxValue,
-            ErrorMessage = "Мора да одберете филм.")]
+            ErrorMessage = "Please select a movie.")]
         public int MovieId { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime SelectedDay { get; set; }
 
         [Required(
-            ErrorMessage = "Мора да одберете термин на проекција.")]
+            ErrorMessage = "Please select a screening time.")]
         public string SelectedTime { get; set; }
 
         [Range(
             1,
             100,
-            ErrorMessage = "Мора да одберете помеѓу 1 и 100 седишта.")]
+            ErrorMessage = "Please select between 1 and 100 seats.")]
         public int NumberOfSeats { get; set; }
 
         [Required(
-            ErrorMessage = "Мора да одберете барем едно седиште.")]
+            ErrorMessage = "Please select at least one seat.")]
         public string SelectedSeats { get; set; }
 
         [Required(
-            ErrorMessage = "Мора да внесете е-пошта.")]
+            ErrorMessage = "Please enter your email address.")]
         [EmailAddress(
-            ErrorMessage = "Внесете валидна е-пошта.")]
+            ErrorMessage = "Please enter a valid email address.")]
         public string Email { get; set; }
 
         [Required(
-            ErrorMessage = "Мора да одберете возрасна категорија.")]
+            ErrorMessage = "Please select an age category.")]
         public string AgeCategory { get; set; }
 
         public string UnavailableSeats { get; set; }

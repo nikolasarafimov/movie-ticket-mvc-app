@@ -5,7 +5,7 @@
 @model MovieTicketMVC.Models.Movie
 
 @{
-    ViewBag.Title = "Измени филм";
+    ViewBag.Title = "Edit Movie";
 
     var returnSection = ViewBag.ReturnSection as string;
     if (returnSection != "Current" && returnSection != "ComingSoon")
@@ -29,23 +29,23 @@
         ? "video/webm"
         : trailerExtension == ".ogg" ? "video/ogg" : "video/mp4";
     var isCurrentlyShowing = Model.ReleaseDate.Date <= DateTime.Today;
-    var currentStatus = isCurrentlyShowing ? "Актуелен филм" : "Наскоро";
-    var returnLabel = returnSection == "Current" ? "Актуелни филмови" : "Наскоро";
+    var currentStatus = isCurrentlyShowing ? "Now Showing" : "Coming Soon";
+    var returnLabel = returnSection == "Current" ? "Now Showing" : "Coming Soon";
     var todayValue = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 }
 
-<main class="movie-edit-page" aria-labelledby="movie-edit-title">
+<div class="movie-edit-page" aria-labelledby="movie-edit-title">
     <header class="movie-edit-hero">
         <div class="movie-edit-hero-copy">
             <a class="movie-edit-back" href="@Url.Action(returnSection, "Movies")">
                 <span aria-hidden="true">←</span>
-                Назад кон @returnLabel.ToLowerInvariant()
+                Back to @returnLabel
             </a>
-            <div class="cinema-eyebrow">АДМИНИСТРАЦИЈА · ФИЛМСКИ КАТАЛОГ</div>
-            <h1 id="movie-edit-title">Измени <span class="cinema-text-gradient">филм</span></h1>
-            <p>Ажурирај ги информациите за филмот, возрасната категорија и видеото, а потоа зачувај ги промените.</p>
+            <div class="cinema-eyebrow">ADMIN · MOVIE CATALOG</div>
+            <h1 id="movie-edit-title">Edit <span class="cinema-text-gradient">Movie</span></h1>
+            <p>Update the movie details, age rating, and trailer, then save your changes.</p>
             <div class="movie-edit-hero-tags">
-                <span class="movie-edit-tag">Филм #@Model.Id</span>
+                <span class="movie-edit-tag">Movie #@Model.Id</span>
                 <span class="movie-edit-tag movie-edit-tag-status" id="heroStatus">@currentStatus</span>
             </div>
         </div>
@@ -73,37 +73,37 @@
                     <div class="movie-edit-panel-head">
                         <span class="movie-edit-step">01</span>
                         <div>
-                            <h2 id="movie-edit-general-title">Основни информации</h2>
-                            <p>Податоците што се прикажуваат во каталогот.</p>
+                            <h2 id="movie-edit-general-title">Basic Information</h2>
+                            <p>The details displayed in the movie catalog.</p>
                         </div>
                     </div>
 
                     <div class="movie-edit-fields">
                         <div class="movie-edit-field movie-edit-full">
-                            @Html.LabelFor(m => m.Title, "Наслов на филмот", new { @class = "form-label" })
-                            @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "Внеси наслов", required = "required" })
+                            @Html.LabelFor(m => m.Title, "Movie Title", new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "Enter the movie title", required = "required" })
                             @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
                         </div>
                         <div class="movie-edit-field">
-                            @Html.LabelFor(m => m.Genre, "Жанр", new { @class = "form-label" })
-                            @Html.TextBoxFor(m => m.Genre, new { @class = "form-control", placeholder = "На пр. драма", required = "required" })
+                            @Html.LabelFor(m => m.Genre, "Genre", new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Genre, new { @class = "form-control", placeholder = "e.g. Drama", required = "required" })
                             @Html.ValidationMessageFor(m => m.Genre, "", new { @class = "text-danger" })
                         </div>
                         <div class="movie-edit-field">
-                            @Html.LabelFor(m => m.Language, "Јазик", new { @class = "form-label" })
-                            @Html.TextBoxFor(m => m.Language, new { @class = "form-control", placeholder = "На пр. англиски" })
+                            @Html.LabelFor(m => m.Language, "Language", new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Language, new { @class = "form-control", placeholder = "e.g. English" })
                             @Html.ValidationMessageFor(m => m.Language, "", new { @class = "text-danger" })
                         </div>
                         <div class="movie-edit-field">
-                            @Html.LabelFor(m => m.LengthInMinutes, "Времетраење", new { @class = "form-label" })
+                            @Html.LabelFor(m => m.LengthInMinutes, "Duration", new { @class = "form-label" })
                             <div class="movie-edit-input-unit">
                                 @Html.TextBoxFor(m => m.LengthInMinutes, new { @class = "form-control", type = "number", min = "1", max = "600", step = "1", required = "required" })
-                                <span>мин.</span>
+                                <span>min</span>
                             </div>
                             @Html.ValidationMessageFor(m => m.LengthInMinutes, "", new { @class = "text-danger" })
                         </div>
                         <div class="movie-edit-field">
-                            @Html.LabelFor(m => m.Rating, "Оценка", new { @class = "form-label" })
+                            @Html.LabelFor(m => m.Rating, "Rating", new { @class = "form-label" })
                             <div class="movie-edit-input-unit">
                                 @Html.TextBoxFor(m => m.Rating, new { @class = "form-control", type = "text", inputmode = "decimal", placeholder = "0.0", id = "Rating" })
                                 <span>/ 10</span>
@@ -111,9 +111,9 @@
                             @Html.ValidationMessageFor(m => m.Rating, "", new { @class = "text-danger" })
                         </div>
                         <div class="movie-edit-field movie-edit-full">
-                            @Html.LabelFor(m => m.ReleaseDate, "Датум на премиера", new { @class = "form-label" })
+                            @Html.LabelFor(m => m.ReleaseDate, "Release Date", new { @class = "form-label" })
                             @Html.TextBox("ReleaseDate", releaseDateValue, new { @class = "form-control", type = "date", required = "required", id = "ReleaseDate" })
-                            <small class="movie-edit-field-hint">Датумот го одредува прикажувањето во „Актуелни“ или „Наскоро“.</small>
+                            <small class="movie-edit-field-hint">The release date determines whether the movie appears in “Now Showing” or “Coming Soon”.</small>
                             @Html.ValidationMessageFor(m => m.ReleaseDate, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -123,19 +123,19 @@
                     <div class="movie-edit-panel-head">
                         <span class="movie-edit-step">02</span>
                         <div>
-                            <h2 id="movie-edit-content-title">Опис и актерска екипа</h2>
-                            <p>Информациите што посетителите ќе ги прочитаат на страницата на филмот.</p>
+                            <h2 id="movie-edit-content-title">Description and Cast</h2>
+                            <p>The information visitors will see on the movie details page.</p>
                         </div>
                     </div>
                     <div class="movie-edit-field">
-                        @Html.LabelFor(m => m.Description, "Опис на филмот", new { @class = "form-label" })
-                        @Html.TextAreaFor(m => m.Description, 5, 50, new { @class = "form-control movie-edit-description", placeholder = "Краток опис на филмот", required = "required" })
+                        @Html.LabelFor(m => m.Description, "Movie Description", new { @class = "form-label" })
+                        @Html.TextAreaFor(m => m.Description, 5, 50, new { @class = "form-control movie-edit-description", placeholder = "A short description of the movie", required = "required" })
                         @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                     </div>
                     <div class="movie-edit-field movie-edit-field-spaced">
-                        @Html.LabelFor(m => m.Actors, "Актерска екипа", new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Actors, new { @class = "form-control", placeholder = "Имиња на актерите" })
-                        <small class="movie-edit-field-hint">Оддели ги имињата со запирка.</small>
+                        @Html.LabelFor(m => m.Actors, "Cast", new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Actors, new { @class = "form-control", placeholder = "Names of the actors" })
+                        <small class="movie-edit-field-hint">Separate names with commas.</small>
                         @Html.ValidationMessageFor(m => m.Actors, "", new { @class = "text-danger" })
                     </div>
                 </section>
@@ -144,19 +144,19 @@
                     <div class="movie-edit-panel-head">
                         <span class="movie-edit-step">03</span>
                         <div>
-                            <h2 id="movie-edit-age-title">Возрасна категорија</h2>
-                            <p>Одбери дали филмот има ограничување за возраст.</p>
+                            <h2 id="movie-edit-age-title">Age Rating</h2>
+                            <p>Specify whether the movie has an age restriction.</p>
                         </div>
                     </div>
                     <fieldset class="movie-edit-age-options">
-                        <legend class="visually-hidden">Возрасна категорија</legend>
+                        <legend class="visually-hidden">Age Rating</legend>
                         <label class="movie-edit-age-option" for="IsForAdultsFalse">
                             @Html.RadioButtonFor(m => m.IsForAdults, false, new { id = "IsForAdultsFalse", required = "required" })
                             <span class="movie-edit-age-body">
                                 <span class="movie-edit-age-symbol">ALL</span>
                                 <span class="movie-edit-age-text">
-                                    <strong>За сите возрасти</strong>
-                                    <small>Без возрасно ограничување</small>
+                                    <strong>All Ages</strong>
+                                    <small>No age restriction</small>
                                 </span>
                                 <span class="movie-edit-age-check" aria-hidden="true">✓</span>
                             </span>
@@ -166,8 +166,8 @@
                             <span class="movie-edit-age-body">
                                 <span class="movie-edit-age-symbol movie-edit-age-adult">18+</span>
                                 <span class="movie-edit-age-text">
-                                    <strong>Само за возрасни</strong>
-                                    <small>За лица од најмалку 18 години</small>
+                                    <strong>Adults Only</strong>
+                                    <small>For viewers aged 18 and over</small>
                                 </span>
                                 <span class="movie-edit-age-check" aria-hidden="true">✓</span>
                             </span>
@@ -177,22 +177,22 @@
                 </section>
             </div>
 
-            <aside class="movie-edit-sidebar" aria-label="Трејлер и информации за филмот">
+            <aside class="movie-edit-sidebar" aria-label="Trailer and movie information">
                 <section class="movie-edit-panel movie-edit-trailer" aria-labelledby="movie-edit-trailer-title">
                     <div class="movie-edit-panel-head">
                         <span class="movie-edit-step">04</span>
                         <div>
-                            <h2 id="movie-edit-trailer-title">Видео трејлер</h2>
-                            <p>Прегледај или замени го видеото.</p>
+                            <h2 id="movie-edit-trailer-title">Video Trailer</h2>
+                            <p>Preview or replace the trailer video.</p>
                         </div>
                     </div>
                     @if (hasTrailer)
                     {
                         <div class="movie-edit-existing-video">
-                            <div class="movie-edit-video-caption"><span class="movie-edit-presence-dot"></span>Постоечки трејлер</div>
-                            <video controls preload="metadata" playsinline aria-label="Постоечки трејлер на филмот">
+                            <div class="movie-edit-video-caption"><span class="movie-edit-presence-dot"></span>Current Trailer</div>
+                            <video controls preload="metadata" playsinline aria-label="Current movie trailer">
                                 <source src="@trailerUrl" type="@trailerMime" />
-                                Твојот прелистувач не го поддржува видеото.
+                                Your browser does not support video playback.
                             </video>
                             <div class="movie-edit-video-name" title="@trailerFileName">@trailerFileName</div>
                         </div>
@@ -201,52 +201,52 @@
                     {
                         <div class="movie-edit-no-video">
                             <span class="movie-edit-empty-icon" aria-hidden="true">▷</span>
-                            <strong>Нема додаден трејлер</strong>
-                            <span>Можеш да прикачиш видео подолу.</span>
+                            <strong>No Trailer Uploaded</strong>
+                            <span>You can upload a video below.</span>
                         </div>
                     }
 
-                    <div class="movie-edit-upload-title">ЗАМЕНА НА ТРЕЈЛЕР</div>
-                    <label class="form-label" for="videoFile">Избери видео датотека</label>
+                    <div class="movie-edit-upload-title">REPLACE TRAILER</div>
+                    <label class="form-label" for="videoFile">Choose a Video File</label>
                     <input type="file" name="videoFile" id="videoFile" class="form-control movie-edit-file-input" accept=".mp4,.webm,.ogg,video/mp4,video/webm,video/ogg" aria-describedby="movieEditUploadHint videoClientError" />
-                    <small id="movieEditUploadHint" class="movie-edit-field-hint">MP4, WebM или Ogg · најмногу 200 MB</small>
+                    <small id="movieEditUploadHint" class="movie-edit-field-hint">MP4, WebM, or Ogg · maximum 200 MB</small>
                     <div id="videoClientError" class="movie-edit-upload-error" role="alert" hidden></div>
                     @Html.ValidationMessage("videoFile", "", new { @class = "text-danger" })
 
                     <div id="newTrailerPreview" class="movie-edit-new-preview" hidden>
-                        <span class="movie-edit-preview-caption">ПРЕГЛЕД НА НОВОТО ВИДЕО</span>
-                        <video id="newTrailerVideo" controls preload="metadata" playsinline aria-label="Нов трејлер пред зачувување"></video>
+                        <span class="movie-edit-preview-caption">NEW VIDEO PREVIEW</span>
+                        <video id="newTrailerVideo" controls preload="metadata" playsinline aria-label="New trailer preview before saving"></video>
                         <div class="movie-edit-file-meta">
                             <strong id="videoFileName"></strong>
                             <span id="videoFileSize"></span>
                         </div>
                     </div>
-                    <p class="movie-edit-trailer-note">Ако не избереш ново видео, постоечкиот трејлер ќе остане непроменет.</p>
+                    <p class="movie-edit-trailer-note">If you do not select a new video, the current trailer will remain unchanged.</p>
                 </section>
 
                 <section class="movie-edit-panel movie-edit-summary" aria-labelledby="movie-edit-summary-title">
                     <div class="movie-edit-summary-top">
-                        <span class="cinema-eyebrow">ИНФОРМАЦИИ ЗА ФИЛМОТ</span>
-                        <h2 id="movie-edit-summary-title">Преглед на статусот</h2>
+                        <span class="cinema-eyebrow">MOVIE INFORMATION</span>
+                        <h2 id="movie-edit-summary-title">Status Overview</h2>
                         <span class="movie-edit-status-indicator" id="movieEditStatusIndicator">@currentStatus</span>
                     </div>
-                    <div class="movie-edit-summary-row"><span>ID на филмот</span><strong>#@Model.Id</strong></div>
-                    <div class="movie-edit-summary-row"><span>Премиера</span><strong id="movieEditReleaseSummary">@Model.ReleaseDate.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture)</strong></div>
-                    <div class="movie-edit-summary-row"><span>Трејлер</span><strong>@(hasTrailer ? "Додаден" : "Не е додаден")</strong></div>
-                    <p class="movie-edit-summary-help">При промена на датумот, статусот се пресметува повторно по зачувувањето.</p>
+                    <div class="movie-edit-summary-row"><span>Movie ID</span><strong>#@Model.Id</strong></div>
+                    <div class="movie-edit-summary-row"><span>Release Date</span><strong id="movieEditReleaseSummary">@Model.ReleaseDate.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture)</strong></div>
+                    <div class="movie-edit-summary-row"><span>Trailer</span><strong>@(hasTrailer ? "Uploaded" : "Not Uploaded")</strong></div>
+                    <p class="movie-edit-summary-help">If you change the release date, the movie status will be recalculated after saving.</p>
                 </section>
             </aside>
         </div>
 
         <div class="movie-edit-footer-actions">
-            <a class="btn btn-outline-secondary" href="@Url.Action(returnSection, "Movies")">Откажи</a>
-            <a class="btn btn-outline-primary" href="@Url.Action("Details", "Movies", new { id = Model.Id })">Прегледај филм</a>
+            <a class="btn btn-outline-secondary" href="@Url.Action(returnSection, "Movies")">Cancel</a>
+            <a class="btn btn-outline-primary" href="@Url.Action("Details", "Movies", new { id = Model.Id })">View Movie</a>
             <button id="movieSubmitButton" type="submit" class="btn btn-primary movie-edit-submit">
-                <span id="movieSubmitButtonText">Зачувај промени</span><span aria-hidden="true">→</span>
+                <span id="movieSubmitButtonText">Save Changes</span><span aria-hidden="true">→</span>
             </button>
         </div>
     }
-</main>
+</div>
 
 <style>
     .movie-edit-page {
@@ -1070,9 +1070,9 @@
             function validateVideo() {
                 var file = selectedFile();
                 if (!file) { showError(""); return true; }
-                if (file.size <= 0) { showError("Избраната датотека е празна."); return false; }
-                if (file.size > maxSize) { showError("Видеото не смее да биде поголемо од 200 MB."); return false; }
-                if (!/\.(mp4|webm|ogg)$/i.test(file.name)) { showError("Дозволени се само MP4, WebM и Ogg видео датотеки."); return false; }
+                if (file.size <= 0) { showError("The selected file is empty."); return false; }
+                if (file.size > maxSize) { showError("The video must not exceed 200 MB."); return false; }
+                if (!/\.(mp4|webm|ogg)$/i.test(file.name)) { showError("Only MP4, WebM, and Ogg video files are allowed."); return false; }
                 showError("");
                 return true;
             }
@@ -1092,7 +1092,7 @@
             function updateDateStatus() {
                 if (!dateInput || !dateInput.value) return;
                 var isCurrent = dateInput.value <= today;
-                var label = isCurrent ? "Актуелен филм" : "Наскоро";
+                var label = isCurrent ? "Now Showing" : "Coming Soon";
                 if (statusIndicator) {
                     statusIndicator.textContent = label;
                     statusIndicator.classList.toggle("is-soon", !isCurrent);
@@ -1119,14 +1119,14 @@
                 isSubmitting = true;
                 submitButton.disabled = true;
                 submitButton.setAttribute("aria-busy", "true");
-                if (submitLabel) submitLabel.textContent = "Се зачувува...";
+                if (submitLabel) submitLabel.textContent = "Saving...";
             });
             window.addEventListener("pageshow", function (event) {
                 if (event.persisted) {
                     isSubmitting = false;
                     submitButton.disabled = false;
                     submitButton.removeAttribute("aria-busy");
-                    if (submitLabel) submitLabel.textContent = "Зачувај промени";
+                    if (submitLabel) submitLabel.textContent = "Save Changes";
                     updateVideo();
                     updateDateStatus();
                 }

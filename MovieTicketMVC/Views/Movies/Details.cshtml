@@ -6,7 +6,7 @@
 
 @{
     var movieTitle = string.IsNullOrWhiteSpace(Model.Title)
-        ? "Непознат филм"
+        ? "Unknown Movie"
         : Model.Title.Trim();
 
     ViewBag.Title = movieTitle;
@@ -16,15 +16,15 @@
     var daysUntilRelease = Math.Max(0, (Model.ReleaseDate.Date - DateTime.Today).Days);
 
     var genre = string.IsNullOrWhiteSpace(Model.Genre)
-        ? "Филм"
+        ? "Film"
         : Model.Genre.Trim();
 
     var language = string.IsNullOrWhiteSpace(Model.Language)
-        ? "Непознат"
+        ? "Unknown"
         : Model.Language.Trim();
 
     var description = string.IsNullOrWhiteSpace(Model.Description)
-        ? "Нема достапен опис за овој филм."
+        ? "No description is available for this movie."
         : Model.Description.Trim();
 
     var actors = string.IsNullOrWhiteSpace(Model.Actors)
@@ -46,8 +46,8 @@
         : Model.IsForAdults == false ? "ALL" : "N/A";
 
     var ageDescription = Model.IsForAdults == true
-        ? "само за возрасни"
-        : Model.IsForAdults == false ? "без рестрикција" : "непозната категорија";
+        ? "adults only"
+        : Model.IsForAdults == false ? "no age restriction" : "unknown rating";
 
     var ageCssClass = Model.IsForAdults == true
         ? "adult"
@@ -80,25 +80,25 @@
 
     var backAction = isCurrent ? "Current" : "ComingSoon";
     var backUrl = Url.Action(backAction, "Movies");
-    var buyUrl = Url.Action("Buy", "Tickets");
+    var buyUrl = Url.Action("Buy", "Tickets", new { movieId = Model.Id });
 }
 
-<main class="movie-details-page" aria-labelledby="movie-title">
+<div class="movie-details-page" aria-labelledby="movie-title">
     <section class="movie-details-hero">
         <div class="movie-details-hero-content">
             <div class="movie-details-badges">
                 <span class="movie-details-status">
                     <span class="movie-details-status-dot" aria-hidden="true"></span>
-                    @(isCurrent ? "СЕ ПРИКАЖУВА" : "НАСКОРО")
+                    @(isCurrent ? "NOW SHOWING" : "COMING SOON")
                 </span>
                 <span class="movie-details-genre">@genre</span>
-                <span class="movie-details-age @ageCssClass" aria-label="Возрасна категорија: @ageDescription">@ageLabel</span>
+                <span class="movie-details-age @ageCssClass" aria-label="Age rating: @ageDescription">@ageLabel</span>
             </div>
 
             <h1 id="movie-title">@movieTitle</h1>
 
             <div class="movie-details-rating-row">
-                <div class="movie-details-rating" aria-label="Рејтинг: @(Model.Rating.HasValue ? ratingText + " од 10" : "нема оценка")">
+                <div class="movie-details-rating" aria-label="Rating: @(Model.Rating.HasValue ? ratingText + " out of 10" : "not rated")">
                     @if (Model.Rating.HasValue)
                     {
                         <span class="movie-details-star" aria-hidden="true">★</span>
@@ -111,7 +111,7 @@
                     }
                 </div>
                 <span class="movie-details-separator" aria-hidden="true">·</span>
-                <span>@Model.LengthInMinutes мин.</span>
+                <span>@Model.LengthInMinutes min</span>
                 <span class="movie-details-separator" aria-hidden="true">·</span>
                 <span>@language</span>
             </div>
@@ -120,10 +120,10 @@
 
             <div class="movie-details-actions">
                 <a class="btn btn-primary movie-details-primary-action" href="@buyUrl">
-                    @(isCurrent ? "Купи билет" : "Резервирај за премиера")
+                    @(isCurrent ? "Buy Tickets" : "Book for the Premiere")
                     <span aria-hidden="true">→</span>
                 </a>
-                <a class="btn btn-outline-secondary" href="@backUrl">Назад кон филмови</a>
+                <a class="btn btn-outline-secondary" href="@backUrl">Back to Movies</a>
             </div>
 
             @if (!isCurrent && daysUntilRelease > 0)
@@ -131,8 +131,8 @@
                 <div class="movie-details-premiere-note">
                     <span class="movie-details-premiere-icon" aria-hidden="true">◷</span>
                     <div>
-                        <span>ПРЕМИЕРА</span>
-                        <strong>За @daysUntilRelease @(daysUntilRelease == 1 ? "ден" : "дена")</strong>
+                        <span>PREMIERE</span>
+                        <strong>In @daysUntilRelease @(daysUntilRelease == 1 ? "day" : "days")</strong>
                     </div>
                 </div>
             }
@@ -150,9 +150,9 @@
                         <div class="movie-trailer-duration">@genre</div>
                     </div>
                     <div class="movie-trailer-video">
-                        <video controls preload="metadata" playsinline aria-label="Trailer за @movieTitle">
+                        <video controls preload="metadata" playsinline aria-label="Trailer for @movieTitle">
                             <source src="@trailerUrl" type="@trailerMime" />
-                            Вашиот прелистувач не поддржува HTML5 видео.
+                            Your browser does not support HTML5 video.
                         </video>
                     </div>
                 </div>
@@ -167,7 +167,7 @@
                         <strong>@movieTitle</strong>
                         <span class="movie-no-trailer-genre">@genre</span>
                     </div>
-                    <div class="movie-no-trailer-message">Трејлерот сè уште не е достапен</div>
+                    <div class="movie-no-trailer-message">The trailer is not available yet</div>
                 </div>
             }
         </div>
@@ -179,39 +179,39 @@
         <div class="cinema-page-header">
             <div>
                 <div class="cinema-eyebrow">MOVIE INFORMATION</div>
-                <h2 id="information-title">Детали за <span class="cinema-text-gradient">филмот</span></h2>
+                <h2 id="information-title">Movie <span class="cinema-text-gradient">Details</span></h2>
             </div>
         </div>
         <div class="movie-details-info-grid">
             <article class="movie-info-card">
-                <span class="movie-info-label">ВРЕМЕТРАЕЊЕ</span>
+                <span class="movie-info-label">DURATION</span>
                 <strong>@Model.LengthInMinutes</strong>
-                <small>минути</small>
+                <small>minutes</small>
             </article>
             <article class="movie-info-card">
-                <span class="movie-info-label">ПРЕМИЕРА</span>
+                <span class="movie-info-label">RELEASE DATE</span>
                 <strong class="movie-info-date">@Model.ReleaseDate.ToString("dd.MM", culture)</strong>
                 <small>@Model.ReleaseDate.ToString("yyyy", culture)</small>
             </article>
             <article class="movie-info-card">
-                <span class="movie-info-label">ОЦЕНКА</span>
+                <span class="movie-info-label">RATING</span>
                 <strong>@(Model.Rating.HasValue ? ratingText : "—")</strong>
-                <small>@(Model.Rating.HasValue ? "од 10" : "нема оценка")</small>
+                <small>@(Model.Rating.HasValue ? "out of 10" : "not rated")</small>
             </article>
             <article class="movie-info-card">
-                <span class="movie-info-label">ВОЗРАСНА КАТЕГОРИЈА</span>
+                <span class="movie-info-label">AGE RATING</span>
                 <strong>@ageLabel</strong>
                 <small>@ageDescription</small>
             </article>
             <article class="movie-info-card">
-                <span class="movie-info-label">ЖАНР</span>
+                <span class="movie-info-label">GENRE</span>
                 <strong class="movie-info-text" title="@genre">@genre</strong>
-                <small>категорија</small>
+                <small>category</small>
             </article>
             <article class="movie-info-card">
-                <span class="movie-info-label">ЈАЗИК</span>
+                <span class="movie-info-label">LANGUAGE</span>
                 <strong class="movie-info-text" title="@language">@language</strong>
-                <small>оригинален јазик</small>
+                <small>original language</small>
             </article>
         </div>
     </section>
@@ -220,7 +220,7 @@
         <div class="movie-story-card">
             <div class="movie-story-heading">
                 <div class="cinema-eyebrow">THE STORY</div>
-                <h2 id="story-title">За филмот</h2>
+                <h2 id="story-title">About the Movie</h2>
             </div>
             <div class="movie-story-copy"><p>@description</p></div>
         </div>
@@ -230,7 +230,7 @@
         <div class="cinema-page-header">
             <div>
                 <div class="cinema-eyebrow">CAST</div>
-                <h2 id="cast-title">Актерска <span class="cinema-text-gradient">екипа</span></h2>
+                <h2 id="cast-title">Movie <span class="cinema-text-gradient">Cast</span></h2>
             </div>
         </div>
         @if (actors.Any())
@@ -256,7 +256,7 @@
         else
         {
             <div class="cinema-empty-state movie-cast-empty">
-                <p>Нема достапни информации за актерската екипа.</p>
+                <p>No cast information is available.</p>
             </div>
         }
     </section>
@@ -266,16 +266,16 @@
         <section class="movie-admin-panel">
             <div>
                 <span class="movie-admin-label">ADMIN CONTROLS</span>
-                <strong>Управување со филмот</strong>
-                <p>Промени ги информациите или отстрани го филмот од каталогот.</p>
+                <strong>Manage Movie</strong>
+                <p>Edit the movie information or remove it from the catalog.</p>
             </div>
             <div class="movie-admin-actions">
-                <a class="btn btn-outline-primary" href="@Url.Action("Edit", "Movies", new { id = Model.Id })">Уреди</a>
-                <a class="btn btn-outline-danger" href="@Url.Action("Delete", "Movies", new { id = Model.Id })">Избриши</a>
+                <a class="btn btn-outline-primary" href="@Url.Action("Edit", "Movies", new { id = Model.Id })">Edit</a>
+                <a class="btn btn-outline-danger" href="@Url.Action("Delete", "Movies", new { id = Model.Id })">Delete</a>
             </div>
         </section>
     }
-</main>
+</div>
 
 <style>
     .movie-details-page {

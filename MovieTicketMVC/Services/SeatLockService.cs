@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace MovieTicketMVC.Services
 {
@@ -18,20 +20,25 @@ namespace MovieTicketMVC.Services
 
         public string ConnectionId { get; set; }
 
+        public string OwnerEmail { get; set; }
+
         public DateTime ExpiresAtUtc { get; set; }
+
+        public Guid? PurchaseId { get; set; }
     }
 
     public static class SeatLockService
     {
-        private static readonly object SyncRoot =
-            new object();
+        private static readonly object SyncRoot = new object();
 
         private static readonly TimeSpan LockLifetime =
             TimeSpan.FromMinutes(15);
 
+        private static readonly TimeSpan PurchaseLifetime =
+            TimeSpan.FromMinutes(5);
+
         private static readonly Dictionary<string, SeatLockInfo> Locks =
-            new Dictionary<string, SeatLockInfo>(
-                StringComparer.Ordinal);
+            new Dictionary<string, SeatLockInfo>(StringComparer.Ordinal);
 
         private static readonly Regex SeatIdRegex =
             new Regex(
@@ -42,26 +49,37 @@ namespace MovieTicketMVC.Services
 
         private static readonly HashSet<string> AllowedProjectionTimes =
             new HashSet<string>(
-                new[]
-                {
-                    "10:00",
-                    "14:00",
-                    "18:00",
-                    "21:00"
-                },
+                new[] { "10:00", "14:00", "18:00", "21:00" },
                 StringComparer.Ordinal);
+
+        private static readonly Timer ExpirationTimer;
+
+        public static event Action<IReadOnlyCollection<SeatLockInfo>> LocksExpired;
+
+        public static event Action<IReadOnlyCollection<SeatLockInfo>> PurchaseLocksReleased;
+
+        static SeatLockService()
+        {
+            ExpirationTimer = new Timer(
+                CleanupExpiredLocks,
+                null,
+                TimeSpan.FromSeconds(10),
+                TimeSpan.FromSeconds(10));
+        }
 
         public static bool TryLock(
             int movieId,
             DateTime day,
             string time,
             string seatId,
-            string connectionId)
+            string connectionId,
+            string ownerEmail)
         {
             string normalizedTime;
             string normalizedSeatId;
 
-            if (!TryNormalizeInput(
+            if (string.IsNullOrWhiteSpace(ownerEmail) ||
+                !TryNormalizeInput(
                     movieId,
                     day,
                     time,
@@ -73,52 +91,52 @@ namespace MovieTicketMVC.Services
                 return false;
             }
 
-            var key = BuildKey(
-                movieId,
-                day,
-                normalizedTime,
-                normalizedSeatId);
+            var key = BuildKey(movieId, day, normalizedTime, normalizedSeatId);
+            var acquired = false;
+            List<SeatLockInfo> expiredLocks;
 
             lock (SyncRoot)
             {
-                var now = DateTime.UtcNow;
-
-                RemoveExpiredLocks(now);
+                var nowUtc = DateTime.UtcNow;
+                expiredLocks = RemoveExpiredLocks(nowUtc);
 
                 SeatLockInfo existingLock;
 
-                if (Locks.TryGetValue(
-                        key,
-                        out existingLock))
+                if (Locks.TryGetValue(key, out existingLock))
                 {
-                    if (!string.Equals(
+                    if (!existingLock.PurchaseId.HasValue &&
+                        string.Equals(
                             existingLock.ConnectionId,
                             connectionId,
-                            StringComparison.Ordinal))
+                            StringComparison.Ordinal) &&
+                        string.Equals(
+                            existingLock.OwnerEmail,
+                            ownerEmail,
+                            StringComparison.OrdinalIgnoreCase))
                     {
-                        return false;
+                        existingLock.ExpiresAtUtc = nowUtc.Add(LockLifetime);
+                        acquired = true;
                     }
-
-                    existingLock.ExpiresAtUtc =
-                        now.Add(LockLifetime);
-
-                    return true;
                 }
-
-                Locks.Add(
-                    key,
-                    new SeatLockInfo
+                else
+                {
+                    Locks.Add(key, new SeatLockInfo
                     {
                         MovieId = movieId,
                         Day = day.Date,
                         Time = normalizedTime,
                         SeatId = normalizedSeatId,
                         ConnectionId = connectionId,
-                        ExpiresAtUtc = now.Add(LockLifetime)
+                        OwnerEmail = ownerEmail,
+                        ExpiresAtUtc = nowUtc.Add(LockLifetime)
                     });
 
-                return true;
+                    acquired = true;
+                }
             }
+
+            NotifyLocks(LocksExpired, expiredLocks, "expiration");
+            return acquired;
         }
 
         public static bool Unlock(
@@ -143,35 +161,28 @@ namespace MovieTicketMVC.Services
                 return false;
             }
 
-            var key = BuildKey(
-                movieId,
-                day,
-                normalizedTime,
-                normalizedSeatId);
+            var key = BuildKey(movieId, day, normalizedTime, normalizedSeatId);
+            var unlocked = false;
+            List<SeatLockInfo> expiredLocks;
 
             lock (SyncRoot)
             {
-                RemoveExpiredLocks(DateTime.UtcNow);
-
+                expiredLocks = RemoveExpiredLocks(DateTime.UtcNow);
                 SeatLockInfo existingLock;
 
-                if (!Locks.TryGetValue(
-                        key,
-                        out existingLock))
-                {
-                    return false;
-                }
-
-                if (!string.Equals(
+                if (Locks.TryGetValue(key, out existingLock) &&
+                    !existingLock.PurchaseId.HasValue &&
+                    string.Equals(
                         existingLock.ConnectionId,
                         connectionId,
                         StringComparison.Ordinal))
                 {
-                    return false;
+                    unlocked = Locks.Remove(key);
                 }
-
-                return Locks.Remove(key);
             }
+
+            NotifyLocks(LocksExpired, expiredLocks, "expiration");
+            return unlocked;
         }
 
         public static IReadOnlyCollection<SeatLockInfo> ReleaseAll(
@@ -182,30 +193,31 @@ namespace MovieTicketMVC.Services
                 return new List<SeatLockInfo>();
             }
 
+            List<SeatLockInfo> expiredLocks;
+            var releasedLocks = new List<SeatLockInfo>();
+
             lock (SyncRoot)
             {
-                RemoveExpiredLocks(DateTime.UtcNow);
-
-                var locksToRelease = Locks
+                expiredLocks = RemoveExpiredLocks(DateTime.UtcNow);
+                var keysToRelease = Locks
                     .Where(pair =>
+                        !pair.Value.PurchaseId.HasValue &&
                         string.Equals(
                             pair.Value.ConnectionId,
                             connectionId,
                             StringComparison.Ordinal))
+                    .Select(pair => pair.Key)
                     .ToList();
 
-                var releasedLocks = new List<SeatLockInfo>();
-
-                foreach (var pair in locksToRelease)
+                foreach (var key in keysToRelease)
                 {
-                    releasedLocks.Add(
-                        CopyLockInfo(pair.Value));
-
-                    Locks.Remove(pair.Key);
+                    releasedLocks.Add(CopyLockInfo(Locks[key]));
+                    Locks.Remove(key);
                 }
-
-                return releasedLocks;
             }
+
+            NotifyLocks(LocksExpired, expiredLocks, "expiration");
+            return releasedLocks;
         }
 
         public static IReadOnlyCollection<SeatLockInfo> GetActiveLocks(
@@ -215,20 +227,18 @@ namespace MovieTicketMVC.Services
         {
             string normalizedTime;
 
-            if (!TryNormalizeProjection(
-                    movieId,
-                    day,
-                    time,
-                    out normalizedTime))
+            if (!TryNormalizeProjection(movieId, day, time, out normalizedTime))
             {
                 return new List<SeatLockInfo>();
             }
 
+            List<SeatLockInfo> expiredLocks;
+            List<SeatLockInfo> activeLocks;
+
             lock (SyncRoot)
             {
-                RemoveExpiredLocks(DateTime.UtcNow);
-
-                return Locks.Values
+                expiredLocks = RemoveExpiredLocks(DateTime.UtcNow);
+                activeLocks = Locks.Values
                     .Where(seatLock =>
                         seatLock.MovieId == movieId &&
                         seatLock.Day == day.Date &&
@@ -237,10 +247,119 @@ namespace MovieTicketMVC.Services
                             normalizedTime,
                             StringComparison.Ordinal))
                     .Select(CopyLockInfo)
-                    .OrderBy(seatLock =>
-                        GetSeatSortValue(seatLock.SeatId))
+                    .OrderBy(seatLock => GetSeatSortValue(seatLock.SeatId))
                     .ToList();
             }
+
+            NotifyLocks(LocksExpired, expiredLocks, "expiration");
+            return activeLocks;
+        }
+
+        public static Guid? TryBeginPurchase(
+            int movieId,
+            DateTime day,
+            string time,
+            IEnumerable<string> seatIds,
+            string connectionId,
+            string ownerEmail)
+        {
+            string normalizedTime;
+
+            if (string.IsNullOrWhiteSpace(connectionId) ||
+                string.IsNullOrWhiteSpace(ownerEmail) ||
+                !TryNormalizeProjection(movieId, day, time, out normalizedTime) ||
+                seatIds == null)
+            {
+                return null;
+            }
+
+            var selectedSeats = seatIds.ToList();
+
+            if (selectedSeats.Count == 0 || selectedSeats.Count > 100 ||
+                selectedSeats.Any(seat =>
+                    string.IsNullOrWhiteSpace(seat) ||
+                    !SeatIdRegex.IsMatch(seat)) ||
+                selectedSeats.Distinct(StringComparer.OrdinalIgnoreCase).Count() !=
+                    selectedSeats.Count)
+            {
+                return null;
+            }
+
+            var purchaseId = Guid.NewGuid();
+            var acquired = false;
+            List<SeatLockInfo> expiredLocks;
+
+            lock (SyncRoot)
+            {
+                var nowUtc = DateTime.UtcNow;
+                expiredLocks = RemoveExpiredLocks(nowUtc);
+
+                var locksToPurchase = new List<SeatLockInfo>();
+                acquired = true;
+
+                foreach (var seatId in selectedSeats)
+                {
+                    SeatLockInfo seatLock;
+                    var key = BuildKey(movieId, day, normalizedTime, seatId);
+
+                    if (!Locks.TryGetValue(key, out seatLock) ||
+                        seatLock.PurchaseId.HasValue ||
+                        !string.Equals(
+                            seatLock.ConnectionId,
+                            connectionId,
+                            StringComparison.Ordinal) ||
+                        !string.Equals(
+                            seatLock.OwnerEmail,
+                            ownerEmail,
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        acquired = false;
+                        break;
+                    }
+
+                    locksToPurchase.Add(seatLock);
+                }
+
+                if (acquired)
+                {
+                    foreach (var seatLock in locksToPurchase)
+                    {
+                        seatLock.PurchaseId = purchaseId;
+                        seatLock.ExpiresAtUtc = nowUtc.Add(PurchaseLifetime);
+                    }
+                }
+            }
+
+            NotifyLocks(LocksExpired, expiredLocks, "expiration");
+            return acquired ? (Guid?)purchaseId : null;
+        }
+
+        public static void EndPurchase(Guid purchaseId)
+        {
+            if (purchaseId == Guid.Empty)
+            {
+                return;
+            }
+
+            List<SeatLockInfo> expiredLocks;
+            var releasedLocks = new List<SeatLockInfo>();
+
+            lock (SyncRoot)
+            {
+                expiredLocks = RemoveExpiredLocks(DateTime.UtcNow);
+                var entries = Locks
+                    .Where(pair => pair.Value.PurchaseId == purchaseId)
+                    .ToList();
+
+                foreach (var entry in entries)
+                {
+                    releasedLocks.Add(CopyLockInfo(entry.Value));
+                    Locks.Remove(entry.Key);
+                }
+            }
+
+            NotifyLocks(LocksExpired, expiredLocks, "expiration");
+            NotifyLocks(PurchaseLocksReleased, releasedLocks, "purchase release");
         }
 
         private static bool TryNormalizeInput(
@@ -256,24 +375,13 @@ namespace MovieTicketMVC.Services
             normalizedSeatId = null;
 
             if (string.IsNullOrWhiteSpace(connectionId) ||
-                string.IsNullOrWhiteSpace(seatId))
+                string.IsNullOrWhiteSpace(seatId) ||
+                !TryNormalizeProjection(movieId, day, time, out normalizedTime))
             {
                 return false;
             }
 
-            if (!TryNormalizeProjection(
-                    movieId,
-                    day,
-                    time,
-                    out normalizedTime))
-            {
-                return false;
-            }
-
-            normalizedSeatId = seatId
-                .Trim()
-                .ToUpperInvariant();
-
+            normalizedSeatId = seatId.Trim().ToUpperInvariant();
             return SeatIdRegex.IsMatch(normalizedSeatId);
         }
 
@@ -301,26 +409,68 @@ namespace MovieTicketMVC.Services
             }
 
             normalizedTime = value;
-
             return true;
         }
 
-        private static void RemoveExpiredLocks(DateTime nowUtc)
+        private static List<SeatLockInfo> RemoveExpiredLocks(DateTime nowUtc)
         {
-            var expiredKeys = Locks
-                .Where(pair =>
-                    pair.Value.ExpiresAtUtc <= nowUtc)
-                .Select(pair => pair.Key)
+            var expiredEntries = Locks
+                .Where(pair => pair.Value.ExpiresAtUtc <= nowUtc)
                 .ToList();
+            var expiredLocks = new List<SeatLockInfo>(expiredEntries.Count);
 
-            foreach (var key in expiredKeys)
+            foreach (var entry in expiredEntries)
             {
-                Locks.Remove(key);
+                expiredLocks.Add(CopyLockInfo(entry.Value));
+                Locks.Remove(entry.Key);
+            }
+
+            return expiredLocks;
+        }
+
+        private static void CleanupExpiredLocks(object state)
+        {
+            try
+            {
+                List<SeatLockInfo> expiredLocks;
+
+                lock (SyncRoot)
+                {
+                    expiredLocks = RemoveExpiredLocks(DateTime.UtcNow);
+                }
+
+                NotifyLocks(LocksExpired, expiredLocks, "expiration");
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("Seat lock cleanup failed: {0}", ex);
             }
         }
 
-        private static SeatLockInfo CopyLockInfo(
-            SeatLockInfo source)
+        private static void NotifyLocks(
+            Action<IReadOnlyCollection<SeatLockInfo>> handler,
+            List<SeatLockInfo> seatLocks,
+            string operation)
+        {
+            if (handler == null || seatLocks == null || seatLocks.Count == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                handler(seatLocks.AsReadOnly());
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(
+                    "Seat lock {0} notification failed: {1}",
+                    operation,
+                    ex);
+            }
+        }
+
+        private static SeatLockInfo CopyLockInfo(SeatLockInfo source)
         {
             return new SeatLockInfo
             {
@@ -329,14 +479,15 @@ namespace MovieTicketMVC.Services
                 Time = source.Time,
                 SeatId = source.SeatId,
                 ConnectionId = source.ConnectionId,
-                ExpiresAtUtc = source.ExpiresAtUtc
+                OwnerEmail = source.OwnerEmail,
+                ExpiresAtUtc = source.ExpiresAtUtc,
+                PurchaseId = source.PurchaseId
             };
         }
 
         private static int GetSeatSortValue(string seatId)
         {
-            var match = SeatIdRegex.Match(
-                seatId ?? string.Empty);
+            var match = SeatIdRegex.Match(seatId ?? string.Empty);
 
             if (!match.Success)
             {
@@ -346,7 +497,6 @@ namespace MovieTicketMVC.Services
             var row = int.Parse(
                 match.Groups[1].Value,
                 CultureInfo.InvariantCulture);
-
             var column = int.Parse(
                 match.Groups[2].Value,
                 CultureInfo.InvariantCulture);

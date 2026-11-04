@@ -2,7 +2,7 @@
 @model MovieTicketMVC.Models.ExternalLoginConfirmationViewModel
 
 @{
-    ViewBag.Title = "Заврши регистрација";
+    ViewBag.Title = "Complete Registration";
 
     var providerName =
         ViewBag.LoginProvider as string;
@@ -10,7 +10,7 @@
     if (string.IsNullOrWhiteSpace(providerName))
     {
         providerName =
-            "Надворешна услуга";
+            "External provider";
     }
 }
 
@@ -68,13 +68,13 @@
                 </span>
 
                 <strong>
-                    Успешна автентикација
+                    Authentication successful
                 </strong>
 
                 <p>
-                    Најавата преку надворешната услуга е потврдена.
-                    Внеси e-mail адреса за да создадеш
-                    нов MovieTicket профил.
+                    Your external sign-in was successful.
+                    Enter your email address to create
+                    a new MovieTicket account.
                 </p>
 
             </div>
@@ -94,7 +94,7 @@
 
 
             <div class="external-confirm-progress"
-                 aria-label="Процес за регистрација">
+                 aria-label="Registration progress">
 
                 <div class="external-confirm-step completed">
 
@@ -105,11 +105,11 @@
                     <div>
 
                         <strong>
-                            Надворешна најава
+                            External sign-in
                         </strong>
 
                         <small>
-                            Потврдено
+                            Verified
                         </small>
 
                     </div>
@@ -134,7 +134,7 @@
                         </strong>
 
                         <small>
-                            Создај профил
+                            Create account
                         </small>
 
                     </div>
@@ -151,16 +151,16 @@
                 </div>
 
                 <h1 id="external-confirm-title">
-                    Уште еден
+                    Just one more
                     <span class="cinema-text-gradient">
-                        чекор
+                        step
                     </span>
                 </h1>
 
                 <p>
-                    Внеси ја e-mail адресата за новиот
-                    MovieTicket профил. Избраната услуга
-                    ќе биде додадена како начин за најава.
+                    Enter the email address for your new
+                    MovieTicket account. Your selected provider
+                    will be linked as a sign-in method.
                 </p>
 
             </div>
@@ -176,7 +176,7 @@
                 <div>
 
                     <span>
-                        НАДВОРЕШНА НАЈАВА
+                        EXTERNAL SIGN-IN
                     </span>
 
                     <strong>
@@ -184,9 +184,9 @@
                     </strong>
 
                     <p>
-                        Надворешната автентикација е успешна.
-                        Регистрацијата на MovieTicket профилот
-                        сè уште не е завршена.
+                        Authentication with your external provider succeeded.
+                        Your MovieTicket account registration
+                        is not yet complete.
                     </p>
 
                 </div>
@@ -214,25 +214,25 @@
 
 
                 @Html.ValidationSummary(
-                         true,
-                         "",
-                         new
-                         {
-                             @class =
-                                 "validation-summary-errors external-confirm-validation"
-                         })
+                              true,
+                              "",
+                              new
+                              {
+                                  @class =
+                                      "validation-summary-errors external-confirm-validation"
+                              })
 
 
                 <div class="form-group">
 
                     @Html.LabelFor(
-                             m => m.Email,
-                             "E-mail адреса",
-                             new
-                             {
-                                 @class =
-                                     "form-label"
-                             })
+                                  m => m.Email,
+                                  "Email address",
+                                  new
+                                  {
+                                      @class =
+                                          "form-label"
+                                  })
 
 
                     <div class="external-confirm-input-wrapper">
@@ -243,43 +243,43 @@
                         </span>
 
                         @Html.TextBoxFor(
-                                 m => m.Email,
-                                 new
-                                 {
-                                     @class =
-                                         "form-control external-confirm-input",
-                                     type =
-                                         "email",
-                                     autocomplete =
-                                         "email",
-                                     placeholder =
-                                         "name@example.com",
-                                     autofocus =
-                                         "autofocus",
-                                     inputmode = "email",
-                                     autocapitalize = "none",
-                                     spellcheck = "false",
-                                     aria_describedby = "externalConfirmEmailHelp",
-                                     required = "required"
-                                 })
+                                      m => m.Email,
+                                      new
+                                      {
+                                          @class =
+                                              "form-control external-confirm-input",
+                                          type =
+                                              "email",
+                                          autocomplete =
+                                              "email",
+                                          placeholder =
+                                              "name@example.com",
+                                          autofocus =
+                                              "autofocus",
+                                          inputmode = "email",
+                                          autocapitalize = "none",
+                                          spellcheck = "false",
+                                          aria_describedby = "externalConfirmEmailHelp",
+                                          required = "required"
+                                      })
 
                     </div>
 
 
                     @Html.ValidationMessageFor(
-                             m => m.Email,
-                             "",
-                             new
-                             {
-                                 @class =
-                                     "text-danger"
-                             })
+                                  m => m.Email,
+                                  "",
+                                  new
+                                  {
+                                      @class =
+                                          "text-danger"
+                                  })
 
 
                     <small id="externalConfirmEmailHelp" class="external-confirm-email-help">
-                        Оваа адреса ќе се користи за
-                        твојот нов MovieTicket профил
-                        и известувањата за билетите.
+                        We will use this email address for
+                        your MovieTicket account
+                        and ticket notifications.
                     </small>
 
                 </div>
@@ -290,7 +290,7 @@
                         class="btn btn-primary external-confirm-submit">
 
                     <span id="externalConfirmButtonText">
-                        Заврши регистрација
+                        Complete registration
                     </span>
 
                     <span aria-hidden="true">
@@ -308,11 +308,10 @@
                 </span>
 
                 <p>
-                    Со продолжување ќе создадеш нов
-                    MovieTicket профил и ќе го поврзеш
-                    со избраниот начин за најава.
-                    Ако веќе имаш профил, најави се
-                    и поврзи ја услугата во поставките.
+                    Continuing will create a MovieTicket account
+                    linked to your selected sign-in provider.
+                    If you already have an account, sign in
+                    and link the provider in your account settings.
                 </p>
 
             </div>
@@ -325,9 +324,9 @@
                 </span>
 
                 @Html.ActionLink(
-                         "Имаш профил? Најави се",
-                         "Login",
-                         "Account")
+                              "Already have an account? Sign in",
+                              "Login",
+                              "Account")
 
             </div>
 
@@ -387,7 +386,7 @@
                 isSubmitting = true;
                 button.disabled = true;
                 button.setAttribute("aria-busy", "true");
-                buttonText.textContent = "Се креира профил...";
+                buttonText.textContent = "Creating your account...";
             });
 
             window.addEventListener("pageshow", function (event) {

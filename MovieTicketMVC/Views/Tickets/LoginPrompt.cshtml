@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Потребна е најава";
+    ViewBag.Title = "Log In Required";
 
     var returnUrl = ViewBag.ReturnUrl as string;
 
@@ -14,7 +14,7 @@
     var moviesUrl = Url.Action("Current", "Movies");
 }
 
-<main class="booking-gate-page" aria-labelledby="booking-gate-title">
+<div class="booking-gate-page" aria-labelledby="booking-gate-title">
     <section class="booking-gate-shell">
         <div class="booking-gate-showcase">
             <div class="booking-gate-orbit booking-gate-orbit-outer" aria-hidden="true"></div>
@@ -24,7 +24,7 @@
                 <div class="booking-gate-brand">
                     <a href="@Url.Action("Index", "Home")"
                        class="booking-gate-brand-link"
-                       aria-label="MovieTicket - Почетна">
+                       aria-label="MovieTicket - Home">
                         <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
                              alt="MovieTicket"
                              width="170"
@@ -33,18 +33,18 @@
                     </a>
 
                     <span class="booking-gate-brand-label">
-                        РЕЗЕРВАЦИИ
+                        RESERVATIONS
                     </span>
                 </div>
 
                 <h2>
-                    Твојот филм.<br />
-                    <span class="cinema-text-gradient">Твоето место.</span>
+                    Your Movie.<br />
+                    <span class="cinema-text-gradient">Your Seat.</span>
                 </h2>
 
                 <p>
-                    Избери ја проекцијата што ти одговара и резервирај ги
-                    твоите седишта на едно место.
+                    Choose the screening that works best for you
+                    and reserve your seats in one place.
                 </p>
             </div>
 
@@ -52,21 +52,24 @@
                 <div class="booking-gate-ticket">
                     <div class="booking-gate-ticket-heading">
                         <img src="@Url.Content("~/Content/Images/movieticket-logo.png")"
-                             alt="" width="135" height="36" decoding="async" />
-                        <span>КИНО БИЛЕТ</span>
+                             alt=""
+                             width="135"
+                             height="36"
+                             decoding="async" />
+                        <span>CINEMA TICKET</span>
                     </div>
 
                     <div class="booking-gate-ticket-center">
-                        <span class="booking-gate-ticket-label">ТВОЈАТА СЛЕДНА ПРОЕКЦИЈА</span>
-                        <strong>Филмска<br />вечер</strong>
+                        <span class="booking-gate-ticket-label">YOUR NEXT SCREENING</span>
+                        <strong>Movie<br />Night</strong>
                     </div>
 
                     <div class="booking-gate-ticket-divider"></div>
 
                     <div class="booking-gate-ticket-details">
-                        <span>ФИЛМ</span>
-                        <span>ТЕРМИН</span>
-                        <span>СЕДИШТЕ</span>
+                        <span>MOVIE</span>
+                        <span>SHOWTIME</span>
+                        <span>SEAT</span>
                     </div>
 
                     <div class="booking-gate-ticket-bars">
@@ -82,65 +85,78 @@
         <div class="booking-gate-content">
             <div class="booking-gate-content-inner">
                 <div class="booking-gate-lock" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="25" height="25" fill="none"
-                         stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24"
+                         width="25"
+                         height="25"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
                         <rect x="4.5" y="10.5" width="15" height="10.5" rx="2.2"></rect>
                         <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
                         <path d="M12 14.5v2.5"></path>
                     </svg>
                 </div>
 
-                <div class="cinema-eyebrow booking-gate-eyebrow">УШТЕ ЕДЕН ЧЕКОР</div>
+                <div class="cinema-eyebrow booking-gate-eyebrow">ONE MORE STEP</div>
 
                 <h1 id="booking-gate-title">
-                    Најави се за да
-                    <span class="cinema-text-gradient">резервираш билет.</span>
+                    Log In to
+                    <span class="cinema-text-gradient">Book Your Tickets.</span>
                 </h1>
 
                 <p class="booking-gate-description">
-                    За резервација ти е потребен MovieTicket профил.
-                    Најави се или креирај нов профил за да продолжиш.
+                    A MovieTicket account is required to make a reservation.
+                    Log in or create a new account to continue.
                 </p>
 
                 <div class="booking-gate-actions">
                     <a href="@loginUrl" class="btn btn-primary booking-gate-primary">
-                        <span>Најави се</span>
+                        <span>Log In</span>
                         <span aria-hidden="true">→</span>
                     </a>
 
                     <a href="@registerUrl" class="btn btn-outline-secondary booking-gate-secondary">
-                        Креирај профил
+                        Create Account
                     </a>
                 </div>
 
                 <div class="booking-gate-return-note">
                     <div class="booking-gate-note-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="19" height="19" fill="none"
-                             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <svg viewBox="0 0 24 24"
+                             width="19"
+                             height="19"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="1.9"
+                             stroke-linecap="round"
+                             stroke-linejoin="round">
                             <path d="M20 11a8 8 0 1 1-3.1-6.3"></path>
                             <path d="m9 11 3 3 8-8"></path>
                         </svg>
                     </div>
+
                     <p>
-                        <strong>Продолжи таму каде што застана.</strong>
-                        По успешна најава автоматски ќе се вратиш на страницата
-                        за избор на филм и седишта.
+                        <strong>Pick Up Where You Left Off.</strong>
+                        After logging in successfully, you will automatically
+                        return to the movie and seat selection page.
                     </p>
                 </div>
 
                 <a href="@moviesUrl" class="booking-gate-back">
                     <span aria-hidden="true">←</span>
-                    Продолжи со разгледување филмови
+                    Continue Browsing Movies
                 </a>
 
                 <p class="booking-gate-footnote">
-                    По резервацијата твоите билети ќе бидат достапни во „Мои билети“.
-                    По нова регистрација, избери „Купи билет“ за да продолжиш.
+                    After booking, your tickets will be available under "My Tickets".
+                    If you create a new account, select "Buy Tickets" to continue.
                 </p>
             </div>
         </div>
     </section>
-</main>
+</div>
 
 <style>
     .booking-gate-page {
@@ -171,37 +187,34 @@
         padding: clamp(2.25rem, 4vw, 3.75rem);
         overflow: hidden;
         isolation: isolate;
-        background: radial-gradient(circle at 5% 5%, rgba(214,168,75,.13), transparent 40%),
-                    radial-gradient(circle at 100% 100%, rgba(60,102,169,.18), transparent 47%),
-                    linear-gradient(145deg, #19212d 0%, #0d1420 54%, #090d15 100%);
+        background: radial-gradient(circle at 5% 5%, rgba(214,168,75,.13), transparent 40%), radial-gradient(circle at 100% 100%, rgba(60,102,169,.18), transparent 47%), linear-gradient(145deg, #19212d 0%, #0d1420 54%, #090d15 100%);
     }
 
-    .booking-gate-showcase::before {
-        position: absolute;
-        z-index: -2;
-        inset: 0;
-        content: "";
-        opacity: .36;
-        background-image: linear-gradient(rgba(255,255,255,.023) 1px, transparent 1px),
-                          linear-gradient(90deg, rgba(255,255,255,.023) 1px, transparent 1px);
-        background-size: 45px 45px;
-        -webkit-mask-image: linear-gradient(135deg, #000, transparent 82%);
-        mask-image: linear-gradient(135deg, #000, transparent 82%);
-        pointer-events: none;
-    }
+        .booking-gate-showcase::before {
+            position: absolute;
+            z-index: -2;
+            inset: 0;
+            content: "";
+            opacity: .36;
+            background-image: linear-gradient(rgba(255,255,255,.023) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.023) 1px, transparent 1px);
+            background-size: 45px 45px;
+            -webkit-mask-image: linear-gradient(135deg, #000, transparent 82%);
+            mask-image: linear-gradient(135deg, #000, transparent 82%);
+            pointer-events: none;
+        }
 
-    .booking-gate-showcase::after {
-        position: absolute;
-        z-index: -1;
-        right: -150px;
-        bottom: -220px;
-        width: 590px;
-        height: 590px;
-        border: 1px solid rgba(214,168,75,.08);
-        border-radius: 50%;
-        content: "";
-        pointer-events: none;
-    }
+        .booking-gate-showcase::after {
+            position: absolute;
+            z-index: -1;
+            right: -150px;
+            bottom: -220px;
+            width: 590px;
+            height: 590px;
+            border: 1px solid rgba(214,168,75,.08);
+            border-radius: 50%;
+            content: "";
+            pointer-events: none;
+        }
 
     .booking-gate-showcase-copy {
         position: relative;
@@ -300,26 +313,26 @@
         animation: booking-gate-ticket-float 7s ease-in-out infinite;
     }
 
-    .booking-gate-ticket::before,
-    .booking-gate-ticket::after {
-        position: absolute;
-        top: 67%;
-        width: 22px;
-        height: 22px;
-        border: 1px solid rgba(255,255,255,.1);
-        border-radius: 50%;
-        background: #101826;
-        content: "";
-        transform: translateY(-50%);
-    }
+        .booking-gate-ticket::before,
+        .booking-gate-ticket::after {
+            position: absolute;
+            top: 67%;
+            width: 22px;
+            height: 22px;
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 50%;
+            background: #101826;
+            content: "";
+            transform: translateY(-50%);
+        }
 
-    .booking-gate-ticket::before {
-        left: -12px;
-    }
+        .booking-gate-ticket::before {
+            left: -12px;
+        }
 
-    .booking-gate-ticket::after {
-        right: -12px;
-    }
+        .booking-gate-ticket::after {
+            right: -12px;
+        }
 
     .booking-gate-ticket-heading {
         display: flex;
@@ -328,23 +341,23 @@
         gap: .7rem;
     }
 
-    .booking-gate-ticket-heading img {
-        display: block;
-        max-width: 55%;
-        height: 36px;
-        object-fit: contain;
-        object-position: left center;
-    }
+        .booking-gate-ticket-heading img {
+            display: block;
+            max-width: 55%;
+            height: 36px;
+            object-fit: contain;
+            object-position: left center;
+        }
 
-    .booking-gate-ticket-heading > span {
-        padding: .3rem .55rem;
-        border: 1px solid rgba(214,168,75,.29);
-        border-radius: 999px;
-        color: #f0cb76;
-        font-size: .62rem;
-        font-weight: 800;
-        white-space: nowrap;
-    }
+        .booking-gate-ticket-heading > span {
+            padding: .3rem .55rem;
+            border: 1px solid rgba(214,168,75,.29);
+            border-radius: 999px;
+            color: #f0cb76;
+            font-size: .62rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
 
     .booking-gate-ticket-center {
         padding: 2.15rem 0 1.7rem;
@@ -379,12 +392,12 @@
         padding: 1.1rem 0;
     }
 
-    .booking-gate-ticket-details span {
-        color: #a6b1c0;
-        font-size: .64rem;
-        font-weight: 800;
-        letter-spacing: .05em;
-    }
+        .booking-gate-ticket-details span {
+            color: #a6b1c0;
+            font-size: .64rem;
+            font-weight: 800;
+            letter-spacing: .05em;
+        }
 
     .booking-gate-ticket-bars {
         display: flex;
@@ -394,19 +407,19 @@
         opacity: .77;
     }
 
-    .booking-gate-ticket-bars span {
-        display: block;
-        width: 3px;
-        background: #c8d0db;
-    }
+        .booking-gate-ticket-bars span {
+            display: block;
+            width: 3px;
+            background: #c8d0db;
+        }
 
-    .booking-gate-ticket-bars span:nth-child(2n) {
-        width: 1px;
-    }
+            .booking-gate-ticket-bars span:nth-child(2n) {
+                width: 1px;
+            }
 
-    .booking-gate-ticket-bars span:nth-child(3n) {
-        width: 5px;
-    }
+            .booking-gate-ticket-bars span:nth-child(3n) {
+                width: 5px;
+            }
 
     .booking-gate-content {
         display: grid;
@@ -446,9 +459,9 @@
         letter-spacing: -.05em;
     }
 
-    .booking-gate-content h1 span {
-        display: block;
-    }
+        .booking-gate-content h1 span {
+            display: block;
+        }
 
     .booking-gate-description {
         margin: 0 0 1.65rem;
@@ -463,30 +476,30 @@
         gap: .7rem;
     }
 
-    .booking-gate-actions .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 49px;
-        padding: .7rem .95rem;
-        font-size: .89rem;
-        font-weight: 750;
-        white-space: nowrap;
-    }
+        .booking-gate-actions .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 49px;
+            padding: .7rem .95rem;
+            font-size: .89rem;
+            font-weight: 750;
+            white-space: nowrap;
+        }
 
     .booking-gate-primary {
         justify-content: space-between !important;
         gap: .65rem;
     }
 
-    .booking-gate-primary > span:last-child,
-    .booking-gate-back > span {
-        transition: transform var(--cinema-transition);
-    }
+        .booking-gate-primary > span:last-child,
+        .booking-gate-back > span {
+            transition: transform var(--cinema-transition);
+        }
 
-    .booking-gate-primary:hover > span:last-child {
-        transform: translateX(4px);
-    }
+        .booking-gate-primary:hover > span:last-child {
+            transform: translateX(4px);
+        }
 
     .booking-gate-return-note {
         display: flex;
@@ -533,13 +546,13 @@
         text-decoration: none;
     }
 
-    .booking-gate-back:hover {
-        color: var(--cinema-gold-light);
-    }
+        .booking-gate-back:hover {
+            color: var(--cinema-gold-light);
+        }
 
-    .booking-gate-back:hover > span {
-        transform: translateX(-4px);
-    }
+            .booking-gate-back:hover > span {
+                transform: translateX(-4px);
+            }
 
     .booking-gate-footnote {
         margin: 1.35rem 0 0;
@@ -646,9 +659,9 @@
             grid-template-columns: minmax(0, 1fr);
         }
 
-        .booking-gate-actions .btn {
-            width: 100%;
-        }
+            .booking-gate-actions .btn {
+                width: 100%;
+            }
     }
 
     @@media (prefers-reduced-motion: reduce) {
@@ -662,7 +675,6 @@
             transition: none;
         }
     }
-
 
     .booking-gate-brand {
         display: flex;

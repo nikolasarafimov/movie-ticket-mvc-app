@@ -8,39 +8,40 @@ namespace MovieTicketMVC.Models
         public int Id { get; set; }
 
         [Required(
-            ErrorMessage = "Мора да внесете наслов на филмот.")]
+            ErrorMessage = "Please enter a movie title.")]
         public string Title { get; set; }
 
         [Range(
             1,
             600,
-            ErrorMessage = "Времетраењето мора да биде помеѓу 1 и 600 минути.")]
+            ErrorMessage = "The movie duration must be between 1 and 600 minutes.")]
         public int LengthInMinutes { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime ReleaseDate { get; set; }
 
         [Required(
-            ErrorMessage = "Мора да внесете опис на филмот.")]
+            ErrorMessage = "Please enter a movie description.")]
         public string Description { get; set; }
 
         [Required(
-            ErrorMessage = "Мора да ја одберете возрасната категорија.")]
+            ErrorMessage = "Please specify whether the movie is restricted to adults.")]
         public bool? IsForAdults { get; set; }
 
         public bool IsCurrentlyShowing { get; set; }
 
         [Required(
-            ErrorMessage = "Мора да внесете жанр на филмот.")]
+            ErrorMessage = "Please enter a movie genre.")]
         public string Genre { get; set; }
 
         [DisplayFormat(
             DataFormatString = "{0:0.##}",
             ApplyFormatInEditMode = true)]
         [Range(
-            0,
-            10,
-            ErrorMessage = "Рејтингот мора да биде помеѓу 0 и 10.")]
+            typeof(decimal),
+            "0",
+            "10",
+            ErrorMessage = "The movie rating must be between 0 and 10.")]
         public decimal? Rating { get; set; }
 
         public string Actors { get; set; }
